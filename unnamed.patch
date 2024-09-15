@@ -1,0 +1,666 @@
+Index: .gitignore
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.gitignore b/.gitignore
+new file mode 100644
+--- /dev/null	(revision ac7f1ad6f660dfb48a98f8a0b161fb77e187d87c)
++++ b/.gitignore	(revision ac7f1ad6f660dfb48a98f8a0b161fb77e187d87c)
+@@ -0,0 +1,29 @@
++### IntelliJ IDEA ###
++out/
++!**/src/main/**/out/
++!**/src/test/**/out/
++
++### Eclipse ###
++.apt_generated
++.classpath
++.factorypath
++.project
++.settings
++.springBeans
++.sts4-cache
++bin/
++!**/src/main/**/bin/
++!**/src/test/**/bin/
++
++### NetBeans ###
++/nbproject/private/
++/nbbuild/
++/dist/
++/nbdist/
++/.nb-gradle/
++
++### VS Code ###
++.vscode/
++
++### Mac OS ###
++.DS_Store
+\ No newline at end of file
+Index: .idea/.gitignore
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.idea/.gitignore b/.idea/.gitignore
+new file mode 100644
+--- /dev/null	(revision ac7f1ad6f660dfb48a98f8a0b161fb77e187d87c)
++++ b/.idea/.gitignore	(revision ac7f1ad6f660dfb48a98f8a0b161fb77e187d87c)
+@@ -0,0 +1,8 @@
++# Default ignored files
++/shelf/
++/workspace.xml
++# Editor-based HTTP Client requests
++/httpRequests/
++# Datasource local storage ignored files
++/dataSources/
++/dataSources.local.xml
+Index: .idea/misc.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.idea/misc.xml b/.idea/misc.xml
+new file mode 100644
+--- /dev/null	(revision ac7f1ad6f660dfb48a98f8a0b161fb77e187d87c)
++++ b/.idea/misc.xml	(revision ac7f1ad6f660dfb48a98f8a0b161fb77e187d87c)
+@@ -0,0 +1,6 @@
++<?xml version="1.0" encoding="UTF-8"?>
++<project version="4">
++  <component name="ProjectRootManager" version="2" project-jdk-name="openjdk-22" project-jdk-type="JavaSDK">
++    <output url="file://$PROJECT_DIR$/out" />
++  </component>
++</project>
+\ No newline at end of file
+Index: .idea/modules.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.idea/modules.xml b/.idea/modules.xml
+new file mode 100644
+--- /dev/null	(revision ac7f1ad6f660dfb48a98f8a0b161fb77e187d87c)
++++ b/.idea/modules.xml	(revision ac7f1ad6f660dfb48a98f8a0b161fb77e187d87c)
+@@ -0,0 +1,8 @@
++<?xml version="1.0" encoding="UTF-8"?>
++<project version="4">
++  <component name="ProjectModuleManager">
++    <modules>
++      <module fileurl="file://$PROJECT_DIR$/Compilador.iml" filepath="$PROJECT_DIR$/Compilador.iml" />
++    </modules>
++  </component>
++</project>
+\ No newline at end of file
+Index: .idea/vcs.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.idea/vcs.xml b/.idea/vcs.xml
+new file mode 100644
+--- /dev/null	(revision ac7f1ad6f660dfb48a98f8a0b161fb77e187d87c)
++++ b/.idea/vcs.xml	(revision ac7f1ad6f660dfb48a98f8a0b161fb77e187d87c)
+@@ -0,0 +1,6 @@
++<?xml version="1.0" encoding="UTF-8"?>
++<project version="4">
++  <component name="VcsDirectoryMappings">
++    <mapping directory="$PROJECT_DIR$" vcs="Git" />
++  </component>
++</project>
+\ No newline at end of file
+Index: Compilador.iml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/Compilador.iml b/Compilador.iml
+new file mode 100644
+--- /dev/null	(revision ac7f1ad6f660dfb48a98f8a0b161fb77e187d87c)
++++ b/Compilador.iml	(revision ac7f1ad6f660dfb48a98f8a0b161fb77e187d87c)
+@@ -0,0 +1,11 @@
++<?xml version="1.0" encoding="UTF-8"?>
++<module type="JAVA_MODULE" version="4">
++  <component name="NewModuleRootManager" inherit-compiler-output="true">
++    <exclude-output />
++    <content url="file://$MODULE_DIR$">
++      <sourceFolder url="file://$MODULE_DIR$/src" isTestSource="false" />
++    </content>
++    <orderEntry type="inheritedJdk" />
++    <orderEntry type="sourceFolder" forTests="false" />
++  </component>
++</module>
+\ No newline at end of file
+Index: src/Main.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/Main.java b/src/Main.java
+new file mode 100644
+--- /dev/null	(revision 3d6199ae1e2b26b7c28239eb2cacaccba2cef43f)
++++ b/src/Main.java	(revision 3d6199ae1e2b26b7c28239eb2cacaccba2cef43f)
+@@ -0,0 +1,15 @@
++//TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or
++// click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
++public class Main {
++    public static void main(String[] args) {
++        //TIP Press <shortcut actionId="ShowIntentionActions"/> with your caret at the highlighted text
++        // to see how IntelliJ IDEA suggests fixing it.
++        System.out.printf("Hello and welcome BOOOOOOOOOOOCA!");
++
++        for (int i = 1; i <= 5; i++) {
++            //TIP Press <shortcut actionId="Debug"/> to start debugging your code. We have set one <icon src="AllIcons.Debugger.Db_set_breakpoint"/> breakpoint
++            // for you, but you can always add more by pressing <shortcut actionId="ToggleLineBreakpoint"/>.
++            System.out.println("i = " + i);
++        }
++    }
++}
+\ No newline at end of file
+Index: src/AccionesSemanticas/AS1.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/AccionesSemanticas/AS1.java b/src/AccionesSemanticas/AS1.java
+new file mode 100644
+--- /dev/null	(revision 3da1e7c81678b923eabf5443220b37cb19b7b6a4)
++++ b/src/AccionesSemanticas/AS1.java	(revision 3da1e7c81678b923eabf5443220b37cb19b7b6a4)
+@@ -0,0 +1,33 @@
++package AccionesSemanticas;
++
++import java.io.IOException;
++import java.io.Reader;
++import java.util.Map;
++
++import Compilador.Simbolo;
++import Compilador.TablaPalabrasReservadas;
++
++/*Acción Semantica 1:
++Checkeo que no sea 0
++Inicializar string para la constante 
++Agregar dígito al string 
++ */
++
++public class AS1 implements AccionSemantica {
++    @Override
++    public int ejecutar(Reader lector, StringBuilder token, TablaPalabrasReservadas PalabrasReservadas, Map<String, Simbolo> TablaDeSimbolos) {
++            try {
++            	char caracter = (char) lector.read(); // Lee el siguiente caracter
++
++            	/*DUDA -> es necesario checkearlo? ya que no va a ser llamado si es 0*/
++            	
++            if ((int)caracter != 0) {
++                token.append(caracter); //Si no es 0 lo concatenamos
++            }
++        } catch (IOException excepcion) {
++            excepcion.printStackTrace();
++        }
++        
++        return TOKEN_ACTIVO;   
++    }; 
++}
+\ No newline at end of file
+Index: src/AccionesSemanticas/AS2.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/AccionesSemanticas/AS2.java b/src/AccionesSemanticas/AS2.java
+new file mode 100644
+--- /dev/null	(revision 3da1e7c81678b923eabf5443220b37cb19b7b6a4)
++++ b/src/AccionesSemanticas/AS2.java	(revision 3da1e7c81678b923eabf5443220b37cb19b7b6a4)
+@@ -0,0 +1,29 @@
++package AccionesSemanticas;
++
++import java.io.IOException;
++import java.io.Reader;
++import java.util.Map;
++
++import Compilador.AnalizadorLexico;
++import Compilador.Simbolo;
++import Compilador.TablaPalabrasReservadas;
++
++public class AS2 implements AccionSemantica {
++    @Override
++    public int ejecutar(Reader lector, StringBuilder token, TablaPalabrasReservadas PalabrasReservadas, Map<String, Simbolo> TablaDeSimbolos) {
++        if(true/*es octal*/){
++        	if(true /*cumple rangos*/) {
++        		//buscar en tabla de simbolos
++        		//si no esta lo agregamos
++        	}
++        }
++        try {
++			lector.mark(1);
++			lector.reset();
++		} catch (IOException e) {
++			e.printStackTrace();
++		}
++        AnalizadorLexico.token_actual.setLength(0); //VACIAMOS EL BUFFER YA QUE SE ESPERA UN NUEVO TOKEN
++        return AnalizadorLexico.OCTAL;
++    }; 
++}
+\ No newline at end of file
+Index: src/AccionesSemanticas/AccionSemantica.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/AccionesSemanticas/AccionSemantica.java b/src/AccionesSemanticas/AccionSemantica.java
+new file mode 100644
+--- /dev/null	(revision 3da1e7c81678b923eabf5443220b37cb19b7b6a4)
++++ b/src/AccionesSemanticas/AccionSemantica.java	(revision 3da1e7c81678b923eabf5443220b37cb19b7b6a4)
+@@ -0,0 +1,13 @@
++package AccionesSemanticas;
++import java.io.Reader;
++import java.util.Map;
++
++import Compilador.Simbolo;
++import Compilador.TablaPalabrasReservadas;
++
++
++public interface AccionSemantica {
++    int TOKEN_ACTIVO = -1;
++    int ERROR = -2;
++    int ejecutar(Reader lector, StringBuilder token, TablaPalabrasReservadas PalabrasReservadas, Map<String, Simbolo> TablaDeSimbolos); 
++}
+Index: src/Compilador/AnalizadorLexico.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/Compilador/AnalizadorLexico.java b/src/Compilador/AnalizadorLexico.java
+new file mode 100644
+--- /dev/null	(revision 3da1e7c81678b923eabf5443220b37cb19b7b6a4)
++++ b/src/Compilador/AnalizadorLexico.java	(revision 3da1e7c81678b923eabf5443220b37cb19b7b6a4)
+@@ -0,0 +1,159 @@
++package Compilador;
++/*
++ * 	¿Qué le entrega el AL al AS?
++		● Un número entero correspondiente a un tipo de token
++		● Los números para cada token se definen en la etapa 2
++		● En esta etapa pueden definir los valores y luego modificarlos
++ * 
++ * 	Tabla de Simbolos
++ * 		● Cada entrada almacena atributos de los tokens (ej el lexema de un identificador o una constante)
++		● Se debe implementar utilizando una estructura dinámica
++		● Se recomienda utilizar una estructura que permita escribir 
++			y recuperar información de manera eficiente (ej tabla de hash)
++ * 
++ */
++
++import java.util.Map;
++import java.util.HashMap;
++
++import AccionesSemanticas.*;
++import java.io.*;
++
++public class AnalizadorLexico {
++	//TOKENS RECONOCIDOS
++	public static final int OCTAL = '3';
++	
++	//COLUMNAS DE LA MATRIZ DE TRANSICION DE ESTADOS
++    public static final char TABULACION = '\t';
++    public static final char BLANCO = ' ';
++    public static final char SALTO_DE_LINEA = '\n';
++	private static final String ARCH_MATRIZ_ESTADOS = "Compilador/matrizDeEstados.txt";
++    private static final String ARCH_MATRIZ_ACCIONES = "Compilador/matrizDeAcciones.txt";
++	private static final int CANTIDAD_ESTADOS = 14;
++	private static final int CANTIDAD_CARACTERES = 18;
++	private static final int CERO = '0';
++	private static final int MENOR7 = '1';
++	private static final int MAYOR7 = '2';
++	private static final int LETRA = '3';
++	private static final int D = '4';
++	public static int saltoDeLinea = 0;
++    public static int estado_actual = 0;
++    public static final StringBuilder token_actual = new StringBuilder();
++    
++    public static Map<String, Simbolo> TablaDeSimbolos = new HashMap<>();  
++	private static final TablaPalabrasReservadas PalabrasReservadas = new TablaPalabrasReservadas("PalabrasReservadas.txt");
++    private static final AccionSemantica[][] acciones_Semanticas = CargadorDeMatriz.CargarMatrizAS(ARCH_MATRIZ_ESTADOS, CANTIDAD_ESTADOS, CANTIDAD_CARACTERES);
++    private static final int[][] transicion_estados = CargadorDeMatriz.CargarMatrizEstados(ARCH_MATRIZ_ACCIONES, CANTIDAD_ESTADOS, CANTIDAD_CARACTERES);
++
++	private static char obtenerTipoCaracter(char caracter) {
++        if (Character.isDigit(caracter)) {
++			if(caracter == 0){
++				return CERO;
++			}else{
++				if(1<= caracter && caracter  >= 7){
++					return MENOR7;
++				}else{
++					return MAYOR7;
++				}
++			}
++        }if (Character.isLetter(caracter)){
++			if(caracter == 'd'){
++				return D;
++			}else{
++				return LETRA;
++			}
++		}else {
++            return caracter;
++        }
++    }
++
++	public static int siguienteEstado(Reader lector, char caracter) {
++        int caracter_actual;
++		// Ahora vamos a matchearlo con las columnas de la matriz de estado
++        switch (obtenerTipoCaracter(caracter)) {
++            case CERO:
++                caracter_actual = 0;
++                break;
++            case MENOR7:
++                caracter_actual = 1;
++                break;
++            case MAYOR7:
++                caracter_actual = 2;
++                break;
++			case LETRA:
++                caracter_actual = 3;
++                break;
++            case D:
++                caracter_actual = 4;
++                break;
++			case '_':
++                caracter_actual = 5;
++            	break;
++			case ']':
++                caracter_actual = 6;
++            	break;
++			case '[':
++                caracter_actual = 7;
++                break;
++            case '+':
++                caracter_actual = 8;
++                break;
++			case '-':
++                caracter_actual = 8;
++                break;
++			case '*':
++                caracter_actual = 9;
++                break;
++            case '/':
++                caracter_actual = 9;
++                break;
++            case ':':
++                caracter_actual = 10;
++                break;
++            case '!':
++                caracter_actual = 10;
++                break;
++            case '<':
++                caracter_actual = 11;
++                break;
++            case '>':
++                caracter_actual = 12;
++                break;
++            case '=':
++                caracter_actual = 13;
++                break;
++            case '(':
++                caracter_actual = 14;
++                break;
++            case ')':
++                caracter_actual = 14;
++                break;
++            case ',':
++                caracter_actual = 14;
++                break;
++            case ';':
++                caracter_actual = 14;
++                break;
++            case '.':
++                caracter_actual = 15;
++                break;
++            case '#':
++                caracter_actual = 16;
++                break;
++            case SALTO_DE_LINEA:
++                caracter_actual = 17;
++                break;
++            default:
++                caracter_actual = 18;
++                break;
++        }
++
++        AccionSemantica accion_a_ejecutar = acciones_Semanticas[estado_actual][caracter_actual];
++        int identificador_token = accion_a_ejecutar.ejecutar(lector, token_actual,PalabrasReservadas,TablaDeSimbolos );//-1 si es activo, -2 si es error y el token si es fin de cadena
++        estado_actual = transicion_estados[estado_actual][caracter_actual];
++
++        return identificador_token;
++    }
++
++	
++}
+Index: src/Compilador/CargadorDeMatriz.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/Compilador/CargadorDeMatriz.java b/src/Compilador/CargadorDeMatriz.java
+new file mode 100644
+--- /dev/null	(revision 3da1e7c81678b923eabf5443220b37cb19b7b6a4)
++++ b/src/Compilador/CargadorDeMatriz.java	(revision 3da1e7c81678b923eabf5443220b37cb19b7b6a4)
+@@ -0,0 +1,83 @@
++package Compilador;
++import AccionesSemanticas.*;
++
++import java.io.*;
++import java.util.HashMap;
++import java.util.Map;
++import java.util.Scanner;
++
++public class CargadorDeMatriz {
++    public static AccionSemantica[][] CargarMatrizAS(String path, int rows, int columns){
++        AccionSemantica[][] resultado = new AccionSemantica[rows][columns];
++        try {
++            File archivo = new File(path);
++            Scanner scanner = new Scanner(archivo);
++            for (int i = 0; i < rows; ++i) {
++                for (int j = 0; j < columns; ++j) {
++                    resultado[i][j] = createAction(scanner.nextLine());
++                }
++            }
++            scanner.close();
++        } catch (FileNotFoundException excepcion) {
++            System.out.println("No se pudo leer el archivo " + path);
++            excepcion.printStackTrace();
++        } 
++        return resultado;
++    }
++
++    private static AccionSemantica createAction(String action_name) {
++        switch (action_name) {
++            case "AS1":
++                return new AS1();
++            default:
++                return null;
++        }
++    }
++
++    public static int[][] CargarMatrizEstados(String path, int rows, int columns) {
++        int[][] int_matrix = new int[rows][columns];
++
++        try {
++            File archivo = new File(path);
++            Scanner scanner = new Scanner(archivo);
++
++            for (int i = 0; i < rows; ++i) {
++                for (int j = 0; j < columns; ++j) {
++                    int_matrix[i][j] =  Integer.parseInt(scanner.nextLine());
++                }
++            }
++
++            scanner.close();
++        } catch (FileNotFoundException excepcion) {
++            System.out.println("No se pudo leer el archivo " + path);  
++            excepcion.printStackTrace();
++        }
++
++        return int_matrix;
++    }
++
++
++    public static Map<String, Integer> CrearMapDeArch(String path) {
++        Map<String, Integer> map = new HashMap<>();
++
++        try {
++            File archivo = new File(path);
++            Scanner scanner = new Scanner(archivo);
++
++            while (scanner.hasNext()) {
++                String palabra_reservada = scanner.next();
++                int identificador = scanner.nextInt();
++                map.put(palabra_reservada, identificador);
++            }
++
++            scanner.close();
++        } catch (FileNotFoundException excepcion) {
++            System.out.println("No se pudo leer el archivo " + path);
++            excepcion.printStackTrace();
++        }
++
++        return map;
++    }
++
++
++}
+\ No newline at end of file
+Index: src/Compilador/Codigo.txt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/Compilador/Codigo.txt b/src/Compilador/Codigo.txt
+new file mode 100644
+--- /dev/null	(revision 3da1e7c81678b923eabf5443220b37cb19b7b6a4)
++++ b/src/Compilador/Codigo.txt	(revision 3da1e7c81678b923eabf5443220b37cb19b7b6a4)
+@@ -0,0 +1,5 @@
++1Adan y Boro
++letra/caract = A
++token_actual = A
++identificador_token = -1
++estado_actual = 1
+\ No newline at end of file
+Index: src/Compilador/Main.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/Compilador/Main.java b/src/Compilador/Main.java
+new file mode 100644
+--- /dev/null	(revision 3da1e7c81678b923eabf5443220b37cb19b7b6a4)
++++ b/src/Compilador/Main.java	(revision 3da1e7c81678b923eabf5443220b37cb19b7b6a4)
+@@ -0,0 +1,27 @@
++package Compilador;
++
++import java.io.FileNotFoundException;
++import java.io.FileReader;
++import java.io.IOException;
++import java.io.Reader;
++
++public class Main {
++	public static void main(String[] args) {
++		try (Reader reader = new FileReader("Codigo.txt")) {
++            int caracter;
++            // Recorrer cada carácter del archivo
++            while ((caracter = reader.read()) != -1) {
++                // Convertimos el entero leído a char
++                char letra = (char) caracter;
++                
++                // Llamar al método que procesa el carácter
++                if (AnalizadorLexico.siguienteEstado(reader, letra)==-2) {
++                	System.out.println("ERRORRRRRRRRRRR");
++                	}
++                
++            }
++        } catch (IOException e) {
++            e.printStackTrace();
++        }
++	}
++}
+Index: src/Compilador/Simbolo.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/Compilador/Simbolo.java b/src/Compilador/Simbolo.java
+new file mode 100644
+--- /dev/null	(revision 3da1e7c81678b923eabf5443220b37cb19b7b6a4)
++++ b/src/Compilador/Simbolo.java	(revision 3da1e7c81678b923eabf5443220b37cb19b7b6a4)
+@@ -0,0 +1,39 @@
++package Compilador;
++
++public class Simbolo {
++    private Class<?> tipo;       // Tipo de variable
++    private int direccion;    // Dirección en memoria
++    private boolean booleano;    // Atributo booleano
++
++    // Constructor
++    public Simbolo(Class<?> tipo, int direccion, boolean booleano) {
++        this.tipo = tipo;
++        this.direccion = direccion;
++        this.booleano = booleano;
++    }
++
++    // Getters y setters
++    public Class<?> getTipo() {
++        return tipo;
++    }
++
++    public void setTipo(Class<?> tipo) {
++        this.tipo = tipo;
++    }
++
++    public int getDireccion() {
++        return direccion;
++    }
++
++    public void setDireccion(int direccion) {
++        this.direccion = direccion;
++    }
++
++    public boolean isBooleano() {
++        return booleano;
++    }
++
++    public void setBooleano(boolean booleano) {
++        this.booleano = booleano;
++    }
++}
+Index: src/Compilador/TablaPalabrasReservadas.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/Compilador/TablaPalabrasReservadas.java b/src/Compilador/TablaPalabrasReservadas.java
+new file mode 100644
+--- /dev/null	(revision 3da1e7c81678b923eabf5443220b37cb19b7b6a4)
++++ b/src/Compilador/TablaPalabrasReservadas.java	(revision 3da1e7c81678b923eabf5443220b37cb19b7b6a4)
+@@ -0,0 +1,21 @@
++package Compilador;
++
++import java.util.Map;
++
++public class TablaPalabrasReservadas {
++    public static int PALABRA_NO_RESERVADA;
++
++    private static String ARCHIVO_PALABRAS_RESERVADAS;
++
++    private static Map<String, Integer> palabras_reservadas;
++
++    public TablaPalabrasReservadas(String ruta) {
++    	PALABRA_NO_RESERVADA=-1;
++    	ARCHIVO_PALABRAS_RESERVADAS=ruta;
++    	palabras_reservadas=CargadorDeMatriz.CrearMapDeArch(ARCHIVO_PALABRAS_RESERVADAS);
++    }
++
++	public static int obtenerIdentificador(String palabra_reservada) {
++        return palabras_reservadas.getOrDefault(palabra_reservada, PALABRA_NO_RESERVADA);
++    }
++}
+diff --git a/src/Compilador/PalabrasReservadas.txt b/src/Compilador/PalabrasReservadas.txt
+new file mode 100644
+diff --git a/src/Compilador/matrizDeEstados.txt b/src/Compilador/matrizDeEstados.txt
+new file mode 100644
