@@ -15,7 +15,7 @@ public class TablaPalabrasReservadas {
     	palabras_reservadas=CargadorDeMatriz.CrearMapDeArch(ARCHIVO_PALABRAS_RESERVADAS);
     }
 
-	public static int obtenerIdentificador(String palabra_reservada) {
+	public int obtenerIdentificador(String palabra_reservada) {
         return palabras_reservadas.getOrDefault(palabra_reservada, PALABRA_NO_RESERVADA);
     }
 }

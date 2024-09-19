@@ -1,5 +1,5 @@
 package Compilador;
-import AccionesSemanticas.*;
+import AccionSemantica.*;
 
 import java.io.*;
 import java.util.HashMap;
@@ -28,7 +28,7 @@ public class CargadorDeMatriz {
     private static AccionSemantica createAction(String action_name) {
         switch (action_name) {
             case "AS1":
-                return new AS1();
+                return new AS_Concatenas();
             default:
                 return null;
         }

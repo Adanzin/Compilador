@@ -14,9 +14,10 @@ package Compilador;
  */
 
 import java.util.Map;
+import java.util.Vector;
 import java.util.HashMap;
 
-import AccionesSemanticas.*;
+import AccionSemantica.AccionSemantica;
 import java.io.*;
 
 public class AnalizadorLexico {
@@ -42,7 +43,7 @@ public class AnalizadorLexico {
     
     public static Map<String, Simbolo> TablaDeSimbolos = new HashMap<>();  
 	private static final TablaPalabrasReservadas PalabrasReservadas = new TablaPalabrasReservadas("PalabrasReservadas.txt");
-    private static final AccionSemantica[][] acciones_Semanticas = CargadorDeMatriz.CargarMatrizAS(ARCH_MATRIZ_ESTADOS, CANTIDAD_ESTADOS, CANTIDAD_CARACTERES);
+    private static final AccionSemantica[][] accionesSemanticas = CargadorDeMatriz.CargarMatrizAS(ARCH_MATRIZ_ESTADOS, CANTIDAD_ESTADOS, CANTIDAD_CARACTERES);
     private static final int[][] transicion_estados = CargadorDeMatriz.CargarMatrizEstados(ARCH_MATRIZ_ACCIONES, CANTIDAD_ESTADOS, CANTIDAD_CARACTERES);
 
 	private static char obtenerTipoCaracter(char caracter) {
@@ -148,8 +149,8 @@ public class AnalizadorLexico {
                 break;
         }
 
-        AccionSemantica accion_a_ejecutar = acciones_Semanticas[estado_actual][caracter_actual];
-        int identificador_token = accion_a_ejecutar.ejecutar(lector, token_actual,PalabrasReservadas,TablaDeSimbolos );//-1 si es activo, -2 si es error y el token si es fin de cadena
+        AccionSemantica accion_a_ejecutar = accionesSemanticas[estado_actual][caracter_actual];
+        int identificador_token = accion_a_ejecutar.ejecutar(caracter, lector, token_actual,PalabrasReservadas,TablaDeSimbolos );//-1 si es activo, -2 si es error y el token si es fin de cadena
         estado_actual = transicion_estados[estado_actual][caracter_actual];
 
         return identificador_token;

@@ -1,23 +1,28 @@
 package Compilador;
 
 public class Simbolo {
-    private Class<?> tipo;       // Tipo de variable
+    private String tipo;       // Tipo de variable
     private int direccion;    // Dirección en memoria
     private boolean booleano;    // Atributo booleano
 
     // Constructor
-    public Simbolo(Class<?> tipo, int direccion, boolean booleano) {
+    public Simbolo(String tipo, int direccion, boolean booleano) {
         this.tipo = tipo;
+        this.direccion = direccion;
+        this.booleano = booleano;
+    }
+    
+    public Simbolo(int direccion, boolean booleano) { //si es palabra reservada
         this.direccion = direccion;
         this.booleano = booleano;
     }
 
     // Getters y setters
-    public Class<?> getTipo() {
+    public String getTipo() {
         return tipo;
     }
 
-    public void setTipo(Class<?> tipo) {
+    public void setTipo(String tipo) {
         this.tipo = tipo;
     }
 

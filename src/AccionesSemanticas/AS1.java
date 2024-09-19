@@ -18,12 +18,7 @@ public class AS1 implements AccionSemantica {
     public int ejecutar(Reader lector, StringBuilder token, TablaPalabrasReservadas PalabrasReservadas, Map<String, Simbolo> TablaDeSimbolos) {
             try {
             	char caracter = (char) lector.read(); // Lee el siguiente caracter
-
-            	/*DUDA -> es necesario checkearlo? ya que no va a ser llamado si es 0*/
-            	
-            if ((int)caracter != 0) {
                 token.append(caracter); //Si no es 0 lo concatenamos
-            }
         } catch (IOException excepcion) {
             excepcion.printStackTrace();
         }
