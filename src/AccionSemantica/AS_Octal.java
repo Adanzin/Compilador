@@ -14,7 +14,7 @@ public class AS_Octal implements AccionSemantica {
         int tokenint = Integer.valueOf(token.toString(),8);
     	if((tokenint+32768)>= 0 && (tokenint + 32768)<=65535) {
         	if(!TablaDeSimbolos.containsKey(token.toString())){
-        		Simbolo simb = new Simbolo("octal",PalabrasReservadas.obtenerIdentificador("CTE"),false);
+        		Simbolo simb = new Simbolo("octal");
         		TablaDeSimbolos.put(token.toString(),simb);
         	}
         }else {

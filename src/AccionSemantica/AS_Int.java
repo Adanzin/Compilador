@@ -14,7 +14,7 @@ public class AS_Int implements AccionSemantica {
         int tokenint = Integer.valueOf(token.toString());
     	if((tokenint+32768)>= 0 && (tokenint + 32768)<=65535) {
         	if(!TablaDeSimbolos.containsKey(token.toString())){
-        		Simbolo simb = new Simbolo("integer",PalabrasReservadas.obtenerIdentificador("CTE"),false);
+        		Simbolo simb = new Simbolo("integer");
         		TablaDeSimbolos.put(token.toString(),simb);
         	}
         }else {
@@ -27,6 +27,7 @@ public class AS_Int implements AccionSemantica {
 			e.printStackTrace();
 		}
         AnalizadorLexico.token_actual.setLength(0); //VACIAMOS EL BUFFER YA QUE SE ESPERA UN NUEVO TOKEN
+        //retornar el key 
         return PalabrasReservadas.obtenerIdentificador("CTE");
     }; 
 }

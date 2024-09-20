@@ -5,6 +5,7 @@ import java.io.Reader;
 import java.util.Map;
 
 import Compilador.AnalizadorLexico;
+import Compilador.Parser;
 import Compilador.Simbolo;
 import Compilador.TablaPalabrasReservadas;
 
@@ -13,15 +14,11 @@ public class AS_Identificador implements AccionSemantica {
     public int ejecutar(char car, Reader lector, StringBuilder token, TablaPalabrasReservadas PalabrasReservadas, Map<String, Simbolo> TablaDeSimbolos) {
         String tokenString = truncar(token.toString());
         
-        if(PalabrasReservadas.obtenerIdentificador(tokenString)!= -1) { //Si es palabra reservada
-        	if(!TablaDeSimbolos.containsKey(tokenString)){ //Si no esta en la TS loa grego
-        		Simbolo simb = new Simbolo(PalabrasReservadas.obtenerIdentificador(tokenString),true);
-        		TablaDeSimbolos.put(tokenString,simb);
-        	}
-        }else { // Si no es PR
+        if(PalabrasReservadas.obtenerIdentificador(tokenString)== -1) { //Si es palabra reservada
         	if(!TablaDeSimbolos.containsKey(tokenString)){
-        		Simbolo simb = new Simbolo(PalabrasReservadas.obtenerIdentificador("ID"),false);
+        		Simbolo simb = new Simbolo();
         		TablaDeSimbolos.put(tokenString,simb);
+        		Parser.yylval = new ParserVal(tokenString);  //LE PASO EL ID A LA TABLA DE SIMBOLOS AL PARSER.
         	}
         }
         try {

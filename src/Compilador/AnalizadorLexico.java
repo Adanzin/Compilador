@@ -68,7 +68,7 @@ public class AnalizadorLexico {
         }
     }
 
-	public static int siguienteEstado(Reader lector, char caracter) {
+	public static int siguienteLectura(Reader lector, char caracter) {
         int caracter_actual;
 		// Ahora vamos a matchearlo con las columnas de la matriz de estado
         switch (obtenerTipoCaracter(caracter)) {
@@ -143,6 +143,7 @@ public class AnalizadorLexico {
                 break;
             case SALTO_DE_LINEA:
                 caracter_actual = 17;
+                saltoDeLinea++; // incremento el nro de linea
                 break;
             default:
                 caracter_actual = 18;
