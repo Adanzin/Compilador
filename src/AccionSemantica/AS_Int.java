@@ -12,10 +12,11 @@ public class AS_Int implements AccionSemantica {
     @Override
     public int ejecutar(char car, Reader lector, StringBuilder token, TablaPalabrasReservadas PalabrasReservadas, Map<String, Simbolo> TablaDeSimbolos) {
         int tokenint = Integer.valueOf(token.toString());
-    	if((tokenint+32768)>= 0 && (tokenint + 32768)<=65535) {
+    	if(cumple(tokenint)) {
         	if(!TablaDeSimbolos.containsKey(token.toString())){
         		Simbolo simb = new Simbolo("integer");
         		TablaDeSimbolos.put(token.toString(),simb);
+        		AnalizadorLexico.Lexema = token.toString();  //LE PASO EL ID A LA TABLA DE SIMBOLOS AL PARSER.
         	}
         }else {
         	System.out.println("CTE FUERA DE RANGO EN LA LINEA " + AnalizadorLexico.saltoDeLinea);
@@ -30,4 +31,14 @@ public class AS_Int implements AccionSemantica {
         //retornar el key 
         return PalabrasReservadas.obtenerIdentificador("CTE");
     }; 
+    
+    public boolean cumple(double d) {
+    	double min1 = -32768;
+    	double min2 = 32767;
+    	if(min1 <= d && d<= min2) {
+    		return true;
+    	}
+    	return false;
+
+    }
 }

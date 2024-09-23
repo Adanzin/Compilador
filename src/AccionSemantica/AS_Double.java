@@ -14,8 +14,9 @@ public class AS_Double implements AccionSemantica {
         double tokenDouble = Double.valueOf(token.toString());
     	if(cumple(tokenDouble)) {
         	if(!TablaDeSimbolos.containsKey(token.toString())){
-        		Simbolo simb = new Simbolo("octal",PalabrasReservadas.obtenerIdentificador("CTE"),false);
+        		Simbolo simb = new Simbolo("octal");
         		TablaDeSimbolos.put(token.toString(),simb);
+        		AnalizadorLexico.Lexema = token.toString();  //LE PASO EL ID A LA TABLA DE SIMBOLOS AL PARSER.
         	}
         }else {
         	System.out.println("CTE FUERA DE RANGO EN LA LINEA " + AnalizadorLexico.saltoDeLinea);

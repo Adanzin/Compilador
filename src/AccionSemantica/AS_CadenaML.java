@@ -19,8 +19,9 @@ public class AS_CadenaML implements AccionSemantica {
     public int ejecutar(char car, Reader lector, StringBuilder token, TablaPalabrasReservadas PalabrasReservadas, Map<String, Simbolo> TablaDeSimbolos) {
 
 		if (!TablaDeSimbolos.containsKey(token.toString())) {
-			Simbolo simb = new Simbolo(PalabrasReservadas.obtenerIdentificador("CadenaMultilinea"), false);
+			Simbolo simb = new Simbolo("CadenaMultiLinea");
 			TablaDeSimbolos.put(token.toString(), simb);
+			AnalizadorLexico.Lexema = token.toString();  //LE PASO EL ID A LA TABLA DE SIMBOLOS AL PARSER.
 		}
         try {
 			lector.reset(); //ESTO ES PARA Q VUELVA A LEER EL SIMBOLO.
@@ -28,6 +29,6 @@ public class AS_CadenaML implements AccionSemantica {
 			e.printStackTrace();
 		}
         AnalizadorLexico.token_actual.setLength(0); //VACIAMOS EL BUFFER YA QUE SE ESPERA UN NUEVO TOKEN
-        return PalabrasReservadas.obtenerIdentificador("CadenaMultilinea"); //devolvemos el token correspondiente 
+        return PalabrasReservadas.obtenerIdentificador("CADENAMULTILINEA"); //devolvemos el token correspondiente 
     }; 
 }

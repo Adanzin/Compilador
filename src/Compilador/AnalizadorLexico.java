@@ -38,6 +38,7 @@ public class AnalizadorLexico {
 	private static final int LETRA = '3';
 	private static final int D = '4';
 	public static int saltoDeLinea = 0;
+	public static String Lexema;
     public static int estado_actual = 0;
     public static final StringBuilder token_actual = new StringBuilder();
     
@@ -157,5 +158,26 @@ public class AnalizadorLexico {
         return identificador_token;
     }
 
+	public static int getToken(Reader reader) throws IOException {
+		int caracter;
+		int token;
+		// Recorrer cada carácter del archivo
+		while ((caracter = reader.read()) != -1) {
+			// Convertimos el entero leído a char
+			char letra = (char) caracter;
+			reader.mark(1);
+			token = AnalizadorLexico.siguienteLectura(reader, letra);
+			// Llamar al método que procesa el carácter
+			if (token == -2) {
+				System.out.println("ERROR EN LA LINEA " + AnalizadorLexico.saltoDeLinea);
+			} else if (token != -1) { // Si no es un token activo, se carga en el archivo.
+				//Parser.yylval = new ParserVal(AnalizadorLexico.Lexema);
+				return token;
+			}
+
+		}
+		return 0; //fin de archivo.
+	}
+	
 	
 }

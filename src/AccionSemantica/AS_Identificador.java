@@ -5,7 +5,6 @@ import java.io.Reader;
 import java.util.Map;
 
 import Compilador.AnalizadorLexico;
-import Compilador.Parser;
 import Compilador.Simbolo;
 import Compilador.TablaPalabrasReservadas;
 
@@ -18,7 +17,7 @@ public class AS_Identificador implements AccionSemantica {
         	if(!TablaDeSimbolos.containsKey(tokenString)){
         		Simbolo simb = new Simbolo();
         		TablaDeSimbolos.put(tokenString,simb);
-        		Parser.yylval = new ParserVal(tokenString);  //LE PASO EL ID A LA TABLA DE SIMBOLOS AL PARSER.
+        		AnalizadorLexico.Lexema = tokenString;  //LE PASO EL ID A LA TABLA DE SIMBOLOS AL PARSER.
         	}
         }
         try {
