@@ -165,6 +165,29 @@ public class AnalizadorLexico {
         }
 		return 0; //fin de archivo.
 	}
+
+    public static void main(String[] args) {
+        try {
+            // Inicializa el Reader con el archivo "Codigo.txt"
+            archivo_original = new BufferedReader(new FileReader("Codigo.txt"));
+    
+            int token;
+            // Continuar leyendo tokens hasta que se termine el archivo
+            while ((token = getToken()) != 0) {
+                System.out.println("Linea " + saltoDeLinea  +"Token encontrado: " + token + "\n");
+            }
+    
+            System.out.println("Fin del archivo.");
+            
+            // Cerrar el archivo al finalizar
+            archivo_original.close();
+    
+        } catch (FileNotFoundException e) {
+            System.out.println("Archivo no encontrado: " + e.getMessage());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 	
 	
 }

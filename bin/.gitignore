@@ -1,2 +1,4 @@
-/Compilador/
-/AccionSemantica/
+/pruebasemantica.y
+/y.output
+/y.tab.c
+/yacc.exe
