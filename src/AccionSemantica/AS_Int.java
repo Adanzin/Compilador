@@ -33,9 +33,8 @@ public class AS_Int implements AccionSemantica {
     }; 
     
     public boolean cumple(double d) {
-    	double min1 = -32768;
-    	double min2 = 32767;
-    	if(min1 <= d && d<= min2) {
+    	double min2 = 32768;
+    	if(d<= min2) {
     		return true;
     	}
     	return false;

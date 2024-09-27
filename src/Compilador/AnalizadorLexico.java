@@ -1,23 +1,8 @@
 package Compilador;
-/*
- * 	¿Qué le entrega el AL al AS?
-		● Un número entero correspondiente a un tipo de token
-		● Los números para cada token se definen en la etapa 2
-		● En esta etapa pueden definir los valores y luego modificarlos
- * 
- * 	Tabla de Simbolos
- * 		● Cada entrada almacena atributos de los tokens (ej el lexema de un identificador o una constante)
-		● Se debe implementar utilizando una estructura dinámica
-		● Se recomienda utilizar una estructura que permita escribir 
-			y recuperar información de manera eficiente (ej tabla de hash)
- * 
- */
-
 import java.util.Map;
-import java.util.Vector;
 import java.util.HashMap;
 
-import AccionSemantica.AccionSemantica;
+import AccionSemantica.*;
 import java.io.*;
 
 public class AnalizadorLexico {
@@ -41,13 +26,13 @@ public class AnalizadorLexico {
 	public static String Lexema;
     public static int estado_actual = 0;
     public static final StringBuilder token_actual = new StringBuilder();
-    
+    public static Reader archivo_original;
     public static Map<String, Simbolo> TablaDeSimbolos = new HashMap<>();  
 	private static final TablaPalabrasReservadas PalabrasReservadas = new TablaPalabrasReservadas("PalabrasReservadas.txt");
     private static final AccionSemantica[][] accionesSemanticas = CargadorDeMatriz.CargarMatrizAS(ARCH_MATRIZ_ESTADOS, CANTIDAD_ESTADOS, CANTIDAD_CARACTERES);
     private static final int[][] transicion_estados = CargadorDeMatriz.CargarMatrizEstados(ARCH_MATRIZ_ACCIONES, CANTIDAD_ESTADOS, CANTIDAD_CARACTERES);
 
-	private static char obtenerTipoCaracter(char caracter) {
+	private static char getChar(char caracter) {
         if (Character.isDigit(caracter)) {
 			if(caracter == 0){
 				return CERO;
@@ -72,7 +57,7 @@ public class AnalizadorLexico {
 	public static int siguienteLectura(Reader lector, char caracter) {
         int caracter_actual;
 		// Ahora vamos a matchearlo con las columnas de la matriz de estado
-        switch (obtenerTipoCaracter(caracter)) {
+        switch (getChar(caracter)) {
             case CERO:
                 caracter_actual = 0;
                 break;
@@ -158,24 +143,26 @@ public class AnalizadorLexico {
         return identificador_token;
     }
 
-	public static int getToken(Reader reader) throws IOException {
+	public static int getToken(){
 		int caracter;
 		int token;
 		// Recorrer cada carácter del archivo
-		while ((caracter = reader.read()) != -1) {
-			// Convertimos el entero leído a char
-			char letra = (char) caracter;
-			reader.mark(1);
-			token = AnalizadorLexico.siguienteLectura(reader, letra);
-			// Llamar al método que procesa el carácter
-			if (token == -2) {
-				System.out.println("ERROR EN LA LINEA " + AnalizadorLexico.saltoDeLinea);
-			} else if (token != -1) { // Si no es un token activo, se carga en el archivo.
-				//Parser.yylval = new ParserVal(AnalizadorLexico.Lexema);
-				return token;
-			}
-
-		}
+		try {
+            while ((caracter = archivo_original.read()) != -1) {
+            	// Convertimos el entero leído a char
+            	char letra = (char) caracter;
+            	archivo_original.mark(1);
+            	token = AnalizadorLexico.siguienteLectura(archivo_original, letra);
+            	// Llamar al método que procesa el carácter
+            	if (token == -2) {
+            		System.out.println("ERROR EN LA LINEA " + AnalizadorLexico.saltoDeLinea);
+            	} else if (token != -1) { // Si no es un token activo, se carga en el archivo.
+            		return token;
+            	}
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 		return 0; //fin de archivo.
 	}
 	
