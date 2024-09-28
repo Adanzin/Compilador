@@ -14,7 +14,7 @@ Inicializar string para la constante
 Agregar dígito al string 
  */
 
-public class AS_ConcatenasSinSaltoDeLinea implements AccionSemantica {
+public class AS_ConcatenasSinSaltoDeLinea extends AccionSemantica {
     @Override
     public int ejecutar(char car, Reader lector, StringBuilder token, TablaPalabrasReservadas PalabrasReservadas, Map<String, Simbolo> TablaDeSimbolos) {
         //Si es un salto de linea pasa al siguiente.

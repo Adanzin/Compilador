@@ -1,4 +1,4 @@
-1Adan y Boro
+1Adan Boro
 letra/caract = A
 token_actual = A
 identificador_token = -1

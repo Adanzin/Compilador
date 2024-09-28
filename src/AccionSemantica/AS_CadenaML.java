@@ -14,7 +14,7 @@ Inicializar string para la constante
 Agregar dígito al string 
  */
 
-public class AS_CadenaML implements AccionSemantica {
+public class AS_CadenaML extends AccionSemantica {
     @Override
     public int ejecutar(char car, Reader lector, StringBuilder token, TablaPalabrasReservadas PalabrasReservadas, Map<String, Simbolo> TablaDeSimbolos) {
 

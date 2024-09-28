@@ -2,6 +2,13 @@
   "version": "0.2.0",
   "configurations": [
     {
+      "type": "java",
+      "name": "AnalizadorLexico",
+      "request": "launch",
+      "mainClass": "CompiladorAdanEsteban/Compilador.AnalizadorLexico",
+      "projectName": "CompiladorAdanEsteban"
+    },
+    {
       "name": "C/C++ Runner: Debug Session",
       "type": "cppdbg",
       "request": "launch",

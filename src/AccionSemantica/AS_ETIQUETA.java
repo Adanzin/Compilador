@@ -8,7 +8,7 @@ import Compilador.AnalizadorLexico;
 import Compilador.Simbolo;
 import Compilador.TablaPalabrasReservadas;
 
-public class AS_ETIQUETA implements AccionSemantica {
+public class AS_ETIQUETA extends AccionSemantica {
 
 	@Override
 	public int ejecutar(char car, Reader lector, StringBuilder token, TablaPalabrasReservadas PalabrasReservadas,

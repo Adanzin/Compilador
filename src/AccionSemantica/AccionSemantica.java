@@ -6,8 +6,11 @@ import Compilador.Simbolo;
 import Compilador.TablaPalabrasReservadas;
 
 
-public interface AccionSemantica {
-    int TOKEN_ACTIVO = -1;
-    int ERROR = -2;
-    int ejecutar(char car, Reader lector, StringBuilder token, TablaPalabrasReservadas PalabrasReservadas, Map<String, Simbolo> TablaDeSimbolos); 
+public abstract class AccionSemantica {
+    public AccionSemantica() {
+		super();
+	}
+	public int TOKEN_ACTIVO = -1;
+    public int ERROR = -2;
+    public abstract int ejecutar(char car, Reader lector, StringBuilder token, TablaPalabrasReservadas PalabrasReservadas, Map<String, Simbolo> TablaDeSimbolos); 
 }

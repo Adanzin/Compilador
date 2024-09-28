@@ -8,7 +8,7 @@ import Compilador.AnalizadorLexico;
 import Compilador.Simbolo;
 import Compilador.TablaPalabrasReservadas;
 
-public class AS_Identificador implements AccionSemantica {
+public class AS_Identificador extends AccionSemantica {
     @Override
     public int ejecutar(char car, Reader lector, StringBuilder token, TablaPalabrasReservadas PalabrasReservadas, Map<String, Simbolo> TablaDeSimbolos) {
         String tokenString = truncar(token.toString());

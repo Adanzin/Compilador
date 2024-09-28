@@ -1,4 +1,6 @@
-/pruebasemantica.y
-/y.output
-/y.tab.c
-/yacc.exe
+/AccionSemantica/
+/Compilador/
+/Codigo.txt
+/matrizDeAcciones.txt
+/matrizDeEstados.txt
+/PalabrasReservadas.txt

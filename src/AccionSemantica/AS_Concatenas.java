@@ -13,7 +13,9 @@ Inicializar string para la constante
 Agregar dígito al string 
  */
 
-public class AS_Concatenas implements AccionSemantica {
+public class AS_Concatenas extends AccionSemantica {
+	public AS_Concatenas() {
+	}
     @Override
     public int ejecutar(char car, Reader lector, StringBuilder token, TablaPalabrasReservadas PalabrasReservadas, Map<String, Simbolo> TablaDeSimbolos) {
         token.append(car);     

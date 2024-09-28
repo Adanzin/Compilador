@@ -8,7 +8,7 @@ import Compilador.AnalizadorLexico;
 import Compilador.Simbolo;
 import Compilador.TablaPalabrasReservadas;
 
-public class AS_Octal implements AccionSemantica {
+public class AS_Octal extends AccionSemantica {
     @Override
     public int ejecutar(char car, Reader lector, StringBuilder token, TablaPalabrasReservadas PalabrasReservadas, Map<String, Simbolo> TablaDeSimbolos) {
         int tokenint = Integer.valueOf(token.toString(),8); //paso de octal a int

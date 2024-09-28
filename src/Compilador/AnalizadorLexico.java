@@ -13,8 +13,8 @@ public class AnalizadorLexico {
     public static final char TABULACION = '\t';
     public static final char BLANCO = ' ';
     public static final char SALTO_DE_LINEA = '\n';
-	private static final String ARCH_MATRIZ_ESTADOS = "Compilador/matrizDeEstados.txt";
-    private static final String ARCH_MATRIZ_ACCIONES = "Compilador/matrizDeAcciones.txt";
+	private static final String ARCH_MATRIZ_ESTADOS = "src/matrizDeEstados.txt";
+    private static final String ARCH_MATRIZ_ACCIONES = "src/matrizDeAcciones.txt";
 	private static final int CANTIDAD_ESTADOS = 14;
 	private static final int CANTIDAD_CARACTERES = 18;
 	private static final int CERO = '0';
@@ -28,7 +28,7 @@ public class AnalizadorLexico {
     public static final StringBuilder token_actual = new StringBuilder();
     public static Reader archivo_original;
     public static Map<String, Simbolo> TablaDeSimbolos = new HashMap<>();  
-	private static final TablaPalabrasReservadas PalabrasReservadas = new TablaPalabrasReservadas("PalabrasReservadas.txt");
+	private static final TablaPalabrasReservadas PalabrasReservadas = new TablaPalabrasReservadas("src/PalabrasReservadas.txt");
     private static final AccionSemantica[][] accionesSemanticas = CargadorDeMatriz.CargarMatrizAS(ARCH_MATRIZ_ESTADOS, CANTIDAD_ESTADOS, CANTIDAD_CARACTERES);
     private static final int[][] transicion_estados = CargadorDeMatriz.CargarMatrizEstados(ARCH_MATRIZ_ACCIONES, CANTIDAD_ESTADOS, CANTIDAD_CARACTERES);
 
@@ -169,7 +169,7 @@ public class AnalizadorLexico {
     public static void main(String[] args) {
         try {
             // Inicializa el Reader con el archivo "Codigo.txt"
-            archivo_original = new BufferedReader(new FileReader("Codigo.txt"));
+            archivo_original = new BufferedReader(new FileReader("src/Codigo.txt"));
     
             int token;
             // Continuar leyendo tokens hasta que se termine el archivo
