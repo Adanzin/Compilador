@@ -8,10 +8,10 @@ import Compilador.AnalizadorLexico;
 import Compilador.Simbolo;
 import Compilador.TablaPalabrasReservadas;
 
-/*Acción Semantica 1:
+/*Accion Semantica 1:
 Checkeo que no sea 0
 Inicializar string para la constante 
-Agregar dígito al string 
+Agregar digito al string 
  */
 
 public class AS_CadenaML extends AccionSemantica {
