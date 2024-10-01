@@ -12,22 +12,22 @@ import java.io.*;
 %% /* Gramatica */
 									/* PROGRAMA */
 									
-programa 	: ID BEGIN sentencias END {System.out.println(AnalizadorLexico.saltoDeLinea + " PROGRAMA ");}
+programa 	: ID BEGIN sentencias ';' END {System.out.println(AnalizadorLexico.saltoDeLinea + " PROGRAMA ");}
 ;
 	
 sentencias 	: sentencias sentencia ';'
-			| sentencia ';'
+			| sentencia 
 ;
 
 sentencia 	: sentencia_declarativa 
-            | sentencia_ejecutable
+			| sentencia_ejecutable
 ;			
 				
 									/* SENTENCIAS DECLARATIVAS */	
 				
 sentencia_declarativa 	: declaracion_variable 
 						| declaracion_funciones	
-                        | declaracion_subtipo 
+						| declaracion_subtipo 
 ;
 
 declaracion_variable	: tipo variables 
@@ -35,12 +35,17 @@ declaracion_variable	: tipo variables
 
 tipo : INTEGER
 	 | DOUBLE
-;	
+	 | ID /* si es una clase, un subtipo */
+;
+
+variables 	: variables ',' ID  
+			| ID
+;		
 
 declaracion_subtipo : TYPEDEF ID ASIGNACION tipo '{' CTE_con_sig ',' CTE_con_sig '}'
 					| TYPEDEF TRIPLE '<' tipo '>' ID 
-;	
-
+;							
+	
 declaracion_funciones 	: tipo FUN ID parametros_formal BEGIN cuerpo_funcion END
 						| ID FUN ID parametros_formal BEGIN cuerpo_funcion END	
 ;
@@ -56,6 +61,7 @@ cuerpo_funcion	: sentencias RET '(' expresion_arit ')'
 				| sentencias
 ;
 
+
 									/* SENTENCIAS EJECUTABLES */
 
 sentencia_ejecutable	: asignacion
@@ -66,17 +72,9 @@ sentencia_ejecutable	: asignacion
 						| OUTF '(' cadena ')'	{System.out.println(AnalizadorLexico.saltoDeLinea + " Salida cadena ");}
 ;
 
-
+/* USAMOS { en vez de [ para los arreglos asi no nos lo considera como cadena */
 asignacion	: ID ASIGNACION expresion_arit {System.out.println(AnalizadorLexico.saltoDeLinea + " Asignacion ");}
 			| ID '{' CTE '}' ASIGNACION expresion_arit  {System.out.println(AnalizadorLexico.saltoDeLinea + " Asignacion a arreglo");}
-;
-
-invocacion	: ID '(' parametro_real ')' 
-			| ID '(' tipo parametros_formal ')'   //Conversiones
-;
-
-parametro_real	: parametro_real ',' expresion_arit
-				| expresion_arit
 ;
 
 expresion_arit  : expresion_arit '+' termino
@@ -91,24 +89,32 @@ termino : termino '*' factor
 
 factor 	: ID
 		| CTE_con_sig
-		| invocacion //Me hace ruido esto pero no lo cambio por ahora
-		| ID '{' CTE_con_sig '}' //No debería ser una constante positiva únicamente?
+		| invocacion
+		| ID '{' CTE_con_sig '}'
+;				
+
+CTE_con_sig : CTE	/*{if($1.ival > 32767){AnalizadorLexico.TablaDeSimbolos.remove($1.sval); System.out.println(" CTE fuera de rango");}}*/
+			| '-' CTE /* { Simbolo simbaux = AnalizadorLexico.TablaDeSimbolos.get($2.sval);
+						AnalizadorLexico.TablaDeSimbolos.remove($2.sval);
+						String negativo = "-" + $2.sval;
+						AnalizadorLexico.TablaDeSimbolos.put(negativo,simbaux);}*/
 ;
 
-variables 	: variables ',' ID  
-			| ID
-;		
-
-CTE_con_sig : CTE
-			| '-' CTE
+invocacion	: ID '(' parametro_real ')' {System.out.println(AnalizadorLexico.saltoDeLinea + " Invocacion");}
+			| ID '(' tipo parametros_formal ')'  {System.out.println(AnalizadorLexico.saltoDeLinea + " Invocacion");} //Conversiones
 ;
 
-sentencia_IF: IF '(' condicion ')' THEN bloques_sent_ejecutables ELSE bloques_sent_ejecutables END_IF 
-			| IF condicion THEN bloque_sentencias END_IF 
+parametro_real	: parametro_real ',' parametro_real
+				| expresion_arit
+				| CTE_con_sig
+				| variables
 ;
 
-condicion	: expresion_arit comparador expresion_arit
-			| expresion_arit
+sentencia_IF: IF '(' condicion ')' THEN bloques_sent_ejecutables ELSE bloques_sent_ejecutables END_IF {System.out.println(AnalizadorLexico.saltoDeLinea + " Sentencia IF");}
+			| IF condicion THEN bloque_sentencias END_IF {System.out.println(AnalizadorLexico.saltoDeLinea + " Sentencia IF");}
+;
+
+condicion	: operando comparador operando
 			| pattern_matching
 ;
 
@@ -120,8 +126,8 @@ comparador	: '>'
 			| DISTINTO		
 ;			
 
-bloque_sentencias	: BEGIN bloques_sent_ejecutables END ';' 
-                	| BEGIN END ';'	
+bloque_sentencias	: BEGIN bloques_sent_ejecutables END ';' {System.out.println(AnalizadorLexico.saltoDeLinea + " Bloque de sentencias");}
+                	| BEGIN END ';' { System.out.println("Se esperaban sentencias entre BEGIN y END"); }	
 ;
 
 bloques_sent_ejecutables	: bloques_sent_ejecutables sentencia_ejecutable
@@ -131,9 +137,8 @@ bloques_sent_ejecutables	: bloques_sent_ejecutables sentencia_ejecutable
 cadena	: '[' CADENAMULTILINEA ']' 
 		| '[' ']'
 ;
-
-//.................HACIA ARRIBA NO HAY ERRORES..........................
-
+     						
+									/* TEMAS PARTICULARES */
 /* Temas 13:  Sentencias de Control */
 sentencia_WHILE	: WHILE '(' condicion ')' bloques_sent_ejecutables {System.out.println(AnalizadorLexico.saltoDeLinea + " Sentencia WHILE");}
 ;							
@@ -142,12 +147,53 @@ sentencia_WHILE	: WHILE '(' condicion ')' bloques_sent_ejecutables {System.out.p
 pattern_matching	: list_expre comparador list_expre {System.out.println(AnalizadorLexico.saltoDeLinea + " Pattern Matching");}
 ;
 
-//Tira error porque es igual a parametro_real.
-list_expre	: list_expre ',' expresion_arit
-			| expresion_arit
+list_expre	: list_expre ',' expresion 
 ;
+
+expresion	: expresion_arit
+				| CTE_con_sig
+				| variables
 
 /* Tema 23: goto */
 sentencia_goto	: GOTO ETIQUETA {System.out.println(AnalizadorLexico.saltoDeLinea + " Sentencia GOTO");}
 ;
+																		 
 %%
+
+int yylex() {
+	//yylval = new ParserVal(AnalizadorLexico.Lexema);
+	return AnalizadorLexico.getToken();
+}
+
+void yyerror(String s)
+{
+ System.out.println("par:"+s);
+}
+
+void dotest()
+{
+ System.out.println("BYACC/J Calculator Demo");
+ System.out.println("Note: Since this example uses the StringTokenizer");
+ System.out.println("for simplicity, you will need to separate the items");
+ System.out.println("with spaces, i.e.: '( 3 + 5 ) * 2'");
+ /*while (true)
+ {
+ System.out.print("expression:");
+ try
+ {
+ ins = in.readLine();
+ }
+ catch (Exception e)
+ {
+ }
+ st = new StringTokenizer(ins);
+ newline=false;*/
+ yyparse();
+ //}
+}
+
+public static void main(String args[])
+{
+ Parser par = new Parser(false);
+ par.dotest();
+}
