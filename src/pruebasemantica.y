@@ -6,7 +6,7 @@ import java.util.HashMap;
 import AccionSemantica.*;
 import java.io.*;
 %}
-%token IF THEN ELSE BEGIN END END_IF OUTF TYPEDEF FUN RET CTE ID CADENAMULTILINEA WHILE TRIPLE GOTO ETIQUETA MAYORIGUAL MENORIGUAL DISTINTO INTEGER DOUBLE ASIGNACION IGUALIGUAL
+%token IF THEN ELSE BEGIN END END_IF OUTF TYPEDEF FUN RET CTE ID CADENAMULTILINEA WHILE TRIPLE GOTO ETIQUETA MAYORIGUAL MENORIGUAL DISTINTO INTEGER DOUBLE ASIGNACION
 %start programa
 
 %% /* Gramatica */
@@ -60,8 +60,8 @@ cuerpo_funcion	: sentencias RET '(' expresion_arit ')'
 
 sentencia_ejecutable	: asignacion
 						| sentencia_IF
-						| sentencia_WHILE
-						| sentencia_goto
+						//| sentencia_WHILE
+						//| sentencia_goto
 						| OUTF '(' expresion_arit ')' {System.out.println(AnalizadorLexico.saltoDeLinea + " Salida expresion arit ");}
 						| OUTF '(' cadena ')'	{System.out.println(AnalizadorLexico.saltoDeLinea + " Salida cadena ");}
 ;
@@ -103,29 +103,47 @@ CTE_con_sig : CTE
 			| '-' CTE
 ;
 
-sentencia_IF: IF '(' condicion ')' THEN bloques_sent_ejecutables ELSE bloques_sent_ejecutables END_IF 
-			| IF condicion THEN bloque_sentencias END_IF 
+sentencia_IF: IF '(' condicion ')' bloque_if bloque_else END_IF ';'
+			| IF '(' condicion ')' bloque_if END_IF ';'
 ;
 
 condicion	: expresion_arit comparador expresion_arit
 			| expresion_arit
-			| pattern_matching
+			//| pattern_matching
 ;
 
 comparador	: '>'
 			| MAYORIGUAL
 			| '<'
 			| MENORIGUAL
-			| IGUALIGUAL
+			| '='
 			| DISTINTO		
-;			
-
-bloque_sentencias	: BEGIN bloques_sent_ejecutables END ';' 
-                	| BEGIN END ';'	
 ;
 
-bloques_sent_ejecutables	: bloques_sent_ejecutables sentencia_ejecutable
-							| sentencia_ejecutable
+bloque_else: bloque_else_simple
+			| bloque_else_multiple
+;
+
+bloque_else_multiple:	ELSE BEGIN bloque_sent_ejecutables END
+;
+
+bloque_else_simple: THEN ELSE bloque_sentencia_simple
+;
+
+bloque_if: bloque_if_simple
+		| bloque_if_multiple
+;		
+
+bloque_if_multiple: THEN BEGIN bloque_sent_ejecutables END			
+
+bloque_if_simple: THEN bloque_sentencia_simple
+;
+
+bloque_sent_ejecutables	: bloque_sent_ejecutables bloque_sentencia_simple
+							| bloque_sentencia_simple
+;
+
+bloque_sentencia_simple: sentencia_ejecutable
 ;
 
 cadena	: '[' CADENAMULTILINEA ']' 
@@ -134,20 +152,4 @@ cadena	: '[' CADENAMULTILINEA ']'
 
 //.................HACIA ARRIBA NO HAY ERRORES..........................
 
-/* Temas 13:  Sentencias de Control */
-sentencia_WHILE	: WHILE '(' condicion ')' bloques_sent_ejecutables {System.out.println(AnalizadorLexico.saltoDeLinea + " Sentencia WHILE");}
-;							
-
-/* Tema 19: Pattern Matching */
-pattern_matching	: list_expre comparador list_expre {System.out.println(AnalizadorLexico.saltoDeLinea + " Pattern Matching");}
-;
-
-//Tira error porque es igual a parametro_real.
-list_expre	: list_expre ',' expresion_arit
-			| expresion_arit
-;
-
-/* Tema 23: goto */
-sentencia_goto	: GOTO ETIQUETA {System.out.println(AnalizadorLexico.saltoDeLinea + " Sentencia GOTO");}
-;
 %%
