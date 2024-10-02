@@ -10,23 +10,23 @@ import Compilador.TablaPalabrasReservadas;
 
 public class AS_Identificador extends AccionSemantica {
     @Override
-    public int ejecutar(char car, Reader lector, StringBuilder token, TablaPalabrasReservadas PalabrasReservadas, Map<String, Simbolo> TablaDeSimbolos) {
+    public Short ejecutar(char car, Reader lector, StringBuilder token, TablaPalabrasReservadas PalabrasReservadas, Map<String, Simbolo> TablaDeSimbolos) {
         String tokenString = truncar(token.toString());
-        
-        if(PalabrasReservadas.obtenerIdentificador(tokenString)== -1) { //Si es palabra reservada
+        short salida;
+        if(PalabrasReservadas.obtenerIdentificador(tokenString)== -1){ //Si NO es palabra reservada
         	if(!TablaDeSimbolos.containsKey(tokenString)){
         		Simbolo simb = new Simbolo();
+        		simb.setId(tokenString);
         		TablaDeSimbolos.put(tokenString,simb);
         		AnalizadorLexico.Lexema = tokenString;  //LE PASO EL ID A LA TABLA DE SIMBOLOS AL PARSER.
         	}
+        	salida=PalabrasReservadas.obtenerIdentificador("ID");
+        }else {
+        	salida=PalabrasReservadas.obtenerIdentificador(tokenString);
         }
-        try {
-			lector.reset(); //ESTO ES PARA Q VUELVA A LEER EL SIMBOLO.
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+        AnalizadorLexico.SEREPITE=true;
         AnalizadorLexico.token_actual.setLength(0); //VACIAMOS EL BUFFER YA QUE SE ESPERA UN NUEVO TOKEN
-        return PalabrasReservadas.obtenerIdentificador(tokenString); //devolvemos el token correspondiente
+        return salida; //devolvemos el token correspondiente
     }
 
 	private String truncar(String tokenString) {

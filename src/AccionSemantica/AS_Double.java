@@ -10,11 +10,12 @@ import Compilador.TablaPalabrasReservadas;
 
 public class AS_Double extends AccionSemantica {
     @Override
-    public int ejecutar(char car, Reader lector, StringBuilder token, TablaPalabrasReservadas PalabrasReservadas, Map<String, Simbolo> TablaDeSimbolos) {
-        double tokenDouble = Double.valueOf(token.toString());
+    public Short ejecutar(char car, Reader lector, StringBuilder token, TablaPalabrasReservadas PalabrasReservadas, Map<String, Simbolo> TablaDeSimbolos){
+    	double tokenDouble = Double.valueOf(token.toString().replace('d', 'E'));
     	if(cumple(tokenDouble)) {
         	if(!TablaDeSimbolos.containsKey(token.toString())){
-        		Simbolo simb = new Simbolo("octal");
+        		Simbolo simb = new Simbolo();
+        		simb.setDoub(tokenDouble);
         		TablaDeSimbolos.put(token.toString(),simb);
         		AnalizadorLexico.Lexema = token.toString();  //LE PASO EL ID A LA TABLA DE SIMBOLOS AL PARSER.
         	}
@@ -22,13 +23,9 @@ public class AS_Double extends AccionSemantica {
         	System.out.println("CTE FUERA DE RANGO EN LA LINEA " + AnalizadorLexico.saltoDeLinea);
         	return ERROR;
         }
-        try {
-			lector.reset(); //ESTO ES PARA Q VUELVA A LEER EL SIMBOLO.
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+    	AnalizadorLexico.SEREPITE=true;
         AnalizadorLexico.token_actual.setLength(0); //VACIAMOS EL BUFFER YA QUE SE ESPERA UN NUEVO TOKEN
-        return PalabrasReservadas.obtenerIdentificador("CTE");
+        return PalabrasReservadas.obtenerIdentificador("DOUBLE");
     }; 
     
     public boolean cumple(double d) {

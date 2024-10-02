@@ -1,5 +1,0 @@
-1Adan Boro
-letra/caract = A
-token_actual = A
-identificador_token = -1
-estado_actual = 1

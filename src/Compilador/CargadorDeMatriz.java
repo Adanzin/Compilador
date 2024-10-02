@@ -1,17 +1,5 @@
 package Compilador;
 import AccionSemantica.*;
-import accion_semantica.AS0;
-import accion_semantica.AS1;
-import accion_semantica.AS2;
-import accion_semantica.AS3;
-import accion_semantica.AS4;
-import accion_semantica.AS5;
-import accion_semantica.AS6;
-import accion_semantica.AS7;
-import accion_semantica.AS8;
-import accion_semantica.AS9;
-import accion_semantica.ASE;
-import accion_semantica.ASa;
 
 import java.io.*;
 import java.util.HashMap;
@@ -19,27 +7,29 @@ import java.util.Map;
 import java.util.Scanner;
 
 public class CargadorDeMatriz {
-    public static AccionSemantica[][] CargarMatrizAS(String path, int rows, int columns){
-        AccionSemantica[][] resultado = new AccionSemantica[rows][columns];
-        try {
-        	BufferedReader archivo = new BufferedReader(new FileReader(path));
-            System.out.println("ENTRO AL LOOP");
-            for (int i = 0; i < rows; ++i) {
-                for (int j = 0; j < columns; ++j) {
-                    AccionSemantica as = crearAcSem(archivo.readLine());
-                    if(as == null){
-                        System.out.println("Accion semantica no reconocida.");
-                    } else{
-                        resultado[i][j] = as;
-                    }
+    public static AccionSemantica[][] CargarMatrizAS(String path, int filas, int columnas){
+        AccionSemantica[][] matriz = new AccionSemantica[filas][columnas];
+        try (BufferedReader br = new BufferedReader(new FileReader(path))) {
+            String nombreAccion;
+            int fila = 0, columna = 0;
+
+            while ((nombreAccion = br.readLine()) != null) {
+                AccionSemantica accion = crearAcSem(nombreAccion);
+                matriz[fila][columna] = accion;  // Asigna la acción a la matriz
+                columna++;
+                if (columna == columnas) {
+                    columna = 0;
+                    fila++;
+                }
+                if (fila == filas) {
+                    break;
                 }
             }
-            archivo.close();
-        } catch (IOException excepcion) {
-            System.out.println("No se pudo leer el archivo " + path);
-            excepcion.printStackTrace();
-        } 
-        return resultado;
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return matriz;
     }
 
     private static AccionSemantica crearAcSem(String accion_semantica) {
@@ -68,51 +58,52 @@ public class CargadorDeMatriz {
             return new AS_Operador();
         case "AS_SIgChar":
             return new AS_SIgChar();
+        case "AS_Op_solo":
+            return new AS_Op_solo();
         default:
+        	System.out.println("'" + accion_semantica + "'" + " da null ");
             return null;
     }
 	}
 
-	public static int[][] CargarMatrizEstados(String path, int rows, int columns) {
-        int[][] int_matrix = new int[rows][columns];
+    public static int[][] CargarMatrizEstados(String nombreArchivo, int filas, int columnas) {
+        int[][] matriz = new int[filas][columnas];
+        try (BufferedReader br = new BufferedReader(new FileReader(nombreArchivo))) {
+            String linea;
+            int fila = 0, columna = 0;
 
-        try {
-            File archivo = new File(path);
-            Scanner scanner = new Scanner(archivo);
-
-            for (int i = 0; i < rows; ++i) {
-                for (int j = 0; j < columns; ++j) {
-                    int_matrix[i][j] =  Integer.parseInt(scanner.nextLine());
+            while ((linea = br.readLine()) != null) {
+                matriz[fila][columna] = Integer.parseInt(linea.trim());
+                columna++;
+                if (columna == columnas) {
+                    columna = 0;
+                    fila++;
+                }
+                // Si ya se han leído todas las filas y columnas, salir
+                if (fila == filas) {
+                    break;
                 }
             }
-
-            scanner.close();
-        } catch (FileNotFoundException excepcion) {
-            System.out.println("No se pudo leer el archivo " + path);  
-            excepcion.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
 
-        return int_matrix;
+        return matriz;
     }
 
 
-    public static Map<String, Integer> CrearMapDeArch(String path) {
-        Map<String, Integer> map = new HashMap<>();
+    public static Map<String, Short> CrearMapDeArch(String path) {
+    	Map<String, Short> map = new HashMap<>();
+        try (BufferedReader br = new BufferedReader(new FileReader(path))) {
+            String linea;
 
-        try {
-            File archivo = new File(path);
-            Scanner scanner = new Scanner(archivo);
-
-            while (scanner.hasNext()) {
-                String palabra_reservada = scanner.next();
-                int identificador = scanner.nextInt();
-                map.put(palabra_reservada, identificador);
+            while ((linea = br.readLine()) != null) {
+                String key = linea.trim();
+                short Num = Short.parseShort(br.readLine());
+                map.put(key, Num);
             }
-
-            scanner.close();
-        } catch (FileNotFoundException excepcion) {
-            System.out.println("No se pudo leer el archivo " + path);
-            excepcion.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
 
         return map;
