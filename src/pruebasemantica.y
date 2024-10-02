@@ -60,8 +60,8 @@ cuerpo_funcion	: sentencias RET '(' expresion_arit ')'
 
 sentencia_ejecutable	: asignacion
 						| sentencia_IF
-						//| sentencia_WHILE
-						//| sentencia_goto
+						| sentencia_WHILE
+						| sentencia_goto
 						| OUTF '(' expresion_arit ')' {System.out.println(AnalizadorLexico.saltoDeLinea + " Salida expresion arit ");}
 						| OUTF '(' cadena ')'	{System.out.println(AnalizadorLexico.saltoDeLinea + " Salida cadena ");}
 ;
@@ -75,8 +75,11 @@ invocacion	: ID '(' parametro_real ')'
 			| ID '(' tipo parametros_formal ')'   //Conversiones
 ;
 
-parametro_real	: parametro_real ',' expresion_arit
-				| expresion_arit
+parametro_real	: list_expre
+;
+
+list_expre	: list_expre ',' expresion_arit
+			| expresion_arit
 ;
 
 expresion_arit  : expresion_arit '+' termino
@@ -91,7 +94,7 @@ termino : termino '*' factor
 
 factor 	: ID
 		| CTE_con_sig
-		| invocacion //Me hace ruido esto pero no lo cambio por ahora
+		| invocacion //Me hace ruido esto pero no lo cambio por ahora.
 		| ID '{' CTE_con_sig '}' //No debería ser una constante positiva únicamente?
 ;
 
@@ -103,8 +106,8 @@ CTE_con_sig : CTE
 			| '-' CTE
 ;
 
-sentencia_IF: IF '(' condicion ')' bloque_if bloque_else END_IF ';'
-			| IF '(' condicion ')' bloque_if END_IF ';'
+sentencia_IF: IF '(' condicion ')' bloque_unidad bloque_else END_IF ';'
+			| IF '(' condicion ')' bloque_unidad END_IF ';'
 ;
 
 condicion	: expresion_arit comparador expresion_arit
@@ -130,13 +133,13 @@ bloque_else_multiple:	ELSE BEGIN bloque_sent_ejecutables END
 bloque_else_simple: THEN ELSE bloque_sentencia_simple
 ;
 
-bloque_if: bloque_if_simple
-		| bloque_if_multiple
+bloque_unidad: bloque_unidad_simple
+		| bloque_unidad_multiple
 ;		
 
-bloque_if_multiple: THEN BEGIN bloque_sent_ejecutables END			
+bloque_unidad_multiple: THEN BEGIN bloque_sent_ejecutables END			
 
-bloque_if_simple: THEN bloque_sentencia_simple
+bloque_unidad_simple: THEN bloque_sentencia_simple
 ;
 
 bloque_sent_ejecutables	: bloque_sent_ejecutables bloque_sentencia_simple
@@ -150,6 +153,17 @@ cadena	: '[' CADENAMULTILINEA ']'
 		| '[' ']'
 ;
 
-//.................HACIA ARRIBA NO HAY ERRORES..........................
+									/* TEMAS PARTICULARES */
+/* Temas 13:  Sentencias de Control */
+sentencia_WHILE	: WHILE '(' condicion ')' bloque_unidad ';'
+;	
 
+/* Tema 23: goto */
+sentencia_goto	: GOTO ETIQUETA
+;
+
+//.................HACIA ARRIBA NO HAY ERRORES..........................
+/* Tema 19: Pattern Matching 
+pattern_matching	: list_expre comparador list_expre
+;*/
 %%
