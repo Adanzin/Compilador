@@ -94,8 +94,8 @@ termino : termino '*' factor
 
 factor 	: ID
 		| CTE_con_sig
-		| invocacion //Me hace ruido esto pero no lo cambio por ahora.
-		| ID '{' CTE_con_sig '}' //No debería ser una constante positiva únicamente?
+		| invocacion
+		| ID '{' CTE '}' 
 ;
 
 variables 	: variables ',' ID  
@@ -110,9 +110,7 @@ sentencia_IF: IF '(' condicion ')' bloque_unidad bloque_else END_IF ';'
 			| IF '(' condicion ')' bloque_unidad END_IF ';'
 ;
 
-condicion	: expresion_arit comparador expresion_arit
-			| expresion_arit
-			//| pattern_matching
+condicion	: list_expre comparador list_expre //Tenemos en cuenta el pattern_matching 
 ;
 
 comparador	: '>'
@@ -162,8 +160,9 @@ sentencia_WHILE	: WHILE '(' condicion ')' bloque_unidad ';'
 sentencia_goto	: GOTO ETIQUETA
 ;
 
+/* Tema 19: Pattern Matching*/
+//Lo tenemos en cuenta en la regla Condicion
 //.................HACIA ARRIBA NO HAY ERRORES..........................
-/* Tema 19: Pattern Matching 
-pattern_matching	: list_expre comparador list_expre
-;*/
+
+
 %%
