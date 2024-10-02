@@ -1,3 +1,1 @@
-prog_prueba
-begin
-end
+myprograma BEGIN OUTF([adan]);END

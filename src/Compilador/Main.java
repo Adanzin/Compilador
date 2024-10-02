@@ -20,9 +20,10 @@ public class Main {
         try {
             // Leer el contenido del archivo
             AnalizadorLexico.archivo_original = new BufferedReader(new FileReader(archivoRuta));
-            Parser par = new Parser();
-            par.run();
             System.out.println("Se esta compilando");
+            Parser par = new Parser(true);
+            par.run();
+            System.out.println("Se compilo");
         } catch (IOException e) {
             System.out.println("Ocurrió un error al leer el archivo: " + e.getMessage());
         }

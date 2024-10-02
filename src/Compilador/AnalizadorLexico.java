@@ -188,6 +188,7 @@ public class AnalizadorLexico {
 		int caracter;
 		int token;
 		// Recorrer cada carácter del archivo
+		System.out.println("Entro al get token");
 		try {
             while ((caracter = archivo_original.read()) != -1) {
         		if(SEREPITE==true) {

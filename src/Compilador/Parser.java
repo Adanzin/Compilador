@@ -457,7 +457,9 @@ final static String yyrule[] = {
 
 int yylex() {
 	yylval = new ParserVal(AnalizadorLexico.Lexema);
-	return AnalizadorLexico.getToken();
+	int aux = AnalizadorLexico.getToken();
+	System.out.println(aux);
+	return aux;
 }
 //#line 390 "Parser.java"
 //###############################################################

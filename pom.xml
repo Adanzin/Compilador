@@ -46,9 +46,9 @@
 						<configuration>
 							<archive>
 								<manifest>
-									<mainClass>
-										Compilador.Main
-									</mainClass>
+									<addClasspath>true</addClasspath>
+                        			<classpathPrefix>lib/</classpathPrefix>
+                        			<mainClass>Compilador.Main</mainClass>
 								</manifest>
 							</archive>
 							<descriptorRefs>
