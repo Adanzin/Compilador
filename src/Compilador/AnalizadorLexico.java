@@ -218,7 +218,7 @@ public class AnalizadorLexico {
 		return 0; //fin de archivo.
 	}
 	
-
+/*
     public static void main(String[] args) {
         /*for (int i = 0; i < CANTIDAD_ESTADOS; i++) {
             for (int j = 0; j < CANTIDAD_CARACTERES; j++) {
@@ -233,10 +233,8 @@ public class AnalizadorLexico {
             System.out.println();
         }
         /*PalabrasReservadas.toString();*/
-    	 try {
-             // Inicializa el Reader con el archivo "Codigo.txt"
-             archivo_original = new BufferedReader(new FileReader("resources\\Codigo.txt"));
-     
+    /*	 try {
+             // Inicializa el Reader con el archivo "Codigo.txt"     
              int token;
              // Continuar leyendo tokens hasta que se termine el archivo
              while ((token = getToken()) != 0) {
@@ -258,7 +256,7 @@ public class AnalizadorLexico {
          } catch (IOException e) {
              e.printStackTrace();
          }
-    }
+    }*/
 	
 	
 }

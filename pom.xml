@@ -47,7 +47,7 @@
 							<archive>
 								<manifest>
 									<mainClass>
-										Compilador.AnalizadorLexico
+										Compilador.Main
 									</mainClass>
 								</manifest>
 							</archive>
