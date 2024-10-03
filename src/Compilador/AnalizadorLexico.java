@@ -188,7 +188,7 @@ public class AnalizadorLexico {
 		int caracter;
 		int token;
 		// Recorrer cada carácter del archivo
-		System.out.println("Entro al get token");
+		//System.out.println("Entro al get token");
 		try {
             while ((caracter = archivo_original.read()) != -1) {
         		if(SEREPITE==true) {
@@ -208,7 +208,7 @@ public class AnalizadorLexico {
             	token = AnalizadorLexico.siguienteLectura(archivo_original, letra);
             	// Llamar al método que procesa el carácter
             	if (token != -1) { // Si no es un token activo, se carga en el archivo.
-            		//System.out.println("Marcamos con el carcter " + letra);
+            		System.out.println(" --> El TOKEN devuelto es " + token);
             		return token;
             	}
             	archivo_original.mark(1);

@@ -16,7 +16,7 @@ public class AS_ERROR extends AccionSemantica {
 	@Override
 	public Short ejecutar(char car, Reader lector, StringBuilder token, TablaPalabrasReservadas PalabrasReservadas, Map<String, Simbolo> TablaDeSimbolos) {
 		AnalizadorLexico.token_actual.setLength(0); //VACIAMOS EL BUFFER YA QUE SE LEYÓ UN TOKEN INVALIDO
-		System.out.println("Error lexico");
+		System.out.println(">>Error lexico" + token.toString() + " car = "+car);
 		return ERROR;
 	}
 

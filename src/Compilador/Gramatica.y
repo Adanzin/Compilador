@@ -1,4 +1,5 @@
 %{
+package Compilador;
 import java.util.Map;
 import java.util.Vector;
 import java.util.HashMap;
@@ -12,7 +13,7 @@ import java.io.*;
 %% /* Gramatica */
 									/* PROGRAMA */
 									
-programa 	: ID BEGIN sentencias END {System.out.println(AnalizadorLexico.saltoDeLinea + " PROGRAMA ");}
+programa 	: ID BEGIN sentencias END {System.out.println(" En la linea " + AnalizadorLexico.saltoDeLinea + " se compilo el programa ");}
 ;
 	
 sentencias 	: sentencias sentencia ';'
@@ -25,9 +26,9 @@ sentencia 	: sentencia_declarativa
 				
 									/* SENTENCIAS DECLARATIVAS */	
 				
-sentencia_declarativa 	: declaracion_variable 
-						| declaracion_funciones	
-                        | declaracion_subtipo 
+sentencia_declarativa 	: declaracion_variable
+						| declaracion_funciones
+                        | declaracion_subtipo
 ;
 
 declaracion_variable	: tipo variables 
@@ -62,8 +63,8 @@ sentencia_ejecutable	: asignacion
 						| sentencia_IF
 						| sentencia_WHILE
 						| sentencia_goto
-						| OUTF '(' expresion_arit ')' {System.out.println(AnalizadorLexico.saltoDeLinea + " Salida expresion arit ");}
-						| OUTF '(' cadena ')'	{System.out.println(AnalizadorLexico.saltoDeLinea + " Salida cadena ");}
+						| OUTF '(' expresion_arit ')' {System.out.println("En la linea :" + AnalizadorLexico.saltoDeLinea + " Salida expresion arit ");}
+						| OUTF '(' cadena ')'	{System.out.println("En la linea :" + AnalizadorLexico.saltoDeLinea + " Salida cadena ");}
 ;
 
 
@@ -110,7 +111,7 @@ sentencia_IF: IF '(' condicion ')' bloque_unidad bloque_else END_IF ';'
 			| IF '(' condicion ')' bloque_unidad END_IF ';'
 ;
 
-condicion	: list_expre comparador list_expre //Tenemos en cuenta el pattern_matching 
+condicion	:'(' list_expre ')' comparador '(' list_expre ')'//Tenemos en cuenta el pattern_matching 
 ;
 
 comparador	: '>'
@@ -141,13 +142,13 @@ bloque_unidad_simple: THEN bloque_sentencia_simple
 ;
 
 bloque_sent_ejecutables	: bloque_sent_ejecutables bloque_sentencia_simple
-							| bloque_sentencia_simple
+						| bloque_sentencia_simple
 ;
 
 bloque_sentencia_simple: sentencia_ejecutable
 ;
 
-cadena	: '[' CADENAMULTILINEA ']' 
+cadena	: CADENAMULTILINEA {System.out.println(" > Se leyo la cadena multi linea < ");}
 		| '[' ']'
 ;
 
@@ -170,4 +171,7 @@ sentencia_goto	: GOTO ETIQUETA
 int yylex() {
 	yylval = new ParserVal(AnalizadorLexico.Lexema);
 	return AnalizadorLexico.getToken();
+}
+private void yyerror(String string) {
+	System.out.println(" Error Sintactico");
 }

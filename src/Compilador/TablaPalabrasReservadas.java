@@ -16,7 +16,8 @@ public class TablaPalabrasReservadas {
     }
 
 	public Short obtenerIdentificador(String palabra_reservada) {
-        return palabras_reservadas.getOrDefault(palabra_reservada, PALABRA_NO_RESERVADA);
+		String claveNormalizada = palabra_reservada.toUpperCase();
+        return palabras_reservadas.getOrDefault(claveNormalizada, PALABRA_NO_RESERVADA);
     }
 
 	@Override

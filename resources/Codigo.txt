@@ -1,1 +1,15 @@
-myprograma BEGIN OUTF([adan]);END
+myprograma
+BEGIN
+OUTF([adan]);
+END 
+
+
+
+myprograma
+BEGIN
+ integer adan;
+ integer FUN fun_boro parametros_formal BEGIN cuerpo_funcion END;
+ declaracion_subtipo;
+ sentencia_ejecutable;
+END
+

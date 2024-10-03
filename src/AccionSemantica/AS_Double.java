@@ -25,7 +25,7 @@ public class AS_Double extends AccionSemantica {
         }
     	AnalizadorLexico.SEREPITE=true;
         AnalizadorLexico.token_actual.setLength(0); //VACIAMOS EL BUFFER YA QUE SE ESPERA UN NUEVO TOKEN
-        return PalabrasReservadas.obtenerIdentificador("DOUBLE");
+        return PalabrasReservadas.obtenerIdentificador("CTE");
     }; 
     
     public boolean cumple(double d) {

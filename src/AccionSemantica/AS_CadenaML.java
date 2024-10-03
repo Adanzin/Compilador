@@ -24,7 +24,7 @@ public class AS_CadenaML extends AccionSemantica {
 			TablaDeSimbolos.put(token.toString(), simb);
 			AnalizadorLexico.Lexema = token.toString();  //LE PASO EL ID A LA TABLA DE SIMBOLOS AL PARSER.
 		}
-		AnalizadorLexico.SEREPITE=true;
+		System.out.println(">>>> la CADENAMULTILINEA ES :" + token.toString() + "El ultimo car es = "+ car);
         AnalizadorLexico.token_actual.setLength(0); //VACIAMOS EL BUFFER YA QUE SE ESPERA UN NUEVO TOKEN
         return PalabrasReservadas.obtenerIdentificador("CADENAMULTILINEA"); //devolvemos el token correspondiente 
     }; 

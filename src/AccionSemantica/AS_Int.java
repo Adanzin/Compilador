@@ -28,7 +28,7 @@ public class AS_Int extends AccionSemantica {
     	AnalizadorLexico.SEREPITE=true;
         AnalizadorLexico.token_actual.setLength(0); //VACIAMOS EL BUFFER YA QUE SE ESPERA UN NUEVO TOKEN
         //retornar el key 
-        return PalabrasReservadas.obtenerIdentificador("INTEGER");
+        return PalabrasReservadas.obtenerIdentificador("CTE");
     }; 
     
     public boolean cumple(double d) {
