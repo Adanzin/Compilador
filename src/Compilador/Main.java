@@ -21,7 +21,7 @@ public class Main {
             // Leer el contenido del archivo
             AnalizadorLexico.archivo_original = new BufferedReader(new FileReader(archivoRuta));
             //System.out.println("Se esta compilando");
-            Parser par = new Parser(true);
+            Parser par = new Parser();
             par.run();
             //System.out.println("Se compilo");
         } catch (IOException e) {

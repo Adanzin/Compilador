@@ -108,8 +108,8 @@ CTE_con_sig : CTE
 			| '-' CTE
 ;
 
-sentencia_IF: IF '(' condicion ')' bloque_unidad bloque_else END_IF ';'
-			| IF '(' condicion ')' bloque_unidad END_IF ';'
+sentencia_IF: IF '(' condicion ')' THEN bloque_unidad ';' bloque_else ';' END_IF
+			| IF '(' condicion ')' THEN bloque_unidad ';' END_IF
 ;
 
 condicion	:'(' list_expre ')' comparador '(' list_expre ')'//Tenemos en cuenta el pattern_matching 
@@ -130,24 +130,26 @@ bloque_else: bloque_else_simple
 bloque_else_multiple:	ELSE BEGIN bloque_sent_ejecutables END
 ;
 
-bloque_else_simple: THEN ELSE bloque_sentencia_simple
+bloque_else_simple:	ELSE bloque_sentencia_simple
 ;
 
-bloque_unidad: bloque_unidad_simple
-		| bloque_unidad_multiple
+bloque_unidad	: bloque_unidad_simple
+				| bloque_unidad_multiple
 ;		
 
-bloque_unidad_multiple: THEN BEGIN bloque_sent_ejecutables END			
+bloque_unidad_multiple: BEGIN bloque_sent_ejecutables END			
 
-bloque_unidad_simple: THEN bloque_sentencia_simple
+bloque_unidad_simple:  bloque_sentencia_simple
 ;
 
 bloque_sent_ejecutables	: bloque_sent_ejecutables bloque_sentencia_simple
 						| bloque_sentencia_simple
 ;
 
-bloque_sentencia_simple: sentencia_ejecutable
+bloque_sentencia_simple: sentencia_ejecutable 
 ;
+
+
 
 cadena	: CADENAMULTILINEA {System.out.println(" > Se leyo la cadena multi linea < ");}
 		| '[' ']'
@@ -155,7 +157,7 @@ cadena	: CADENAMULTILINEA {System.out.println(" > Se leyo la cadena multi linea 
 
 									/* TEMAS PARTICULARES */
 /* Temas 13:  Sentencias de Control */
-sentencia_WHILE	: WHILE '(' condicion ')' bloque_unidad ';'
+sentencia_WHILE	: WHILE '(' condicion ')' bloque_unidad
 ;	
 
 /* Tema 23: goto */
