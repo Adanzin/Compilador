@@ -42,8 +42,8 @@ declaracion_subtipo : TYPEDEF ID ASIGNACION tipo '{' CTE_con_sig ',' CTE_con_sig
 					| TYPEDEF TRIPLE '<' tipo '>' ID 
 ;	
 
-declaracion_funciones 	: tipo FUN ID parametros_formal BEGIN cuerpo_funcion END
-						| ID FUN ID parametros_formal BEGIN cuerpo_funcion END	
+declaracion_funciones 	: tipo FUN ID '(' parametros_formal ')' BEGIN cuerpo_funcion END
+						| ID FUN ID '(' parametros_formal ')' BEGIN cuerpo_funcion END	
 ;
 
 parametros_formal	: parametros_formal parametro ','
@@ -53,10 +53,10 @@ parametros_formal	: parametros_formal parametro ','
 parametro	: tipo ID	
 ;
 
-cuerpo_funcion	: sentencias RET '(' expresion_arit ')'
-				| sentencias
+cuerpo_funcion	: sentencias
 ;
 
+retorno	: RET '(' expresion_arit ')'
 									/* SENTENCIAS EJECUTABLES */
 
 sentencia_ejecutable	: asignacion
@@ -65,6 +65,7 @@ sentencia_ejecutable	: asignacion
 						| sentencia_goto
 						| OUTF '(' expresion_arit ')' {System.out.println("En la linea :" + AnalizadorLexico.saltoDeLinea + " Salida expresion arit ");}
 						| OUTF '(' cadena ')'	{System.out.println("En la linea :" + AnalizadorLexico.saltoDeLinea + " Salida cadena ");}
+						| retorno
 ;
 
 
