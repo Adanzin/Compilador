@@ -14,7 +14,7 @@ public class AS_Octal extends AccionSemantica {
         int tokenint = Integer.valueOf(token.toString(),8); //paso de octal a int
     	if(cumple(tokenint)) {
         	if(!TablaDeSimbolos.containsKey(token.toString())){
-        		Simbolo simb = new Simbolo();
+        		Simbolo simb = new Simbolo(8);
         		simb.setEntero(tokenint);
         		TablaDeSimbolos.put(token.toString(),simb);
         		AnalizadorLexico.Lexema = token.toString();//LE PASO EL ID A LA TABLA DE SIMBOLOS AL PARSER.
@@ -28,12 +28,10 @@ public class AS_Octal extends AccionSemantica {
         return PalabrasReservadas.obtenerIdentificador("CTE");
     }; 
     public boolean cumple(double d) {
-    	double min1 = -32768;
-    	double min2 = 32767;
-    	if(min1 <= d && d<= min2) {
+    	double min = 32768;
+    	if(d<= min) {
     		return true;
     	}
     	return false;
-
     }
 }

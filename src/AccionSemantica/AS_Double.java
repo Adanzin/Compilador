@@ -29,15 +29,10 @@ public class AS_Double extends AccionSemantica {
     }; 
     
     public boolean cumple(double d) {
-    	double min1 = 2.2250738585072014d-308;
-    	double min2 = 1.7976931348623157d+308;
-    	double min3 = -1.7976931348623157d+308;
-    	double min4 = -2.2250738585072014d-308;
     	double cero = 0.0;
-    	if((min1 < d && d< min2) || (min3 < d && d < min4) || (d==cero)) {
+    	if((d < 1.7976931348623157d+308) || (d > 2.2250738585072014d-308) || (d==cero)) {
     		return true;
     	}
     	return false;
-
     }
 }
