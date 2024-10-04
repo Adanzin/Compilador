@@ -56,13 +56,6 @@ public class AnalizadorLexico {
         }
         
         
-        
-        if(true) {
-        	return a;
-        }else {
-        	
-        }
-        
     }
 
 	public static Short siguienteLectura(Reader lector, char caracter) {

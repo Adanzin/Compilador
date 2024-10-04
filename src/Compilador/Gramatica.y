@@ -5,14 +5,11 @@
 
 %% /* Gramatica */
 									/* PROGRAMA */
-									
-programa 	: ID cuerpo_programa {System.out.println(" Fin de a compilacion ");}	
-			| cuerpo_programa {System.out.println(" Error en la linea " + AnalizadorLexico.saltoDeLinea + ": Falta nombre del programa ");}		
-									
-cuerpo_programa 	: BEGIN sentencias END {System.out.println(" Se identifico el cuerpo_programa");}	
-					| sentencias END {System.out.println(" Linea " + AnalizadorLexico.saltoDeLinea + ": Erro: Falta el delimitador BEGIN ");}
-					| BEGIN sentencias {System.out.println(" Linea " + AnalizadorLexico.saltoDeLinea + ": Erro: Falta el delimitador END ");}
-					| sentencias {System.out.println(" Linea " + AnalizadorLexico.saltoDeLinea + ": Erro: Faltan los delimitadores del programa ");}
+																		
+programa	: ID_simple BEGIN sentencias END {System.out.println(" Se identifico el cuerpo_programa");}	
+			| ID_simple sentencias END {System.out.println(" Linea " + AnalizadorLexico.saltoDeLinea + ": Erro: Falta el delimitador BEGIN ");}
+			| ID_simple BEGIN sentencias {System.out.println(" Linea " + AnalizadorLexico.saltoDeLinea + ": Erro: Falta el delimitador END ");}
+			| ID_simple sentencias {System.out.println(" Linea " + AnalizadorLexico.saltoDeLinea + ": Erro: Faltan los delimitadores del programa ");}
 ;
 	
 sentencias 	: sentencias sentencia ';'
@@ -31,28 +28,27 @@ sentencia_declarativa 	: declaracion_variable
                         | declaracion_subtipo
 ;
 
-declaracion_variable	: tipo variables 
+declaracion_variable	: tipo variables 						
 ;
 
 tipo : INTEGER
-	 | DOUBLE
+	 | DOUBLE 
+	 | ID_simple {System.out.println(" Se identifico el ID de una clase como declaracion ");}
 ;	
 
-declaracion_subtipo : TYPEDEF ID ASIGNACION tipo '{' CTE_con_sig ',' CTE_con_sig '}'
-					| TYPEDEF TRIPLE '<' tipo '>' ID 
+declaracion_subtipo : TYPEDEF ID_simple ASIGNACION tipo '{' CTE_con_sig ',' CTE_con_sig '}'
+					| TYPEDEF TRIPLE '<' tipo '>' ID_simple 
 ;	
 
 declaracion_funciones 	: tipo FUN ID '(' parametros_formal ')' BEGIN cuerpo_funcion END {if(RETORNO==false){System.out.println(" Linea " + AnalizadorLexico.saltoDeLinea + ": Erro: Faltan el RETORNO de al funcion ");RETORNO=false;}}
 						| tipo FUN '(' parametros_formal ')' BEGIN cuerpo_funcion END {System.out.println(" Linea " + AnalizadorLexico.saltoDeLinea + ": Erro: Faltan el nombre en la funcion ");}
-						| ID FUN ID '(' parametros_formal ')' BEGIN cuerpo_funcion END	{System.out.println(" Linea " + AnalizadorLexico.saltoDeLinea + ": Se identifico una funcion de <Class> ");}
-						| ID FUN '(' parametros_formal ')' BEGIN cuerpo_funcion END {System.out.println(" Linea " + AnalizadorLexico.saltoDeLinea + ": Erro: Faltan el nombre en la funcion ");}
 ;
 
 parametros_formal	: parametros_formal parametro ','
 					| parametro
 ;
 
-parametro	: tipo ID	
+parametro	: tipo ID_simple	
 ;
 
 cuerpo_funcion	: sentencias 
@@ -71,12 +67,12 @@ sentencia_ejecutable	: asignacion
 ;
 
 
-asignacion	: ID ASIGNACION expresion_arit {System.out.println(AnalizadorLexico.saltoDeLinea + " Asignacion ");}
-			| ID '{' CTE '}' ASIGNACION expresion_arit  {System.out.println(AnalizadorLexico.saltoDeLinea + " Asignacion a arreglo");}
+asignacion	: variable_simple ASIGNACION expresion_arit {System.out.println(AnalizadorLexico.saltoDeLinea + " Asignacion ");}
+			| variable_simple '{' CTE '}' ASIGNACION expresion_arit  {System.out.println(AnalizadorLexico.saltoDeLinea + " Asignacion a arreglo");}
 ;
 
-invocacion	: ID '(' parametro_real ')' 
-			| ID '(' tipo parametros_formal ')'   //Conversiones
+invocacion	: variable_simple '(' parametro_real ')' 
+			| variable_simple '(' tipo parametros_formal ')'   //Conversiones
 ;
 
 parametro_real	: list_expre
@@ -96,15 +92,22 @@ termino : termino '*' factor
         | factor
 ;
 
-factor 	: ID
+factor 	: variable_simple
 		| CTE_con_sig
 		| invocacion
-		| ID '{' CTE '}' 
+		| variable_simple '{' CTE '}' 
 ;
 
-variables 	: variables ',' ID  
-			| ID
+variables 	: variables ',' variable_simple  
+			| variable_simple
 ;		
+
+variable_simple : ID_simple
+;
+
+ID_simple : ID
+;
+
 
 CTE_con_sig : CTE {if(estaRango($1.sval)) { $$.sval = $1.sval; } }
 			| '-' CTE { cambioCTENegativa($2.sval); $$.sval = "-" + $2.sval;}
@@ -173,8 +176,8 @@ sentencia_goto	: GOTO ETIQUETA
 
 %%																	 
 private static boolean RETORNO = false;
+private static boolean RETORNO_DEL_IF = false;
 private static int cantRETORNOS = 0;
-
 int yylex() {
 	int tokenSalida = AnalizadorLexico.getToken();
 	yylval = new ParserVal(AnalizadorLexico.Lexema);

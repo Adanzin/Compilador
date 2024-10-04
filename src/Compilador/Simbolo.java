@@ -6,6 +6,7 @@ public class Simbolo {
     private String id;
     private int base;  // Base del n�mero (8 = octal, 10 = decimal, 16 = hexadecimal)
     private int contadorDeReferencias;
+    private boolean esSubTipo;
     // Constructor
     public Simbolo() {
         this.entero=-1;
@@ -13,6 +14,7 @@ public class Simbolo {
         this.id=null;
         this.base = 10;  // Por defecto, base decimal
         this.contadorDeReferencias = 0;
+        this.setEsSubTipo(false);
     }
     public Simbolo(int e,double d, int b) {
         this.entero=e;
@@ -20,6 +22,7 @@ public class Simbolo {
         this.id=null;
         this.base = b;  // Por defecto, base decimal
         this.contadorDeReferencias=0;
+        this.setEsSubTipo(false);
     }
     
     
@@ -119,6 +122,12 @@ public class Simbolo {
     public void setBase(int base) {
         this.base = base;
     }
+	public boolean isEsSubTipo() {
+		return esSubTipo;
+	}
+	public void setEsSubTipo(boolean esSubTipo) {
+		this.esSubTipo = esSubTipo;
+	}
     
    
 

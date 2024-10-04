@@ -3,6 +3,7 @@ BEGIN
 	integer adan;
 	boro := -32768;
 	adan := 32768;
+	adan boro;
 	integer FUN juancito (double varParametro) BEGIN 
 	    WHILE ((-32768)>(-5.8)) OUTF(adan);
 	    IF((a)=(b))THEN 
