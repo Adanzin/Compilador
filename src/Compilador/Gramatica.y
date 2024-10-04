@@ -1,11 +1,4 @@
 %{
-package Compilador;
-import java.util.Map;
-import java.util.Vector;
-import java.util.HashMap;
-
-import AccionSemantica.*;
-import java.io.*;
 %}
 %token IF THEN ELSE BEGIN END END_IF OUTF TYPEDEF FUN RET CTE ID CADENAMULTILINEA WHILE TRIPLE GOTO ETIQUETA MAYORIGUAL MENORIGUAL DISTINTO INTEGER DOUBLE ASIGNACION
 %start programa
@@ -13,12 +6,18 @@ import java.io.*;
 %% /* Gramatica */
 									/* PROGRAMA */
 									
-programa 	: ID BEGIN sentencias END {System.out.println(" En la linea " + AnalizadorLexico.saltoDeLinea + " se compilo el programa ");}
-			| BEGIN sentencias END {System.out.println(" Linea " + AnalizadorLexico.saltoDeLinea + ": Erro: Falta nombre del programa ");}
+programa 	: ID cuerpo_programa {System.out.println(" Fin de a compilacion ");}	
+			| cuerpo_programa {System.out.println(" Error en la linea " + AnalizadorLexico.saltoDeLinea + ": Falta nombre del programa ");}		
+									
+cuerpo_programa 	: BEGIN sentencias END {System.out.println(" Se identifico el cuerpo_programa");}	
+					| sentencias END {System.out.println(" Linea " + AnalizadorLexico.saltoDeLinea + ": Erro: Falta el delimitador BEGIN ");}
+					| BEGIN sentencias {System.out.println(" Linea " + AnalizadorLexico.saltoDeLinea + ": Erro: Falta el delimitador END ");}
+					| sentencias {System.out.println(" Linea " + AnalizadorLexico.saltoDeLinea + ": Erro: Faltan los delimitadores del programa ");}
 ;
 	
 sentencias 	: sentencias sentencia ';'
 			| sentencia ';'
+			| sentencia {System.out.println(" Linea " + AnalizadorLexico.saltoDeLinea + ": Erro: Falta ';' al final de la sentencia ");}
 ;
 
 sentencia 	: sentencia_declarativa 
@@ -43,8 +42,10 @@ declaracion_subtipo : TYPEDEF ID ASIGNACION tipo '{' CTE_con_sig ',' CTE_con_sig
 					| TYPEDEF TRIPLE '<' tipo '>' ID 
 ;	
 
-declaracion_funciones 	: tipo FUN ID '(' parametros_formal ')' BEGIN cuerpo_funcion END
-						| ID FUN ID '(' parametros_formal ')' BEGIN cuerpo_funcion END	
+declaracion_funciones 	: tipo FUN ID '(' parametros_formal ')' BEGIN cuerpo_funcion END {if(RETORNO==false){System.out.println(" Linea " + AnalizadorLexico.saltoDeLinea + ": Erro: Faltan el RETORNO de al funcion ");RETORNO=false;}}
+						| tipo FUN '(' parametros_formal ')' BEGIN cuerpo_funcion END {System.out.println(" Linea " + AnalizadorLexico.saltoDeLinea + ": Erro: Faltan el nombre en la funcion ");}
+						| ID FUN ID '(' parametros_formal ')' BEGIN cuerpo_funcion END	{System.out.println(" Linea " + AnalizadorLexico.saltoDeLinea + ": Se identifico una funcion de <Class> ");}
+						| ID FUN '(' parametros_formal ')' BEGIN cuerpo_funcion END {System.out.println(" Linea " + AnalizadorLexico.saltoDeLinea + ": Erro: Faltan el nombre en la funcion ");}
 ;
 
 parametros_formal	: parametros_formal parametro ','
@@ -54,19 +55,19 @@ parametros_formal	: parametros_formal parametro ','
 parametro	: tipo ID	
 ;
 
-cuerpo_funcion	: sentencias
+cuerpo_funcion	: sentencias 
 ;
 
 retorno	: RET '(' expresion_arit ')'
 									/* SENTENCIAS EJECUTABLES */
 
 sentencia_ejecutable	: asignacion
-						| sentencia_IF
+						| sentencia_IF 
 						| sentencia_WHILE
 						| sentencia_goto
 						| OUTF '(' expresion_arit ')' {System.out.println("En la linea :" + AnalizadorLexico.saltoDeLinea + " Salida expresion arit ");}
 						| OUTF '(' cadena ')'	{System.out.println("En la linea :" + AnalizadorLexico.saltoDeLinea + " Salida cadena ");}
-						| retorno
+						| retorno {RETORNO = true;}
 ;
 
 
@@ -171,10 +172,15 @@ sentencia_goto	: GOTO ETIQUETA
 
 
 %%																	 
+private static boolean RETORNO = false;
+private static int cantRETORNOS = 0;
 
 int yylex() {
 	int tokenSalida = AnalizadorLexico.getToken();
 	yylval = new ParserVal(AnalizadorLexico.Lexema);
+	if(tokenSalida==0) {
+		return AnalizadorLexico.siguienteLectura(AnalizadorLexico.archivo_original,' ');
+	}
 	return tokenSalida;
 }
 private static void yyerror(String string) {

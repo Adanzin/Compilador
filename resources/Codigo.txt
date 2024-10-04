@@ -1,15 +1,15 @@
+prog
 BEGIN
 	integer adan;
 	boro := -32768;
 	adan := 32768;
-	integer FUN fun_boro (double varParametro) BEGIN 
+	integer FUN juancito (double varParametro) BEGIN 
 	    WHILE ((-32768)>(-5.8)) OUTF(adan);
 	    IF((a)=(b))THEN 
 	        x:=2;
 	        ELSE a:=5; 
 	    END_IF;
-	    RET (x);
 	    END;
 	 TYPEDEF TRIPLE < integer > a;
-	 RET (0);
-END 
+	 RET (0); 
+END
