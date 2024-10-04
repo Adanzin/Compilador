@@ -1,4 +1,3 @@
-myprograma
 BEGIN
 	integer adan;
 	boro := -32768;

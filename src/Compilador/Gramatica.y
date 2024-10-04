@@ -14,8 +14,7 @@ import java.io.*;
 									/* PROGRAMA */
 									
 programa 	: ID BEGIN sentencias END {System.out.println(" En la linea " + AnalizadorLexico.saltoDeLinea + " se compilo el programa ");}
-			: BEGIN sentencias END {System.out.println(" Linea " + AnalizadorLexico.saltoDeLinea + ": Erro: Falta nombre del programa ");}
-
+			| BEGIN sentencias END {System.out.println(" Linea " + AnalizadorLexico.saltoDeLinea + ": Erro: Falta nombre del programa ");}
 ;
 	
 sentencias 	: sentencias sentencia ';'
