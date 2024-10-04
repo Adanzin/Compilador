@@ -18,7 +18,7 @@ public class AS_Double extends AccionSemantica {
         		simb.setDoub(tokenDouble);
         		TablaDeSimbolos.put(token.toString(),simb);
         		AnalizadorLexico.Lexema = token.toString();  //LE PASO EL ID A LA TABLA DE SIMBOLOS AL PARSER.
-        	}
+        	}else {TablaDeSimbolos.get(token.toString()).incrementarContDeRef();}
         }else {
         	System.out.println("CTE FUERA DE RANGO EN LA LINEA " + AnalizadorLexico.saltoDeLinea);
         	return ERROR;

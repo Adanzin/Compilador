@@ -14,6 +14,8 @@ import java.io.*;
 									/* PROGRAMA */
 									
 programa 	: ID BEGIN sentencias END {System.out.println(" En la linea " + AnalizadorLexico.saltoDeLinea + " se compilo el programa ");}
+			: BEGIN sentencias END {System.out.println(" Linea " + AnalizadorLexico.saltoDeLinea + ": Erro: Falta nombre del programa ");}
+
 ;
 	
 sentencias 	: sentencias sentencia ';'
@@ -104,10 +106,10 @@ variables 	: variables ',' ID
 			| ID
 ;		
 
-CTE_con_sig : CTE
-			| '-' CTE
-;
-
+CTE_con_sig : CTE {if(estaRango($1.sval)) { $$.sval = $1.sval; } }
+			| '-' CTE { cambioCTENegativa($2.sval); $$.sval = "-" + $2.sval;}
+;				
+        		
 sentencia_IF: IF '(' condicion ')' THEN bloque_unidad ';' bloque_else ';' END_IF
 			| IF '(' condicion ')' THEN bloque_unidad ';' END_IF
 ;
@@ -172,9 +174,34 @@ sentencia_goto	: GOTO ETIQUETA
 %%																	 
 
 int yylex() {
+	int tokenSalida = AnalizadorLexico.getToken();
 	yylval = new ParserVal(AnalizadorLexico.Lexema);
-	return AnalizadorLexico.getToken();
+	return tokenSalida;
 }
-private void yyerror(String string) {
-	System.out.println(" Error Sintactico");
+private static void yyerror(String string) {
+	System.out.println(string);
+}
+
+private static void cambioCTENegativa(String key) {
+	System.out.println(" La key es " + key);
+	String keyNeg = "-" + key;
+	if (!AnalizadorLexico.TablaDeSimbolos.containsKey(keyNeg)) {
+		AnalizadorLexico.TablaDeSimbolos.put(keyNeg, AnalizadorLexico.TablaDeSimbolos.get(key).getCopiaNeg());
+	}
+	AnalizadorLexico.TablaDeSimbolos.get(keyNeg).incrementarContDeRef();
+	System.out.println("En la linea " + AnalizadorLexico.saltoDeLinea + " se reconocio token negativo ");
+	// es ultimo ya decrementa
+	if (AnalizadorLexico.TablaDeSimbolos.get(key).esUltimo()) {
+		AnalizadorLexico.TablaDeSimbolos.remove(key);
+	}
+}
+private static boolean estaRango(String key) {
+	if (AnalizadorLexico.TablaDeSimbolos.get(key).esEntero()) {
+		if (!AnalizadorLexico.TablaDeSimbolos.get(key).enRangoPositivo(key)) {
+			AnalizadorLexico.TablaDeSimbolos.remove(key);
+			yyerror("La CTE de la linea " + AnalizadorLexico.saltoDeLinea + " está fuera de rango.");
+			return false;
+		}
+	}
+	return true;
 }

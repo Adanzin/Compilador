@@ -4,20 +4,39 @@ public class Simbolo {
     private int entero;       // Tipo de variable
     private double doub; 
     private String id;
-    private int base;  // Base del número (8 = octal, 10 = decimal, 16 = hexadecimal)
+    private int base;  // Base del nï¿½mero (8 = octal, 10 = decimal, 16 = hexadecimal)
+    private int contadorDeReferencias;
     // Constructor
     public Simbolo() {
         this.entero=-1;
         this.doub=-1.0;
         this.id=null;
         this.base = 10;  // Por defecto, base decimal
+        this.contadorDeReferencias = 0;
     }
+    public Simbolo(int e,double d, int b) {
+        this.entero=e;
+        this.doub=d;
+        this.id=null;
+        this.base = b;  // Por defecto, base decimal
+        this.contadorDeReferencias=0;
+    }
+    
     
     public Simbolo(int base) {
         this.entero=-1;
         this.doub=-1.0;
         this.id=null;
         this.base = base; 
+    }
+    
+    public boolean esUltimo() { 
+    	if(this.contadorDeReferencias==1) {
+    		return true;
+    	}else {
+    		this.contadorDeReferencias--;
+    		return false;
+    	}
     }
     
     public boolean esEntero() {
@@ -27,37 +46,47 @@ public class Simbolo {
     	return true;
     }
     
-    public boolean esOctal() {
-     	if (this.base == 8) {
-    		return false;
-    	}
-    	return true;
-    }
-    
-    public boolean enRango() {
+    public boolean enRangoPositivo(String id) {
+    	int auxint;
+    	double mayor = 32767;
     	if (this.base == 8) {
-    		int tokenint = Integer.
+    		auxint = Integer.parseInt(id, 10); 
+    	}else {auxint=this.entero;}
+    	if(auxint<= mayor) {
+    		return true;
     	}
-    	return true;
+    	return false;
     }
+    public void decrementarContDeRef() {this.contadorDeReferencias--;}
+    public void incrementarContDeRef() {this.contadorDeReferencias++;}
     
+    public Simbolo getCopiaNeg() {
+    	if(this.esEntero()) {
+    		return new Simbolo(this.entero*-1,this.doub,this.base);
+    	}
+    	return new Simbolo(this.entero,this.doub*-1.0,this.base);
+    }
+
     public double getDoub() {
         return doub;
     }
     public void setDoub(double doub) {
         this.doub = doub;
+        this.contadorDeReferencias++;
     }
     public int getEntero() {
         return entero;
     }
     public void setEntero(int entero) {
         this.entero = entero;
+        this.contadorDeReferencias++;
     }
     public String getId() {
         return id;
     }
     public void setId(String id) {
         this.id = id;
+        this.contadorDeReferencias++;
     }
     @Override
     public String toString() {
@@ -77,7 +106,7 @@ public class Simbolo {
             sb.append(id);
         }
 
-        // Si ningún valor fue inicializado
+        // Si ningï¿½n valor fue inicializado
         if (sb.length() == 0) {
             return "Esta vacio";
         }
@@ -90,6 +119,7 @@ public class Simbolo {
     public void setBase(int base) {
         this.base = base;
     }
-
+    
+   
 
 }

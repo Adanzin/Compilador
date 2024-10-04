@@ -451,13 +451,38 @@ final static String yyrule[] = {
 																	 
 
 int yylex() {
+	int tokenSalida = AnalizadorLexico.getToken();
 	yylval = new ParserVal(AnalizadorLexico.Lexema);
-	return AnalizadorLexico.getToken();
+	return tokenSalida;
 }
-private void yyerror(String string) {
-	System.out.println(" Error Sintactico");
+private static void yyerror(String string) {
+	System.out.println(string);
 }
-//#line 389 "Parser.java"
+
+private static void cambioCTENegativa(String key) {
+	System.out.println(" La key es " + key);
+	String keyNeg = "-" + key;
+	if (!AnalizadorLexico.TablaDeSimbolos.containsKey(keyNeg)) {
+		AnalizadorLexico.TablaDeSimbolos.put(keyNeg, AnalizadorLexico.TablaDeSimbolos.get(key).getCopiaNeg());
+	}
+	AnalizadorLexico.TablaDeSimbolos.get(keyNeg).incrementarContDeRef();
+	System.out.println("En la linea " + AnalizadorLexico.saltoDeLinea + " se reconocio token negativo ");
+	// es ultimo ya decrementa
+	if (AnalizadorLexico.TablaDeSimbolos.get(key).esUltimo()) {
+		AnalizadorLexico.TablaDeSimbolos.remove(key);
+	}
+}
+private static boolean estaRango(String key) {
+	if (AnalizadorLexico.TablaDeSimbolos.get(key).esEntero()) {
+		if (!AnalizadorLexico.TablaDeSimbolos.get(key).enRangoPositivo(key)) {
+			AnalizadorLexico.TablaDeSimbolos.remove(key);
+			yyerror("La CTE de la linea " + AnalizadorLexico.saltoDeLinea + " está fuera de rango.");
+			return false;
+		}
+	}
+	return true;
+}
+//#line 414 "Parser.java"
 //###############################################################
 // method: yylexdebug : check lexer state
 //###############################################################
@@ -631,11 +656,19 @@ case 29:
 //#line 73 "Gramatica.y"
 {System.out.println(AnalizadorLexico.saltoDeLinea + " Asignacion a arreglo");}
 break;
+case 47:
+//#line 107 "Gramatica.y"
+{if(estaRango(val_peek(0).sval)) { yyval.sval = val_peek(0).sval; } }
+break;
+case 48:
+//#line 108 "Gramatica.y"
+{ cambioCTENegativa(val_peek(0).sval); yyval.sval = "-" + val_peek(0).sval;}
+break;
 case 69:
 //#line 154 "Gramatica.y"
 {System.out.println(" > Se leyo la cadena multi linea < ");}
 break;
-//#line 562 "Parser.java"
+//#line 595 "Parser.java"
 //########## END OF USER-SUPPLIED ACTIONS ##########
     }//switch
     //#### Now let's reduce... ####

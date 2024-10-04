@@ -1,8 +1,10 @@
 myprograma
 BEGIN
 	integer adan;
+	boro := -32768;
+	adan := 32768;
 	integer FUN fun_boro (double varParametro) BEGIN 
-	    WHILE ((3)>(5)) OUTF(adan);
+	    WHILE ((-32768)>(-5.8)) OUTF(adan);
 	    IF((a)=(b))THEN 
 	        x:=2;
 	        ELSE a:=5; 

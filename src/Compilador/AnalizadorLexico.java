@@ -5,6 +5,8 @@ import java.util.HashMap;
 import AccionSemantica.*;
 import java.io.*;
 
+
+
 public class AnalizadorLexico {
 	//TOKENS RECONOCIDOS
 	public static final int OCTAL = '3';
@@ -216,8 +218,16 @@ public class AnalizadorLexico {
         } catch (IOException e) {
             e.printStackTrace();
         }
+		
+
+		
+		
 		return 0; //fin de archivo.
 	}
+	
+
+
+	 
 	
 /*
     public static void main(String[] args) {
