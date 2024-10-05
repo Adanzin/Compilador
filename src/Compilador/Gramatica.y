@@ -12,28 +12,31 @@ programa	: ID_simple BEGIN sentencias END {System.out.println(" Se identifico el
 			| ID_simple sentencias {System.out.println(" Linea " + AnalizadorLexico.saltoDeLinea + ": Erro: Faltan los delimitadores del programa ");}
 ;
 	
-sentencias 	: sentencias sentencia ';'
-			| sentencia ';'
-			| sentencia {System.out.println(" Linea " + AnalizadorLexico.saltoDeLinea + ": Erro: Falta ';' al final de la sentencia ");}
+sentencias 	: sentencias sentencia 
+			| sentencia
 ;
 
-sentencia 	: sentencia_declarativa 
-            | sentencia_ejecutable
+sentencia 	: sentencia_declarativa
+            | sentencia_ejecutable ';'
+            | sentencia_ejecutable {System.out.println(" Linea " + AnalizadorLexico.saltoDeLinea + ": Erro: Falta ';' al final de la sentencia ejecutable ");}
 ;			
 				
 									/* SENTENCIAS DECLARATIVAS */	
 				
 sentencia_declarativa 	: declaracion_variable
-						| declaracion_funciones
-                        | declaracion_subtipo
+						| declaracion_funciones ';'
+						| declaracion_funciones {System.out.println(" Linea " + AnalizadorLexico.saltoDeLinea + ": Erro: Falta ';' al final de la declaracion de funciones ");}
+                        | declaracion_subtipo ';'
+						| declaracion_subtipo {System.out.println(" Linea " + AnalizadorLexico.saltoDeLinea + ": Erro: Falta ';' al final de la declaracion de subtipo ");}
 ;
 
-declaracion_variable	: tipo variables 						
+declaracion_variable	: tipo variables ';'
+						| tipo ID_simple ';'
 ;
 
 tipo : INTEGER
 	 | DOUBLE 
-	 | ID_simple {System.out.println(" Se identifico el ID de una clase como declaracion ");}
+	 | ID_simple {System.out.println(" Se identifico el ID de un subtipo como declaracion ");}
 ;	
 
 declaracion_subtipo : TYPEDEF ID_simple ASIGNACION tipo '{' CTE_con_sig ',' CTE_con_sig '}'
@@ -42,6 +45,7 @@ declaracion_subtipo : TYPEDEF ID_simple ASIGNACION tipo '{' CTE_con_sig ',' CTE_
 
 declaracion_funciones 	: tipo FUN ID '(' parametros_formal ')' BEGIN cuerpo_funcion END {if(RETORNO==false){System.out.println(" Linea " + AnalizadorLexico.saltoDeLinea + ": Erro: Faltan el RETORNO de al funcion ");RETORNO=false;}}
 						| tipo FUN '(' parametros_formal ')' BEGIN cuerpo_funcion END {System.out.println(" Linea " + AnalizadorLexico.saltoDeLinea + ": Erro: Faltan el nombre en la funcion ");}
+						| tipo FUN ID '(' ')' BEGIN cuerpo_funcion END {if(RETORNO==false){System.out.println(" Linea " + AnalizadorLexico.saltoDeLinea + ": Erro: Faltan el RETORNO de al funcion ");RETORNO=false;}System.out.println(" Erro: Faltan los parametros en la funcion ");}
 ;
 
 parametros_formal	: parametros_formal parametro ','
@@ -49,6 +53,7 @@ parametros_formal	: parametros_formal parametro ','
 ;
 
 parametro	: tipo ID_simple	
+			| error {System.out.println(" ERROR AL DECLARAR LOS PARAMETROS FORMALES. ");}
 ;
 
 cuerpo_funcion	: sentencias 
@@ -61,10 +66,14 @@ sentencia_ejecutable	: asignacion
 						| sentencia_IF 
 						| sentencia_WHILE
 						| sentencia_goto
-						| OUTF '(' expresion_arit ')' {System.out.println("En la linea :" + AnalizadorLexico.saltoDeLinea + " Salida expresion arit ");}
-						| OUTF '(' cadena ')'	{System.out.println("En la linea :" + AnalizadorLexico.saltoDeLinea + " Salida cadena ");}
+						| outf_rule
 						| retorno {RETORNO = true;}
 ;
+
+outf_rule	: OUTF '(' expresion_arit ')' {System.out.println("En la linea :" + AnalizadorLexico.saltoDeLinea + " Salida expresion arit ");}
+			| OUTF '(' ')' {System.out.println("Error en la linea :" + AnalizadorLexico.saltoDeLinea + " : Falta el parametro del OUTF  ");}
+			| OUTF '(' cadena ')'	{System.out.println("En la linea :" + AnalizadorLexico.saltoDeLinea + " Salida cadena ");}
+			| error {System.out.println("Error en la linea :" + AnalizadorLexico.saltoDeLinea + ":  Parámetro incorrecto en sentencia OUTF. ");}
 
 
 asignacion	: variable_simple ASIGNACION expresion_arit {System.out.println(AnalizadorLexico.saltoDeLinea + " Asignacion ");}
@@ -98,14 +107,14 @@ factor 	: variable_simple
 		| variable_simple '{' CTE '}' 
 ;
 
-variables 	: variables ',' variable_simple  
-			| variable_simple
+variables 	: variables ',' variable_simple {System.out.println(" >> Identifico variables var_con_coma ");}
+			| error {System.out.println(" >> Falta la , en la declaracion de variables.  ");} 
 ;		
 
-variable_simple : ID_simple
+variable_simple : ID_simple {System.out.println(">> Identifico una varaible_simple ");}
 ;
 
-ID_simple : ID
+ID_simple : ID {System.out.println(" >> Identifico un ID ");}
 ;
 
 
