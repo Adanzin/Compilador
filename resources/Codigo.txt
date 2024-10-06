@@ -4,13 +4,14 @@ BEGIN
 	boro := -32768;
 	adan := 32768;
 	adan boro;
-	integer FUN juancito ( ) BEGIN 
+	integer FUN juancito ( double a ) BEGIN 
 	    WHILE ((-32768)>(-5.8)) OUTF(1);
 	    IF((a,3+4)=(b,35))THEN 
 	        x:=2;
 	        ELSE a:=5; 
 	    END_IF;
 	    RET (a);
+	    funcion(b);
 	 END;
 	 TYPEDEF TRIPLE < integer > a;
 	 RET (0); 

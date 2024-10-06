@@ -70,6 +70,7 @@ sentencia_ejecutable	: asignacion
 						| OUTF '(' expresion_arit ')' {System.out.println("En la linea :" + AnalizadorLexico.saltoDeLinea + " Salida expresion arit ");}
 						| OUTF '(' cadena ')'	{System.out.println("En la linea :" + AnalizadorLexico.saltoDeLinea + " Salida cadena ");}
 						| retorno {RETORNO = true;}
+						| invocacion {System.out.println(" Una invocacion no es una sentencia ejecutable ");}
 ;
 
 
@@ -77,8 +78,8 @@ asignacion	: variable_simple ASIGNACION expresion_arit {System.out.println(Anali
 			| variable_simple '{' CTE '}' ASIGNACION expresion_arit  {System.out.println(AnalizadorLexico.saltoDeLinea + " Asignacion a arreglo");}
 ;
 
-invocacion	: variable_simple '(' parametro_real ')' 
-			| variable_simple '(' tipo parametros_formal ')'   //Conversiones
+invocacion	: ID_simple '(' parametro_real ')' 
+			| ID_simple '(' tipo parametros_formal ')'   //Conversiones
 ;
 
 parametro_real	: list_expre
