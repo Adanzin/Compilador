@@ -6,6 +6,7 @@ BEGIN
 	adan boro;
 	integer FUN juancito ( double a ) BEGIN 
 	    WHILE ((-32768)>(-5.8)) OUTF(1);
+	    a:=funcion(b);
 	    IF((a,3+4)=(b,35))THEN 
 	        x:=2;
 	        ELSE a:=5; 

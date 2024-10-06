@@ -123,19 +123,20 @@ CTE_con_sig : CTE {if(estaRango($1.sval)) { $$.sval = $1.sval; } }
 			| '-' CTE { cambioCTENegativa($2.sval); $$.sval = "-" + $2.sval;}
 ;				
 
-sentencia_IF: IF '(' condicion ')' THEN bloque_unidad ';' bloque_else ';' END_IF {System.out.println(AnalizadorLexico.saltoDeLinea + " Identifico un IF ");}
-            | IF '(' condicion ')' THEN bloque_unidad ';' END_IF {System.out.println("En la linea :" + AnalizadorLexico.saltoDeLinea + " Reconocio un IF ");}
-            | IF '(' condicion ')' THEN bloque_unidad ';' {System.out.println("Error en la linea :" + AnalizadorLexico.saltoDeLinea + " : Falta el END_IF en IF  ");}
-            | IF '(' condicion ')' THEN bloque_unidad ';' bloque_else ';' {System.out.println(AnalizadorLexico.saltoDeLinea + " Falta el END_IF en IF ");}
-            | IF condicion ')' THEN bloque_unidad ';' bloque_else ';' END_IF {System.out.println("Error en la linea :" + AnalizadorLexico.saltoDeLinea + " : Falta el '(' en IF  ");}
-            | IF condicion ')' THEN bloque_unidad ';' END_IF {System.out.println("Error en la linea :" + AnalizadorLexico.saltoDeLinea + " : Falta el '(' en IF  ");}
-            | IF '(' condicion THEN bloque_unidad ';' bloque_else ';' END_IF {System.out.println("Error en la linea :" + AnalizadorLexico.saltoDeLinea + " : Falta el ')' en IF  ");}
-            | IF '(' condicion THEN bloque_unidad ';' END_IF {System.out.println("Error en la linea :" + AnalizadorLexico.saltoDeLinea + " : Falta el ')' en IF  ");}
-			| IF condicion THEN bloque_unidad ';' bloque_else ';' END_IF {System.out.println("Error en la linea :" + AnalizadorLexico.saltoDeLinea + " : Faltan los parentesis en IF  ");}
-            | IF condicion THEN bloque_unidad ';' END_IF {System.out.println("Error en la linea :" + AnalizadorLexico.saltoDeLinea + " : Faltan los parentesis en IF  ");}			
+sentencia_IF: IF condicion THEN bloque_unidad ';' bloque_else ';' END_IF {System.out.println(AnalizadorLexico.saltoDeLinea + " Identifico un IF ");}
+            | IF condicion THEN bloque_unidad ';' END_IF {System.out.println("En la linea :" + AnalizadorLexico.saltoDeLinea + " Reconocio un IF ");}
+            | IF condicion THEN bloque_unidad ';' {System.out.println("Error en la linea :" + AnalizadorLexico.saltoDeLinea + " : Falta el END_IF en IF  ");}
+            | IF condicion THEN bloque_unidad ';' bloque_else ';' {System.out.println(AnalizadorLexico.saltoDeLinea + " Falta el END_IF en IF ");}
 ;
 
-condicion	:'(' list_expre ')' comparador '(' list_expre ')'//Tenemos en cuenta el pattern_matching 
+condicion	: '(' '(' list_expre ')' comparador '(' list_expre ')' ')'//Tenemos en cuenta el pattern_matching 
+			| '(' list_expre ')' comparador '(' list_expre ')' ')'{System.out.println("Error en la linea :" + AnalizadorLexico.saltoDeLinea + " : Falta el '(' en la condicion ");}
+			| '(' '(' list_expre ')' comparador '(' list_expre ')' {System.out.println("Error en la linea :" + AnalizadorLexico.saltoDeLinea + " : Falta el ')' en la condicion ");}
+			|'(' list_expre ')' comparador '(' list_expre ')' {System.out.println("Error en la linea :" + AnalizadorLexico.saltoDeLinea + " : Faltan los parentesis en la condicion ");}
+			| '(' expresion_arit comparador expresion_arit ')' {System.out.println("En la linea :" + AnalizadorLexico.saltoDeLinea + " : Se identifico una condicion");}
+			|  expresion_arit comparador expresion_arit ')' {System.out.println("Error en la linea :" + AnalizadorLexico.saltoDeLinea + " : Falta el '(' en la condicion ");}
+			| '(' expresion_arit comparador expresion_arit  {System.out.println("Error en la linea :" + AnalizadorLexico.saltoDeLinea + " : Falta el ')' en la condicion ");}
+			| expresion_arit comparador expresion_arit  {System.out.println("Error en la linea :" + AnalizadorLexico.saltoDeLinea + " : Faltan los parentesis en la condicion ");}
 ;
 
 comparador	: '>'
@@ -153,14 +154,15 @@ bloque_else: bloque_else_simple
 bloque_else_multiple:	ELSE BEGIN bloque_sent_ejecutables END
 ;
 
-bloque_else_simple:	ELSE bloque_sentencia_simple
+bloque_else_simple:	ELSE bloque_sentencia_simple 
 ;
 
 bloque_unidad	: bloque_unidad_simple
 				| bloque_unidad_multiple
 ;		
 
-bloque_unidad_multiple: BEGIN bloque_sent_ejecutables END			
+bloque_unidad_multiple  : BEGIN bloque_sent_ejecutables END	
+;
 
 bloque_unidad_simple:  bloque_sentencia_simple
 ;
@@ -180,8 +182,9 @@ cadena	: CADENAMULTILINEA {System.out.println(" > Se leyo la cadena multi linea 
 
 									/* TEMAS PARTICULARES */
 /* Temas 13:  Sentencias de Control */
-sentencia_WHILE	: WHILE '(' condicion ')' bloque_unidad
+sentencia_WHILE	: WHILE condicion bloque_unidad {System.out.println(AnalizadorLexico.saltoDeLinea + " Se identifico un WHILE ");}
 ;	
+
 
 /* Tema 23: goto */
 sentencia_goto	: GOTO ETIQUETA
