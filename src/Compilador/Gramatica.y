@@ -67,12 +67,15 @@ sentencia_ejecutable	: asignacion
 						| sentencia_IF 
 						| sentencia_WHILE
 						| sentencia_goto
-						| OUTF '(' expresion_arit ')' {System.out.println("En la linea :" + AnalizadorLexico.saltoDeLinea + " Salida expresion arit ");}
-						| OUTF '(' cadena ')'	{System.out.println("En la linea :" + AnalizadorLexico.saltoDeLinea + " Salida cadena ");}
+						| outf_rule
 						| retorno {RETORNO = true;}
-						| invocacion {System.out.println(" Una invocacion no es una sentencia ejecutable ");}
 ;
 
+outf_rule    : OUTF '(' expresion_arit ')' {System.out.println("En la linea :" + AnalizadorLexico.saltoDeLinea + " Se reconocio OUTF de Expresion Aritmetica ");}
+            | OUTF '(' ')' {System.out.println("Error en la linea :" + AnalizadorLexico.saltoDeLinea + " : Falta el parametro del OUTF  ");}
+            | OUTF '(' cadena ')'    {System.out.println("En la linea :" + AnalizadorLexico.saltoDeLinea + " Salida cadena ");}
+            | OUTF '(' sentencias ')'  {System.out.println("Error en la linea :" + AnalizadorLexico.saltoDeLinea + ":  Parametro incorrecto en sentencia OUTF. ");}
+;
 
 asignacion	: variable_simple ASIGNACION expresion_arit {System.out.println(AnalizadorLexico.saltoDeLinea + " Asignacion ");}
 			| variable_simple '{' CTE '}' ASIGNACION expresion_arit  {System.out.println(AnalizadorLexico.saltoDeLinea + " Asignacion a arreglo");}
