@@ -55,7 +55,6 @@ public class AnalizadorLexico {
             return caracter;
         }
         
-        
     }
 
 	public static Short siguienteLectura(Reader lector, char caracter) {

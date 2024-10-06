@@ -82,19 +82,20 @@ asignacion	: variable_simple ASIGNACION expresion_arit {System.out.println(Anali
 ;
 
 invocacion	: ID_simple '(' parametro_real ')' 
-			| ID_simple '(' tipo parametros_formal ')'   //Conversiones
 ;
 
-parametro_real	: list_expre
+parametro_real	: list_expre {System.out.println(" PARAMETRO REAL ");}
+				| parametro {System.out.println(" se realizo una conversion ");}
 ;
 
 list_expre	: list_expre ',' expresion_arit
-			| expresion_arit
+			| expresion_arit 
 ;
 
-expresion_arit  : expresion_arit '+' termino
-                | expresion_arit '-' termino
+expresion_arit  : expresion_arit '+' termino {System.out.println(" Se identifico una EXPRESION_ARIT ");}
+                | expresion_arit '-' termino {System.out.println(" Se identifico una EXPRESION_ARIT ");}
                 | termino
+				| error {System.out.println(" La expresion está mal escrita ");} 
 ;
 
 termino : termino '*' factor 

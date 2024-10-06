@@ -10,8 +10,9 @@ BEGIN
 	    IF((a,3+4)=(b,35))THEN A:=1;
 	    ELSE B:=0;END_IF;
 	    RET (a);
-	    a:=funcion(b);
+	    a:=funcion(integer b);
 	 END;
 	 TYPEDEF TRIPLE < integer > a;
 	 RET (0); 
+	 a := 1 + * 2;
 END
