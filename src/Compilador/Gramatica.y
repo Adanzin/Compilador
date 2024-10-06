@@ -127,6 +127,9 @@ sentencia_IF: IF condicion THEN bloque_unidad ';' bloque_else ';' END_IF {System
             | IF condicion THEN bloque_unidad ';' END_IF {System.out.println("En la linea :" + AnalizadorLexico.saltoDeLinea + " Reconocio un IF ");}
             | IF condicion THEN bloque_unidad ';' {System.out.println("Error en la linea :" + AnalizadorLexico.saltoDeLinea + " : Falta el END_IF en IF  ");}
             | IF condicion THEN bloque_unidad ';' bloque_else ';' {System.out.println(AnalizadorLexico.saltoDeLinea + " Falta el END_IF en IF ");}
+			| IF condicion THEN bloque_else ';' END_IF {System.out.println(AnalizadorLexico.saltoDeLinea + " Falta de contenido en bloque THEN");}
+			| IF condicion THEN END_IF {System.out.println(AnalizadorLexico.saltoDeLinea + " Falta de contenido en bloque THEN.");}
+			| IF condicion THEN bloque_unidad ';' ELSE END_IF {{System.out.println(" Error falta cuerpo en el ELSE ");};}
 ;
 
 condicion	: '(' '(' list_expre ')' comparador '(' list_expre ')' ')'//Tenemos en cuenta el pattern_matching 
@@ -167,7 +170,7 @@ bloque_unidad_multiple  : BEGIN bloque_sent_ejecutables END
 bloque_unidad_simple:  bloque_sentencia_simple
 ;
 
-bloque_sent_ejecutables	: bloque_sent_ejecutables bloque_sentencia_simple
+bloque_sent_ejecutables	: bloque_sent_ejecutables ';' bloque_sentencia_simple 
 						| bloque_sentencia_simple
 ;
 
@@ -177,12 +180,12 @@ bloque_sentencia_simple: sentencia_ejecutable
 
 
 cadena	: CADENAMULTILINEA {System.out.println(" > Se leyo la cadena multi linea < ");}
-		| '[' ']'
 ;
 
 									/* TEMAS PARTICULARES */
 /* Temas 13:  Sentencias de Control */
 sentencia_WHILE	: WHILE condicion bloque_unidad {System.out.println(AnalizadorLexico.saltoDeLinea + " Se identifico un WHILE ");}
+				| WHILE condicion error {System.out.println(AnalizadorLexico.saltoDeLinea + " falta el cuerpo del WHILE ");}
 ;	
 
 
