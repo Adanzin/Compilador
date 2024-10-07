@@ -9,11 +9,8 @@ import java.io.*;
 
 public class AnalizadorLexico {
 	//TOKENS RECONOCIDOS
-	public static final int OCTAL = '3';
 	public static boolean SEREPITE=false;
 	//COLUMNAS DE LA MATRIZ DE TRANSICION DE ESTADOS
-    public static final char TABULACION = '\t';
-    public static final char BLANCO = ' ';
     public static final char SALTO_DE_LINEA = '\n';
 	private static final String ARCH_MATRIZ_ESTADOS = "resources\\matrizDeEstados.txt";
     private static final String ARCH_MATRIZ_ACCIONES = "resources\\matrizDeAcciones.txt";
@@ -24,7 +21,7 @@ public class AnalizadorLexico {
 	private static final int MAYOR7 = '2';
 	private static final int LETRA = '3';
 	private static final int D = '4';
-	public static int saltoDeLinea = 0;
+	public static int saltoDeLinea = 1;
 	public static String Lexema;
     public static int estado_actual = 0;
     public static final StringBuilder token_actual = new StringBuilder();
@@ -125,6 +122,12 @@ public class AnalizadorLexico {
             case ')':
                 caracter_actual = 16;
                 break;
+            case '{':
+                caracter_actual = 16;
+                break;
+            case '}':
+                caracter_actual = 16;
+                break;                
             case ';':
                 caracter_actual = 16;
                 break;
@@ -141,7 +144,7 @@ public class AnalizadorLexico {
                 caracter_actual = 19;
                 break;
         }
-
+        //System.out.println("car "+caracter+" "+caracter_actual);
         AccionSemantica accion_a_ejecutar = accionesSemanticas[estado_actual][caracter_actual];
         //System.out.println(accion_a_ejecutar.toString());
         Short identificador_token = accion_a_ejecutar.ejecutar(caracter, lector, token_actual,PalabrasReservadas,TablaDeSimbolos);//-1 si es activo, -2 si es error y el token si es fin de cadena
@@ -191,7 +194,7 @@ public class AnalizadorLexico {
 		int caracter;
 		int token;
 		// Recorrer cada carácter del archivo
-		//System.out.println("Entro al get token");
+		//System.out.println("Entro al get token");		
 		try {
             while ((caracter = archivo_original.read()) != -1) {
         		if(SEREPITE==true) {
@@ -210,8 +213,7 @@ public class AnalizadorLexico {
             	Lexema = null;
             	token = AnalizadorLexico.siguienteLectura(archivo_original, letra);
             	// Llamar al método que procesa el carácter
-            	if (token != -1) { // Si no es un token activo, se carga en el archivo.
-            		System.out.println(" --> El TOKEN devuelto es " + token);
+            	if (token != -1) { // Si no es un token activo, se carga en el archivo.            		
             		return token;
             	}
             	archivo_original.mark(1);

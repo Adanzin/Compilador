@@ -15,11 +15,14 @@ public class AS_Op_solo extends AccionSemantica{
 	    switch (token.toString()) {
 	    	case ">":
 	    		AnalizadorLexico.token_actual.setLength(0); //VACIAMOS EL BUFFER YA QUE SE LEYÓ UN TOKEN INVALIDO
+	    		System.out.println("		╠══ >");
 	    		return (short)'>';
 	    	case "<":
 	    		AnalizadorLexico.token_actual.setLength(0); //VACIAMOS EL BUFFER YA QUE SE LEYÓ UN TOKEN INVALIDO
+	    		System.out.println("		╠══ <");
 	    		return (short)'<';		 
 	    	default:
+	    		System.out.println("		╠══ "+token.toString());
 	    		AnalizadorLexico.token_actual.setLength(0); //VACIAMOS EL BUFFER YA QUE SE LEYÓ UN TOKEN INVALIDO
 	    		return Short.valueOf(token.toString());
 

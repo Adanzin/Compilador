@@ -19,6 +19,7 @@ public class AS_ETIQUETA extends AccionSemantica {
 			TablaDeSimbolos.put(token.toString(), simb);
 			AnalizadorLexico.Lexema = token.toString();  //LE PASO EL ID A LA TABLA DE SIMBOLOS AL PARSER.
 		}
+		System.out.println("	╔═ Etiqueta "+token.toString());
         AnalizadorLexico.token_actual.setLength(0); //VACIAMOS EL BUFFER YA QUE SE ESPERA UN NUEVO TOKEN
         return PalabrasReservadas.obtenerIdentificador("ETIQUETA"); //devolvemos el token correspondiente 
     };

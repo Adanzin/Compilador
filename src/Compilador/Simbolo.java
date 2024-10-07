@@ -94,26 +94,36 @@ public class Simbolo {
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
+        sb.append("<");
         // Chequear si el entero fue inicializado
         if (entero != -1) {
             sb.append(entero);
+            sb.append(", ");
         }
 
         // Chequear si el double fue inicializado
         if (doub != -1.0) {
             sb.append(doub);
+            sb.append(", ");
         }
 
         // Chequear si el id fue inicializado
         if (id != null) {
             sb.append(id);
+            sb.append(", ");
         }
+        sb.append(base);
+        sb.append(", ");
+        sb.append(contadorDeReferencias);
+        sb.append(", ");
+        sb.append(esSubTipo);
 
         // Si ning�n valor fue inicializado
         if (sb.length() == 0) {
             return "Esta vacio";
         }
 
+        sb.append(">");
         return sb.toString();
     }
     public int getBase() {

@@ -1,10 +1,7 @@
-prog
 BEGIN
-	integer adancadenamuylarga, boro, andrea;
-	boro := -32768;
-	adan := 32768;
+	adan := 20
 	adan boro;
-	integer FUN juancito ( double a ) BEGIN 
+	integer FUN ( double a ) BEGIN 
 		WHILE (32768 > -5.8)OUTF(1);
 	    WHILE ((a,3+4)=(b,35))BEGIN OUTF(1); OUTF([Hola Mundo]); goto afuera@ END;
 	    a:=funcion(b);
@@ -12,7 +9,6 @@ BEGIN
 	    a:=4+5;
 	    IF((a,3+4)=(b,35))THEN A:=1;END_IF;
 	    IF(-32768 > 5.8)THEN A:=1;ELSE B:=0;END_IF;
-	    RET (a);
 	 END;
 	 TYPEDEF TRIPLE < integer > tint;
 	 TYPEDEF flotadito := integer {-6, -8};
@@ -24,3 +20,5 @@ BEGIN
 	 afuera@;
 	 a := 1 +2;
 END
+
+

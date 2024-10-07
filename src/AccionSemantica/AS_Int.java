@@ -20,12 +20,12 @@ public class AS_Int extends AccionSemantica {
         		TablaDeSimbolos.put(token.toString(),simb);        		
         	}else {TablaDeSimbolos.get(token.toString()).incrementarContDeRef();}
         	AnalizadorLexico.Lexema = token.toString();  //LE PASO EL ID A LA TABLA DE SIMBOLOS AL PARSER.
-        	System.out.println(AnalizadorLexico.Lexema.toString());
         }else {
-        	System.out.println("CTE FUERA DE RANGO EN LA LINEA " + AnalizadorLexico.saltoDeLinea);
+        	System.out.println("Error lexico en la linea " + AnalizadorLexico.saltoDeLinea+" : Constante entera fuera de rango ");
             AnalizadorLexico.token_actual.setLength(0); //VACIAMOS EL BUFFER YA QUE SE ESPERA UN NUEVO TOKEN
         	return ERROR;
         }
+        System.out.println("	╔═ Constante entera "+tokenlong);
     	AnalizadorLexico.SEREPITE=true;
         AnalizadorLexico.token_actual.setLength(0); //VACIAMOS EL BUFFER YA QUE SE ESPERA UN NUEVO TOKEN
         //retornar el key 

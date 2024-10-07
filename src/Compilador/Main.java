@@ -3,6 +3,8 @@ package Compilador;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.Map;
+import java.util.Map.Entry;
 
 public class Main {
 
@@ -27,6 +29,33 @@ public class Main {
         } catch (IOException e) {
             System.out.println("Ocurrió un error al leer el archivo: " + e.getMessage());
         }
+        System.out.println("       ");
+        System.out.println("       ");
+        System.out.println("       >>>>>  TABLA DE SIMBOLOS <<<<<");
+        getSimbolos();
+        
     }
+	
+	public static void getSimbolos() {
+        StringBuilder sb = new StringBuilder();
+
+        // Recorrer el mapa e ir construyendo el string
+        for (Entry<String, Simbolo> entry : AnalizadorLexico.TablaDeSimbolos.entrySet()) {
+            sb.append("[")
+              .append(entry.getKey())  // Clave
+              .append(", ")
+              .append(entry.getValue())  // Valor
+              .append("] ")
+              .append(AnalizadorLexico.SALTO_DE_LINEA);
+            
+        }
+
+        // Eliminar la última coma y espacio si el mapa no está vacío
+        if (!AnalizadorLexico.TablaDeSimbolos.isEmpty()) {
+            sb.setLength(sb.length() - 2);  // Elimina la última ", "
+        }
+
+        System.out.println(sb);
+	}
 
 }
