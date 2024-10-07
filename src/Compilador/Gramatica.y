@@ -31,10 +31,13 @@ sentencia_declarativa 	: declaracion_variable
 declaracion_variable	: tipo variables 						
 ;
 
-tipo : INTEGER
-	 | DOUBLE 
-	 | ID_simple {System.out.println(" Se identifico el ID de una clase como declaracion ");}
+tipo : ID_simple {System.out.println(" Se identifico el ID de una clase como declaracion ");}
+		|tipo_primitivo
 ;	
+
+tipo_primitivo: INTEGER
+				|DOUBLE
+;
 
 declaracion_subtipo : TYPEDEF ID_simple ASIGNACION tipo '{' CTE_con_sig ',' CTE_con_sig '}'
 					| TYPEDEF TRIPLE '<' tipo '>' ID_simple 
@@ -44,15 +47,10 @@ declaracion_funciones     : tipo FUN ID parametros_parentesis BEGIN cuerpo_funci
                         | tipo FUN parametros_parentesis BEGIN cuerpo_funcion END {System.out.println(" Linea " + AnalizadorLexico.saltoDeLinea + ": Erro: Faltan el nombre en la funcion ");}
 ;
 
-parametros_parentesis: '(' parametros_formal ')'
-                    | '(' ')' {System.out.println(" Erro: Faltan los parametros en la funcion ");}
-                    | '(' error ')' {System.out.println(" ERROR AL DECLARAR LOS PARAMETROS FORMALES. ");}
+parametros_parentesis: '(' parametro ')'
+                    | '(' ')' {System.out.println(" Erro: Falta el parametro en la funcion ");}
+                    | '(' error ')' {System.out.println(" ERROR AL DECLARAR EL PARAMETRO FORMAL. ");}
 ;
-
-parametros_formal	: parametros_formal parametro ','
-					| parametro
-;
-
 
 parametro	: tipo ID_simple	
 ;
@@ -81,11 +79,8 @@ asignacion	: variable_simple ASIGNACION expresion_arit {System.out.println(Anali
 			| variable_simple '{' CTE '}' ASIGNACION expresion_arit  {System.out.println(AnalizadorLexico.saltoDeLinea + " Asignacion a arreglo");}
 ;
 
-invocacion	: ID_simple '(' parametro_real ')' 
-;
-
-parametro_real	: list_expre {System.out.println(" PARAMETRO REAL ");}
-				| parametro {System.out.println(" se realizo una conversion ");}
+invocacion	: ID_simple '(' expresion_arit ')' {System.out.println(AnalizadorLexico.saltoDeLinea + " Invocacion a funcion ");}
+			| ID_simple '(' tipo_primitivo '(' expresion_arit ')' ')' {System.out.println(AnalizadorLexico.saltoDeLinea + " Invocacion con conversion ");}
 ;
 
 list_expre	: list_expre ',' expresion_arit
@@ -177,8 +172,6 @@ bloque_sent_ejecutables	: bloque_sent_ejecutables ';' bloque_sentencia_simple
 
 bloque_sentencia_simple: sentencia_ejecutable 
 ;
-
-
 
 cadena	: CADENAMULTILINEA {System.out.println(" > Se leyo la cadena multi linea < ");}
 ;
