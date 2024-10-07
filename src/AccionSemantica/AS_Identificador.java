@@ -25,6 +25,7 @@ public class AS_Identificador extends AccionSemantica {
         	salida=PalabrasReservadas.obtenerIdentificador(tokenString);
         }
         System.out.println("	╔═ Identificador "+tokenString);
+		cargarSalida("Identificador "+tokenString);
         AnalizadorLexico.SEREPITE=true;
         AnalizadorLexico.token_actual.setLength(0); //VACIAMOS EL BUFFER YA QUE SE ESPERA UN NUEVO TOKEN
         return salida; //devolvemos el token correspondiente

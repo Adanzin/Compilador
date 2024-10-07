@@ -22,11 +22,13 @@ public class AS_Int extends AccionSemantica {
         	AnalizadorLexico.Lexema = token.toString();  //LE PASO EL ID A LA TABLA DE SIMBOLOS AL PARSER.
         }else {
         	System.out.println("Error lexico en la linea " + AnalizadorLexico.saltoDeLinea+" : Constante entera fuera de rango ");
-            AnalizadorLexico.token_actual.setLength(0); //VACIAMOS EL BUFFER YA QUE SE ESPERA UN NUEVO TOKEN
-        	return ERROR;
+    		cargarSalida("Error lexico en la linea " + AnalizadorLexico.saltoDeLinea+" : Constante entera fuera de rango ");
+        	AnalizadorLexico.SEREPITE=true;
+            return ERROR;
         }
         System.out.println("	╔═ Constante entera "+tokenlong);
-    	AnalizadorLexico.SEREPITE=true;
+        cargarSalida("Constante entera "+tokenlong);
+        AnalizadorLexico.SEREPITE=true;
         AnalizadorLexico.token_actual.setLength(0); //VACIAMOS EL BUFFER YA QUE SE ESPERA UN NUEVO TOKEN
         //retornar el key 
         return PalabrasReservadas.obtenerIdentificador("CTE");

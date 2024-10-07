@@ -18,6 +18,7 @@ public class AS_Comentario extends AccionSemantica {
     @Override
     public Short ejecutar(char car, Reader lector, StringBuilder token, TablaPalabrasReservadas PalabrasReservadas, Map<String, Simbolo> TablaDeSimbolos) {
     	System.out.println("	╔═ Comentario ");
+		cargarSalida("Comentario ");
     	AnalizadorLexico.token_actual.setLength(0); //VACIAMOS EL BUFFER YA QUE AL SER UN COM NO SE DEBE ALMACENAR 
         return TOKEN_ACTIVO;   
     }; 

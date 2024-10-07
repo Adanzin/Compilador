@@ -1,0 +1,229 @@
+
+ Identificador prog 
+ Identificador BEGIN 
+ Identificador integer 
+ Identificador adancadenamuyla 
+ , 
+ Identificador boro 
+ , 
+ Identificador andrea 
+ ; 
+ Identificador boro 
+ := 
+ Constante double 1.0 
+ ; 
+ Identificador boro 
+ := 
+ - 
+ Constante double 1.2 
+ ; 
+ Identificador boro 
+ := 
+ Constante double 3.0d-5 
+ ; 
+ Identificador boro 
+ := 
+ - 
+ Constante double 2.3d+34 
+ ; 
+ Identificador boro 
+ := 
+ Constante double 2.5d-1 
+ ; 
+ Identificador adan 
+ := 
+ Constante double 13.0 
+ ; 
+ Identificador adan 
+ := 
+ Constante double 0.0 
+ ; 
+ Identificador adan 
+ := 
+ Constante double 1.2d10 
+ ; 
+ Identificador adan 
+ := 
+ Constante double 1.9d+308 
+ ; 
+ Identificador adan 
+ Identificador boro 
+ ; 
+ Identificador integer 
+ Identificador FUN 
+ Identificador juancito 
+ ( 
+ Identificador double 
+ Identificador a 
+ ) 
+ Identificador BEGIN 
+ Identificador WHILE 
+ ( 
+ Constante entera 32768 
+ > 
+ - 
+ Constante double 5.8 
+ ) 
+ Identificador OUTF 
+ ( 
+ Constante entera 1 
+ ) 
+ ; 
+ Identificador WHILE 
+ ( 
+ ( 
+ Identificador a 
+ , 
+ Constante entera 3 
+ + 
+ Constante entera 4 
+ ) 
+ = 
+ ( 
+ Identificador b 
+ , 
+ Constante entera 35 
+ ) 
+ ) 
+ Identificador BEGIN 
+ Identificador OUTF 
+ ( 
+ Constante entera 1 
+ ) 
+ ; 
+ Identificador OUTF 
+ ( 
+ Cadena multilinea Hola Mundo 
+ ) 
+ ; 
+ Identificador goto 
+ Etiqueta afuera 
+ Identificador END 
+ ; 
+ Identificador a 
+ := 
+ Identificador funcion 
+ ( 
+ Identificador b 
+ ) 
+ ; 
+ Identificador a 
+ := 
+ Identificador funcion 
+ ( 
+ Identificador integer 
+ ( 
+ Identificador a 
+ + 
+ Identificador b 
+ ) 
+ ) 
+ ; 
+ Identificador a 
+ := 
+ Constante entera 4 
+ + 
+ Constante entera 5 
+ ; 
+ Identificador IF 
+ ( 
+ ( 
+ Identificador a 
+ , 
+ Constante entera 3 
+ + 
+ Constante entera 4 
+ ) 
+ = 
+ ( 
+ Identificador b 
+ , 
+ Constante entera 35 
+ ) 
+ ) 
+ Identificador THEN 
+ Identificador A 
+ := 
+ Constante entera 1 
+ ; 
+ Identificador END_IF 
+ ; 
+ Identificador IF 
+ ( 
+ - 
+ Constante entera 32768 
+ > 
+ Constante double 5.8 
+ ) 
+ Identificador THEN 
+ Identificador A 
+ := 
+ Constante entera 1 
+ ; 
+ Identificador ELSE 
+ Identificador B 
+ := 
+ Constante entera 0 
+ ; 
+ Identificador END_IF 
+ ; 
+ Identificador RET 
+ ( 
+ Identificador a 
+ ) 
+ ; 
+ Identificador END 
+ ; 
+ Identificador TYPEDEF 
+ Identificador TRIPLE 
+  < 
+ Identificador integer 
+ > 
+ Identificador tint 
+ ; 
+ Identificador TYPEDEF 
+ Identificador flotadito 
+ := 
+ Identificador integer 
+ { 
+ - 
+ Constante entera 6 
+ , 
+ - 
+ Constante entera 8 
+ } 
+ ; 
+ Identificador flotadito 
+ Identificador a 
+ ; 
+ Identificador tint 
+ Identificador b 
+ ; 
+ Identificador b 
+ { 
+ Constante entera 1 
+ } 
+ := 
+ Constante entera 8 
+ ; 
+ Identificador a 
+ := 
+ Identificador b 
+ { 
+ Constante entera 1 
+ } 
+ ; 
+ Identificador RET 
+ ( 
+ Constante entera 0 
+ ) 
+ ; 
+ Etiqueta afuera 
+ ; 
+ Identificador a 
+ := 
+ Constante entera 1 
+ + 
+ Constante entera 2 
+ ; 
+ Identificador END 

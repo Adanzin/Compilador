@@ -1,6 +1,6 @@
 %{
 %}
-%token IF THEN ELSE BEGIN END END_IF OUTF TYPEDEF FUN RET CTE ID CADENAMULTILINEA WHILE TRIPLE GOTO ETIQUETA MAYORIGUAL MENORIGUAL DISTINTO INTEGER DOUBLE ASIGNACION
+%token IF THEN ELSE BEGIN END END_IF OUTF TYPEDEF FUN RET CTE ID CADENAMULTILINEA WHILE TRIPLE GOTO ETIQUETA MAYORIGUAL MENORIGUAL DISTINTO INTEGER DOUBLE ASIGNACION ERROR
 %start programa
 
 %% /* Gramatica */
@@ -117,7 +117,7 @@ termino : termino '*' factor
 factor 	: variable_simple
 		| CTE_con_sig
 		| invocacion
-		| variable_simple '{' CTE '}' 
+		| variable_simple '{' CTE '}' 		 
 ;
 
 variables 	: variables ',' variable_simple  
@@ -133,6 +133,9 @@ ID_simple : ID
 
 CTE_con_sig : CTE {if(estaRango($1.sval)) { $$.sval = $1.sval; } }
 			| '-' CTE { cambioCTENegativa($2.sval); $$.sval = "-" + $2.sval;}
+			| ERROR 
+			| '-' ERROR 
+			
 ;				
 
 sentencia_IF: IF condicion THEN bloque_unidad ';' bloque_else ';' END_IF {System.out.println("Linea " + AnalizadorLexico.saltoDeLinea +  ": Sentencia IF ");}
@@ -210,7 +213,6 @@ sentencia_goto	: GOTO ETIQUETA {System.out.println("Linea " + AnalizadorLexico.s
 
 %%																	 
 private static boolean RETORNO = false;
-private static boolean RETORNO_DEL_IF = false;
 private static int cantRETORNOS = 0;
 int yylex() {
 	int tokenSalida = AnalizadorLexico.getToken();

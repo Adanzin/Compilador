@@ -25,6 +25,7 @@ public class AnalizadorLexico {
 	public static String Lexema;
     public static int estado_actual = 0;
     public static final StringBuilder token_actual = new StringBuilder();
+    public static BufferedWriter salida; 
     public static Reader archivo_original;
     public static Map<String, Simbolo> TablaDeSimbolos = new HashMap<>();  
 	private static final TablaPalabrasReservadas PalabrasReservadas = new TablaPalabrasReservadas("resources\\PalabrasReservadas.txt");
@@ -213,7 +214,8 @@ public class AnalizadorLexico {
             	Lexema = null;
             	token = AnalizadorLexico.siguienteLectura(archivo_original, letra);
             	// Llamar al método que procesa el carácter
-            	if (token != -1) { // Si no es un token activo, se carga en el archivo.            		
+            	if (token != -1) { // Si no es un token activo, se carga en el archivo.    
+            		//System.out.println(token);
             		return token;
             	}
             	archivo_original.mark(1);

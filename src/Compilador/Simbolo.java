@@ -118,7 +118,7 @@ public class Simbolo {
         sb.append(", ");
         sb.append(esSubTipo);
 
-        // Si ning�n valor fue inicializado
+        // Si ningun valor fue inicializado
         if (sb.length() == 0) {
             return "Esta vacio";
         }

@@ -12,7 +12,8 @@ public class AS_Operador extends AccionSemantica{
 
 	@Override
 	public Short ejecutar(char car, Reader lector, StringBuilder token, TablaPalabrasReservadas PalabrasReservadas, Map<String, Simbolo> TablaDeSimbolos) {
-		token.append(car);   
+		token.append(car);     		
+  		cargarSalida(token.toString());
 	    switch (token.toString()) {
 	    	case "!=":
 	    		System.out.println("		╠══ "+token.toString());

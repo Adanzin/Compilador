@@ -21,9 +21,12 @@ public class AS_Octal extends AccionSemantica {
         	}else {TablaDeSimbolos.get(token.toString()).incrementarContDeRef();}
         }else {
         	System.out.println("Error lexico en la linea " + AnalizadorLexico.saltoDeLinea+" : Constante octal fuera de rango ");
+    		cargarSalida("Error lexico en la linea " + AnalizadorLexico.saltoDeLinea+" : Constante octal fuera de rango ");
+        	AnalizadorLexico.SEREPITE=true;
         	return ERROR;
         }
     	System.out.println("	╔═ Constante octal "+tokenint);
+    	cargarSalida("Constante octal "+tokenint);
     	AnalizadorLexico.SEREPITE=true;
         AnalizadorLexico.token_actual.setLength(0); //VACIAMOS EL BUFFER YA QUE SE ESPERA UN NUEVO TOKEN
         return PalabrasReservadas.obtenerIdentificador("CTE");
