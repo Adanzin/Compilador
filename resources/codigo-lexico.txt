@@ -2,21 +2,33 @@
  Identificador prog 
  Identificador BEGIN 
  Identificador integer 
- Identificador adancadenamuyla 
+ Identificador adancsadjesaea 
  , 
- Identificador boro 
+ Identificador boro32 
  , 
- Identificador andrea 
+ Identificador andr_ea 
+ ; 
+ Identificador integer 
+ Identificador asdsad 
  ; 
  Identificador boro 
  := 
- Constante double 1.0 
+ Constante entera 32767 
  ; 
  Identificador boro 
  := 
  - 
- Constante double 1.2 
+ Constante entera 32768 
  ; 
+ Identificador boro 
+ := 
+ Constante entera 32768 
+ ; 
+ Identificador boro 
+ := 
+ - 
+ Error lexico en la linea 8 : Constante entera fuera de rango  
+ 32769; 
  Identificador boro 
  := 
  Constante double 3.0d-5 
@@ -28,23 +40,7 @@
  ; 
  Identificador boro 
  := 
- Constante double 2.5d-1 
- ; 
- Identificador adan 
- := 
- Constante double 13.0 
- ; 
- Identificador adan 
- := 
- Constante double 0.0 
- ; 
- Identificador adan 
- := 
- Constante double 1.2d10 
- ; 
- Identificador adan 
- := 
- Constante double 1.9d+308 
+ Constante double 2.3d+34 
  ; 
  Identificador adan 
  Identificador boro 
@@ -59,7 +55,7 @@
  Identificador BEGIN 
  Identificador WHILE 
  ( 
- Constante entera 32768 
+ Constante entera 2768 
  > 
  - 
  Constante double 5.8 

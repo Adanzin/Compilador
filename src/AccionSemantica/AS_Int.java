@@ -21,7 +21,7 @@ public class AS_Int extends AccionSemantica {
         	}else {TablaDeSimbolos.get(token.toString()).incrementarContDeRef();}
         	AnalizadorLexico.Lexema = token.toString();  //LE PASO EL ID A LA TABLA DE SIMBOLOS AL PARSER.
         }else {
-        	System.out.println("Error lexico en la linea " + AnalizadorLexico.saltoDeLinea+" : Constante entera fuera de rango ");
+        	System.out.println("\u001B[31m"+"Error lexico en la linea " + AnalizadorLexico.saltoDeLinea+" : Constante entera fuera de rango "+"\u001B[0m");
     		cargarSalida("Error lexico en la linea " + AnalizadorLexico.saltoDeLinea+" : Constante entera fuera de rango ");
         	AnalizadorLexico.SEREPITE=true;
             return ERROR;

@@ -1,18 +1,16 @@
 prog
 BEGIN
-	integer adancadenamuylarga, boro, andrea;
-	boro := 1.0;
-	boro := -1.2;
+	integer adancsadjesaea, boro32, andr_ea;
+	boro := 32767;
+	boro := -32768;
+	boro := 32768;
+	boro := -32769;
 	boro := 3.0d-5;
 	boro := -2.3d+34;
-	boro := 2.5d-1;
-	adan := 13.0;
-	adan := 0.0;
-	adan := 1.2d10;
-	adan := 1.9d+308;
+	boro := 2.3d+34;
 	adan boro;
 	integer FUN juancito ( double a ) BEGIN 
-		WHILE (32768 > -5.8)OUTF(1);
+		WHILE (2768 > -5.8)OUTF(1);
 	    WHILE ((a,3+4)=(b,35))BEGIN OUTF(1); OUTF([Hola Mundo]); goto afuera@ END;
 	    a:=funcion(b);
 	    a:=funcion(integer (a+b));

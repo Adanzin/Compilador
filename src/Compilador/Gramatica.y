@@ -9,8 +9,8 @@
 programa	: ID_simple BEGIN sentencias END {System.out.println("\u001B[32m"+ "\u2714" +"\u001B[0m"+"Se identifico el programa "+"\u001B[32m"+ $1.sval +"\u001B[0m");}	
 			| BEGIN sentencias END {System.out.println("\u001B[31m"+"\u2718"+"\u001B[0m"+"Linea " + AnalizadorLexico.saltoDeLinea +"\u001B[31m"+ ": Error: Falta el nombre del programa "+"\u001B[0m");}
 			| ID_simple BEGIN sentencias {System.out.println("\u001B[31m"+"\u2718"+"\u001B[0m"+"Linea " + AnalizadorLexico.saltoDeLinea +"\u001B[31m"+ ": Error: Falta el delimitador END "+"\u001B[0m");}
+			| ID_simple sentencias END {System.out.println("\u001B[31m"+"\u2718"+"\u001B[0m"+"Linea " + AnalizadorLexico.saltoDeLinea +"\u001B[31m"+ ": Error: Falta el delimitador BEGIN "+"\u001B[0m");}
 			| ID_simple sentencias {System.out.println("\u001B[31m"+"\u2718"+"\u001B[0m"+"Linea " + AnalizadorLexico.saltoDeLinea +"\u001B[31m"+ ": Error: Faltan los delimitadores del programa "+"\u001B[0m");}
-			| error {System.out.println("\u001B[31m"+"\u2718"+"\u001B[0m"+"Linea " + AnalizadorLexico.saltoDeLinea +"\u001B[31m"+" No forma parte de la estructura de un programa "+"\u001B[0m");}
 ;
 	
 sentencias 	: sentencias sentencia ';'
@@ -29,7 +29,7 @@ sentencia_declarativa 	: declaracion_variable
                         | declaracion_subtipo
 ;
 
-declaracion_variable	: tipo variables  {System.out.println("Linea " + AnalizadorLexico.saltoDeLinea + " declaracion de variables ");}				
+declaracion_variable	: tipo variables  {System.out.println("Linea " + AnalizadorLexico.saltoDeLinea + " declaracion de variables ");}
 ;
 
 tipo : ID_simple 
@@ -74,6 +74,7 @@ cuerpo_funcion	: sentencias
 ;
 
 retorno	: RET '(' expresion_arit ')'
+;
 									/* SENTENCIAS EJECUTABLES */
 
 sentencia_ejecutable	: asignacion
@@ -86,7 +87,7 @@ sentencia_ejecutable	: asignacion
 ;
 
 outf_rule    : OUTF '(' expresion_arit ')' {System.out.println("Linea :" + AnalizadorLexico.saltoDeLinea + " Se reconocio OUTF de Expresion Aritmetica ");}
-            | OUTF '(' ')' {System.out.println("\u001B[31m"+"Linea :" + AnalizadorLexico.saltoDeLinea +  " Error : Falta el parametro del OUTF  ");}
+            | OUTF '(' ')' {System.out.println("\u001B[31m"+"Linea :" + AnalizadorLexico.saltoDeLinea +  " Error : Falta el parametro del OUTF  "+"\u001B[0m");}
             | OUTF '(' cadena ')'    {System.out.println("Linea :" + AnalizadorLexico.saltoDeLinea +  " Se reconocio OUTF de cadena de caracteres ");}
             | OUTF '(' sentencias ')'  {System.out.println("\u001B[31m"+"Linea :" + AnalizadorLexico.saltoDeLinea +  " Error : Parametro incorrecto en sentencia OUTF. "+"\u001B[0m");}
 ;
@@ -97,6 +98,7 @@ asignacion	: variable_simple ASIGNACION expresion_arit {System.out.println("Line
 
 invocacion	: ID_simple '(' expresion_arit ')' {System.out.println("Linea :" + AnalizadorLexico.saltoDeLinea + " Invocacion a funcion ");}
 			| ID_simple '(' tipo_primitivo '(' expresion_arit ')' ')' {System.out.println("Linea :" + AnalizadorLexico.saltoDeLinea +  " Invocacion con conversion ");}
+			| ID_simple '(' ')' {System.out.println("\u001B[31m"+"Linea :" + AnalizadorLexico.saltoDeLinea +  " Error:  faltan los parametros reales en la invocacion"+"\u001B[0m");}
 ;
 
 list_expre	: list_expre ',' expresion_arit
@@ -134,8 +136,7 @@ ID_simple : ID
 CTE_con_sig : CTE {if(estaRango($1.sval)) { $$.sval = $1.sval; } }
 			| '-' CTE { cambioCTENegativa($2.sval); $$.sval = "-" + $2.sval;}
 			| ERROR 
-			| '-' ERROR 
-			
+			| '-' ERROR 		
 ;				
 
 sentencia_IF: IF condicion THEN bloque_unidad ';' bloque_else ';' END_IF {System.out.println("Linea " + AnalizadorLexico.saltoDeLinea +  ": Sentencia IF ");}
@@ -241,7 +242,9 @@ private static void cambioCTENegativa(String key) {
 private static boolean estaRango(String key) {
 	if (AnalizadorLexico.TablaDeSimbolos.get(key).esEntero()) {
 		if (!AnalizadorLexico.TablaDeSimbolos.get(key).enRangoPositivo(key)) {
-			AnalizadorLexico.TablaDeSimbolos.remove(key);
+				if (AnalizadorLexico.TablaDeSimbolos.get(key).esUltimo()) {
+					AnalizadorLexico.TablaDeSimbolos.remove(key);
+				}
 			yyerror("\u001B[31m"+"Linea " +"Linea " + AnalizadorLexico.saltoDeLinea + " Error: " +key +" fuera de rango."+"\u001B[0m");
 			return false;
 		}

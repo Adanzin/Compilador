@@ -45,37 +45,13 @@ public class AS_Double extends AccionSemantica {
     	AnalizadorLexico.SEREPITE=true;
         AnalizadorLexico.token_actual.setLength(0); //VACIAMOS EL BUFFER YA QUE SE ESPERA UN NUEVO TOKEN
         return PalabrasReservadas.obtenerIdentificador("CTE");
-
-    	/*try {	
-	    	double tokenDouble = Double.parseDouble(tokenString); 
-	    	if(cumple(tokenDouble)) {
-	        	if(!TablaDeSimbolos.containsKey(token.toString())){
-	        		Simbolo simb = new Simbolo();
-	        		simb.setDoub(tokenDouble);
-	        		TablaDeSimbolos.put(token.toString(),simb);
-	        		AnalizadorLexico.Lexema = token.toString();  //LE PASO EL ID A LA TABLA DE SIMBOLOS AL PARSER.
-	        	}else {TablaDeSimbolos.get(token.toString()).incrementarContDeRef();}
-	        }else {
-	        	System.out.println("\u001B[31m"+"Error lexico en la linea " + AnalizadorLexico.saltoDeLinea+" : Constante double fuera de rango "+"\u001B[0m");
-	        	AnalizadorLexico.SEREPITE=true;
-	        	return ERROR;
-	        }
-        } catch (NumberFormatException excepcion) {
-        	System.out.println("\u001B[31m"+"Error lexico en la linea " + AnalizadorLexico.saltoDeLinea+" : Constante double fuera de rango "+"\u001B[0m");
-        	AnalizadorLexico.SEREPITE=true;
-        	return ERROR;
-        }
-    	
-    	System.out.println("	╔═ Constante double "+token.toString());
-    	AnalizadorLexico.SEREPITE=true;
-        AnalizadorLexico.token_actual.setLength(0); //VACIAMOS EL BUFFER YA QUE SE ESPERA UN NUEVO TOKEN
-        return PalabrasReservadas.obtenerIdentificador("CTE");*/
     }; 
     
     public boolean cumple(double d) {
-    	//Es la unica forma q se nos ocurrio hacerlo con mucha ayuda de chatGPT, el if de abajo no funcionaba
-    	if((d < 1.7976931348623157E+308)
-    			|| (d > 2.2250738585072014E-308) 
+    	double max = 1.7976931348623157E+308;
+    	double min = 2.2250738585072014E-308;
+    	if((d < max)
+    			|| (d > max) 
     					|| (d ==0.0)) {
     		return true;
     	}

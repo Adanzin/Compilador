@@ -1,14 +1,17 @@
 BEGIN
 	adan := 20
 	adan boro;
-	integer FUN ( double a ) BEGIN 
-		WHILE (32768 > -5.8)OUTF(1);
-	    WHILE ((a,3+4)=(b,35))BEGIN OUTF(1); OUTF([Hola Mundo]); goto afuera@ END;
-	    a:=funcion(b);
+	integer FUN () BEGIN 
+		WHILE 32768 > -5.8 OUTF(1);
+	    WHILE ((a,3+4)=(b,35))BEGIN OUTF(); OUTF([Hola Mundo]); goto afuera@ END;
+	    WHILE ((a,3+4)=(b,35)) ;
+	    a:=funcion();
 	    a:=funcion(integer (a+b));
 	    a:=4+5;
 	    IF((a,3+4)=(b,35))THEN A:=1;END_IF;
-	    IF(-32768 > 5.8)THEN A:=1;ELSE B:=0;END_IF;
+	    IF -32768 > 5.8 THEN A:=1;ELSE B:=0;END_IF;
+	    IF((a,3+4)=(b,35))THEN A:=1;;
+		IF((a,3+4)=(b,35))THEN A:=1; ELSE END_IF;
 	 END;
 	 TYPEDEF TRIPLE < integer > tint;
 	 TYPEDEF flotadito := integer {-6, -8};

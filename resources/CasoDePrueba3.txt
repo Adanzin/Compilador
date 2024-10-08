@@ -1,0 +1,21 @@
+prog
+	integer adanc, boro, andrea;
+	VARX := 1 5;
+	VARX := 1 + ;
+	VARX := + 5 ;
+	TYPEDEF flotadito := integer {-6, -8};
+	TYPEDEF flotadito := integer -6, -8;
+	TYPEDEF flotadito := integer {-6,};
+	TYPEDEF flotadito := integer {, -8};
+	TYPEDEF flotadito := integer {};
+	TYPEDEF  := integer {-6, -8};
+	TYPEDEF flotadito :=  {-6, -8};
+	IF(a,3+4)=(b,35)THEN A:=1;END_IF;
+	IF((a,3+4)=(b,35)THEN A:=1;END_IF;
+	IF(a,3+4)=(b,35))THEN A:=1;END_IF;
+	TYPEDEF < integer > tint;
+	TYPEDEF TRIPLE integer tint;
+	TYPEDEF TRIPLE < integer > ;
+	goto ;
+END
+	 
