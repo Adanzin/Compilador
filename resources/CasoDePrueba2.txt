@@ -1,5 +1,13 @@
 BEGIN
 	adan := 20
+	integer adancsadjesaea, boro32, andr_ea;
+	boro := 32767;
+	boro := -32768;
+	boro := 32768;
+	boro := -32769;
+	boro := 3.0d-5;
+	boro := -2.3d+34;
+	boro := 2.3d+34;
 	adan boro;
 	integer FUN () BEGIN 
 		WHILE 32768 > -5.8 OUTF(1);

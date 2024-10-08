@@ -214,7 +214,6 @@ sentencia_goto	: GOTO ETIQUETA {System.out.println("Linea " + AnalizadorLexico.s
 
 %%																	 
 private static boolean RETORNO = false;
-private static int cantRETORNOS = 0;
 int yylex() {
 	int tokenSalida = AnalizadorLexico.getToken();
 	yylval = new ParserVal(AnalizadorLexico.Lexema);
