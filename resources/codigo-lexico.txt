@@ -1,6 +1,318 @@
 
- Identificador prog 
+ Error lexico en la linea1: Se leyo el siguiente caracter invalido pr 
+ Identificador pro34g 
+ Error lexico en la linea2: Se leyo el siguiente caracter invalido BEG 
  Identificador BEGIN 
+ Error lexico en la linea3: Se leyo el siguiente caracter invalido int 
  Identificador integer 
  Identificador varx 
- Cadena multilinea , vary, varx;	varx := 327;	varx := 2.3d+34;	tipo_abc vary;	integer FUN juancito ( double a ) BEGIN 		WHILE (2768 > -5.8)OUTF(1);	    WHILE ((a,3+4)=(b,35))BEGIN OUTF(1); OUTF([Hola Mundo 
+ , 
+ Identificador vary 
+ , 
+ Identificador varx 
+ ; 
+ Identificador varx 
+ := 
+ Error lexico en la linea4: Se leyo el siguiente caracter invalido 32 
+ Error lexico en la linea4: Se leyo el siguiente caracter invalido 32 
+ Error lexico en la linea4: Se leyo el siguiente caracter invalido 32 
+ Error lexico en la linea4: Se leyo el siguiente caracter invalido 32 
+ Error lexico en la linea4: Se leyo el siguiente caracter invalido 32 
+ Error lexico en la linea4: Se leyo el siguiente caracter invalido 32 
+ Constante entera 3267 
+ ; 
+ Identificador varx 
+ := 
+ Error lexico en la linea 5 : Constante entera fuera de rango o male escrita  
+ Constante entera 32769 
+ ; 
+ Identificador varx 
+ := 
+ Error lexico en la linea 6 : Constante entera fuera de rango o male escrita  
+ Constante entera 32769 
+ + 
+ ; 
+ Identificador varx 
+ := 
+ + 
+ Error lexico en la linea 7 : Constante entera fuera de rango o male escrita  
+ Constante entera 32769 
+ ; 
+ Identificador varx 
+ := 
+ + 
+ ; 
+ Identificador varx 
+ := 
+ Error lexico en la linea 9 : Constante entera fuera de rango o male escrita  
+ Constante entera 32769 
+ Constante entera 4533 
+ ; 
+ Identificador octal 
+ := 
+ Constante entera 777 
+ = 
+ Constante entera 76 
+ ; 
+ Identificador octal 
+ := 
+ Constante entera 1000 
+ = 
+ Constante entera 0 
+ ; 
+ Identificador varx 
+ := 
+ Error lexico en la linea13: Se leyo el siguiente caracter invalido 2.22507385d85072020 
+ [31mError lexico en la linea 13 : Constante double fuera de rango o mal escrita[0m 
+ Constante double Infinity 
+ - 
+ Constante entera 308 
+ ; 
+ Identificador varx 
+ := 
+ Error lexico en la linea14: Se leyo el siguiente caracter invalido 2.22507385 
+ [31mError lexico en la linea 14 : Constante double fuera de rango o mal escrita[0m 
+ Constante double 2.225073858507203E-309 
+ ; 
+ Identificador varx 
+ := 
+ Constante double 1.0E100 
+ ; 
+ Identificador varx 
+ := 
+ [31mError lexico en la linea 16 : Constante double fuera de rango o mal escrita[0m 
+ Constante double Infinity 
+ ; 
+ Identificador varx 
+ := 
+ Constante double 1.7976931348623155E308 
+ ; 
+ Identificador varx 
+ := 
+ Constante double 1.7976931348623157E308 
+ ; 
+ Identificador varx 
+ := 
+ - 
+ Constante double 2.225073858507202E-308 
+ ; 
+ Identificador varx 
+ := 
+ - 
+ [31mError lexico en la linea 21 : Constante double fuera de rango o mal escrita[0m 
+ Constante double 2.225073858507203E-309 
+ ; 
+ Identificador varx 
+ := 
+ - 
+ Constante double 1.0E100 
+ ; 
+ Identificador varx 
+ := 
+ - 
+ [31mError lexico en la linea 23 : Constante double fuera de rango o mal escrita[0m 
+ Constante double Infinity 
+ ; 
+ Identificador varx 
+ := 
+ - 
+ Constante double 1.7976931348623155E308 
+ ; 
+ Identificador varx 
+ := 
+ - 
+ [31mError lexico en la linea 25 : Constante double fuera de rango o mal escrita[0m 
+ Constante double 1.797693134862316E-308 
+ ; 
+ Identificador varx 
+ := 
+ Constante double 0.0 
+ ; 
+ Identificador tipo_abc 
+ Identificador vary 
+ ; 
+ Identificador integer 
+ Identificador FUN 
+ Identificador juancito 
+ ( 
+ Identificador double 
+ Identificador a 
+ ) 
+ Identificador BEGIN 
+ Identificador while 
+ ( 
+ Constante entera 2768 
+ > 
+ - 
+ Constante double 5.8 
+ ) 
+ Identificador OUTF 
+ ( 
+ Constante entera 1 
+ ) 
+ ; 
+ Error lexico en la linea31: Se leyo el siguiente caracter invalido WHI 
+ Identificador WHILE 
+ ( 
+ ( 
+ Identificador a 
+ , 
+ Constante entera 3 
+ + 
+ Constante entera 4 
+ ) 
+ = 
+ ( 
+ Identificador b 
+ , 
+ Constante entera 35 
+ ) 
+ ) 
+ Identificador BEGIN 
+ Identificador OUTF 
+ ( 
+ Constante entera 1 
+ ) 
+ ; 
+ Identificador OUTF 
+ ( 
+ Cadena multilinea Hola Mundo 
+ ) 
+ ; 
+ Identificador goto 
+ Etiqueta afuera 
+ ; 
+ Identificador END 
+ ; 
+ Identificador a 
+ := 
+ Identificador funcion 
+ ( 
+ Identificador b 
+ ) 
+ ; 
+ Identificador a 
+ := 
+ Identificador funcion 
+ ( 
+ Identificador integer 
+ ( 
+ Identificador a 
+ + 
+ Identificador b 
+ ) 
+ ) 
+ ; 
+ Identificador a 
+ := 
+ Constante entera 4 
+ + 
+ Constante entera 5 
+ ; 
+ Identificador IF 
+ ( 
+ ( 
+ Identificador a 
+ , 
+ Constante entera 3 
+ + 
+ Constante entera 4 
+ ) 
+ = 
+ ( 
+ Identificador b 
+ , 
+ Constante entera 35 
+ ) 
+ ) 
+ Identificador THEN 
+ Identificador A 
+ := 
+ Constante entera 1 
+ ; 
+ Identificador END_IF 
+ ; 
+ Identificador IF 
+ ( 
+ - 
+ Constante entera 32768 
+ > 
+ Constante double 5.8 
+ ) 
+ Identificador THEN 
+ Identificador A 
+ := 
+ Constante entera 1 
+ ; 
+ Identificador ELSE 
+ Identificador B 
+ := 
+ Constante entera 0 
+ ; 
+ Identificador END_IF 
+ ; 
+ Identificador RET 
+ ( 
+ Identificador a 
+ ) 
+ ; 
+ Identificador END 
+ ; 
+ Identificador TYPEDEF 
+ Identificador TRIPLE 
+  < 
+ Identificador integer 
+ > 
+ Identificador tint 
+ ; 
+ Identificador TYPEDEF 
+ Identificador flotadito 
+ := 
+ Identificador integer 
+ { 
+ - 
+ Constante entera 6 
+ , 
+ - 
+ Constante entera 8 
+ } 
+ ; 
+ Identificador flotadito 
+ Identificador a 
+ ; 
+ Identificador tint 
+ Identificador b 
+ ; 
+ Identificador b 
+ { 
+ Constante entera 1 
+ } 
+ := 
+ Constante entera 8 
+ ; 
+ Identificador a 
+ := 
+ Identificador b 
+ { 
+ Constante entera 1 
+ } 
+ ; 
+ Identificador RET 
+ ( 
+ Constante entera 0 
+ ) 
+ ; 
+ Etiqueta afuera 
+ ; 
+ Identificador a 
+ := 
+ Constante entera 1 
+ + 
+ Constante entera 2 
+ ; 
+ Comentario  
+ Identificador outf 
+ ( 
+ Cadena multilinea saeasje  saj 4kd 	 sa easfa	  asfasf 
+ ) 
+ Identificador END 

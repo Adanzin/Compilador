@@ -1,12 +1,34 @@
-prog
-BEGIN
-	integer varx, vary, varx;
-	varx := 327;
-	varx := 2.3d+34;
+pr$o34g
+BEG¿IN
+	int#eger varx, vary, varx;
+	varx := 32$ljlpm67   ;
+	varx := 32769;
+	varx := 32769+;
+	varx := +32769;
+	varx := +;
+	varx := 32769 4533;
+	octal := 0777=76;
+	octal := 01000=00;
+	
+	varx := 2.22507385d85072020d-308;
+	varx := 2.22507385g85072014d-309;
+	varx := 1.0d100;
+	varx := 1.0d309;
+	varx := 1.7976931348623156d308;
+	varx := 1.7976931348623158d+308;
+	
+	varx := -2.2250738585072020d-308;
+	varx := -2.2250738585072014d-309;
+	varx := -1.0d100;
+	varx := -1.0d309;
+	varx := -1.7976931348623156d308;
+	varx := -1.7976931348623158d-308;
+
+	varx := 0.0;
 	tipo_abc vary;
 	integer FUN juancito ( double a ) BEGIN 
-		WHILE (2768 > -5.8)OUTF(1);
-	    WHILE ((a,3+4)=(b,35))BEGIN OUTF(1); OUTF([Hola Mundo]); goto afuera@ END;
+		while (2768 > -5.8)OUTF(1);
+	    WHI¬LE ((a,3+4)=(b,35))BEGIN OUTF(1); OUTF([Hola Mundo]); goto afuera@; END;
 	    a:=funcion(b);
 	    a:=funcion(integer (a+b));
 	    a:=4+5;
@@ -23,4 +45,8 @@ BEGIN
 	 RET (0); 
 	 afuera@;
 	 a := 1 +2;
+	 ## asfdasea;
+	 outf([saeasje  saj 4kd 
+	 sa easfa
+	  asfasf]);
 END

@@ -7,29 +7,32 @@
 									/* PROGRAMA */
 																		
 programa	: ID_simple BEGIN sentencias END {System.out.println("\u001B[32m"+ "\u2714" +"\u001B[0m"+"Se identifico el programa "+"\u001B[32m"+ $1.sval +"\u001B[0m");}	
-			| BEGIN sentencias END {System.out.println("\u001B[31m"+"\u2718"+"\u001B[0m"+"Linea " + AnalizadorLexico.saltoDeLinea +"\u001B[31m"+ ": Error: Falta el nombre del programa "+"\u001B[0m");}
-			| ID_simple BEGIN sentencias {System.out.println("\u001B[31m"+"\u2718"+"\u001B[0m"+"Linea " + AnalizadorLexico.saltoDeLinea +"\u001B[31m"+ ": Error: Falta el delimitador END "+"\u001B[0m");}
-			| ID_simple sentencias END {System.out.println("\u001B[31m"+"\u2718"+"\u001B[0m"+"Linea " + AnalizadorLexico.saltoDeLinea +"\u001B[31m"+ ": Error: Falta el delimitador BEGIN "+"\u001B[0m");}
-			| ID_simple sentencias {System.out.println("\u001B[31m"+"\u2718"+"\u001B[0m"+"Linea " + AnalizadorLexico.saltoDeLinea +"\u001B[31m"+ ": Error: Faltan los delimitadores del programa "+"\u001B[0m");}
+			| BEGIN sentencias END {System.out.println("\u001B[31m"+"\u2718"+"\u001B[0m"+"Linea " + AnalizadorLexico.saltoDeLinea +"\u001B[31m"+ " Error: Falta el nombre del programa "+"\u001B[0m");}
+			| ID_simple BEGIN sentencias {System.out.println("\u001B[31m"+"\u2718"+"\u001B[0m"+"Linea " + AnalizadorLexico.saltoDeLinea +"\u001B[31m"+ " Error: Falta el delimitador END "+"\u001B[0m");}
+			| ID_simple sentencias END {System.out.println("\u001B[31m"+"\u2718"+"\u001B[0m"+"Linea " + AnalizadorLexico.saltoDeLinea +"\u001B[31m"+ " Error: Falta el delimitador BEGIN "+"\u001B[0m");}
+			| ID_simple sentencias {System.out.println("\u001B[31m"+"\u2718"+"\u001B[0m"+"Linea " + AnalizadorLexico.saltoDeLinea +"\u001B[31m"+ " Error: Faltan los delimitadores del programa "+"\u001B[0m");}
 ;
 	
-sentencias 	: sentencias sentencia ';'
-			| sentencia ';'
-			| sentencia {System.out.println("\u001B[31m"+"Linea " + AnalizadorLexico.saltoDeLinea + ": Erro: Falta ';' al final de la sentencia "+"\u001B[0m");}
+sentencias 	: sentencias sentencia
+			| sentencia
 ;
 
 sentencia 	: sentencia_declarativa 
-            | sentencia_ejecutable
+            | sentencia_ejecutable ';'
+			| sentencia_ejecutable {System.out.println("\u001B[31m"+"Linea " + AnalizadorLexico.saltoDeLinea + " Error: Falta ';' al final de la sentencia "+"\u001B[0m");}
 ;			
 				
 									/* SENTENCIAS DECLARATIVAS */	
 				
 sentencia_declarativa 	: declaracion_variable
-						| declaracion_funciones
-                        | declaracion_subtipo
+						| declaracion_funciones ';'
+                        | declaracion_subtipo ';'
+						| declaracion_funciones {System.out.println("\u001B[31m"+"Linea " + AnalizadorLexico.saltoDeLinea + " Error: Falta ';' al final de la sentencia "+"\u001B[0m");}
+						| declaracion_subtipo {System.out.println("\u001B[31m"+"Linea " + AnalizadorLexico.saltoDeLinea + " Error: Falta ';' al final de la sentencia "+"\u001B[0m");}
 ;
 
-declaracion_variable	: tipo variables  {System.out.println("Linea " + AnalizadorLexico.saltoDeLinea + " declaracion de variables ");}
+declaracion_variable	: tipo variables ';'  {System.out.println("Linea " + AnalizadorLexico.saltoDeLinea + " declaracion de variables ");}
+						| tipo variables error {System.out.println("\u001B[31m"+"Linea " + AnalizadorLexico.saltoDeLinea + " Error: Falta ';' al final de la sentencia "+"\u001B[0m");}
 ;
 
 tipo : ID_simple 
@@ -41,33 +44,32 @@ tipo_primitivo: INTEGER
 ;
 
 declaracion_subtipo : TYPEDEF ID_simple ASIGNACION tipo '{' CTE_con_sig ',' CTE_con_sig '}' {System.out.println("Linea " + AnalizadorLexico.saltoDeLinea +  " declaracion de Subtipo ");}
-                    | TYPEDEF ID_simple ASIGNACION tipo CTE_con_sig ',' CTE_con_sig '}' {System.out.println("\u001B[31m"+"Linea " + AnalizadorLexico.saltoDeLinea + ": Error: Faltan el '{' en el rango "+"\u001B[0m");}
-                    | TYPEDEF ID_simple ASIGNACION tipo '{' CTE_con_sig ',' CTE_con_sig {System.out.println("\u001B[31m"+"Linea " + AnalizadorLexico.saltoDeLinea + ": Error: Faltan el '}' en el rango "+"\u001B[0m");}
-                    | TYPEDEF ID_simple ASIGNACION tipo CTE_con_sig ',' CTE_con_sig {System.out.println("\u001B[31m"+"Linea " + AnalizadorLexico.saltoDeLinea + ": Error: Faltan ambos '{' '}' en el rango "+"\u001B[0m");}
+                    | TYPEDEF ID_simple ASIGNACION tipo CTE_con_sig ',' CTE_con_sig '}' {System.out.println("\u001B[31m"+"Linea " + AnalizadorLexico.saltoDeLinea + " Error: Faltan el '{' en el rango "+"\u001B[0m");}
+                    | TYPEDEF ID_simple ASIGNACION tipo '{' CTE_con_sig ',' CTE_con_sig {System.out.println("\u001B[31m"+"Linea " + AnalizadorLexico.saltoDeLinea + " Error: Faltan el '}' en el rango "+"\u001B[0m");}
+                    | TYPEDEF ID_simple ASIGNACION tipo CTE_con_sig ',' CTE_con_sig {System.out.println("\u001B[31m"+"Linea " + AnalizadorLexico.saltoDeLinea + " Error: Faltan ambos '{' '}' en el rango "+"\u001B[0m");}
                     | TYPEDEF TRIPLE '<' tipo '>' ID_simple  {System.out.println("Linea " + AnalizadorLexico.saltoDeLinea +  " declaracion de Triple ");}
-					| TYPEDEF ID_simple ASIGNACION tipo '{' ',' CTE_con_sig '}' {System.out.println("\u001B[31m"+"Linea " + AnalizadorLexico.saltoDeLinea + ": Error: Falta rango inferior "+"\u001B[0m");}
-					| TYPEDEF ID_simple ASIGNACION tipo '{' CTE_con_sig '}' {System.out.println("\u001B[31m"+"Linea " + AnalizadorLexico.saltoDeLinea + ": Error: Falta alguno de los rangos "+"\u001B[0m");}
-					| TYPEDEF ID_simple ASIGNACION tipo '{' CTE_con_sig ',' '}' {System.out.println("\u001B[31m"+"Linea " + AnalizadorLexico.saltoDeLinea + ": Error: Falta rango superior "+"\u001B[0m");}
-					| TYPEDEF ID_simple ASIGNACION tipo '{' '}' {System.out.println("\u001B[31m"+"Linea " + AnalizadorLexico.saltoDeLinea + ": Error: Faltan ambos rangos "+"\u001B[0m");}
-					|TYPEDEF ASIGNACION tipo '{' CTE_con_sig ',' CTE_con_sig '}' {System.out.println("\u001B[31m"+"Linea " + AnalizadorLexico.saltoDeLinea + ": Error: Falta de nombre en el tipo definido "+"\u001B[0m");}
+					| TYPEDEF ID_simple ASIGNACION tipo '{' ',' CTE_con_sig '}' {System.out.println("\u001B[31m"+"Linea " + AnalizadorLexico.saltoDeLinea + " Error: Falta rango inferior "+"\u001B[0m");}
+					| TYPEDEF ID_simple ASIGNACION tipo '{' CTE_con_sig '}' {System.out.println("\u001B[31m"+"Linea " + AnalizadorLexico.saltoDeLinea + " Error: Falta alguno de los rangos "+"\u001B[0m");}
+					| TYPEDEF ID_simple ASIGNACION tipo '{' CTE_con_sig ',' '}' {System.out.println("\u001B[31m"+"Linea " + AnalizadorLexico.saltoDeLinea + " Error: Falta rango superior "+"\u001B[0m");}
+					| TYPEDEF ID_simple ASIGNACION tipo '{' '}' {System.out.println("\u001B[31m"+"Linea " + AnalizadorLexico.saltoDeLinea + " Error: Faltan ambos rangos "+"\u001B[0m");}
+					|TYPEDEF ASIGNACION tipo '{' CTE_con_sig ',' CTE_con_sig '}' {System.out.println("\u001B[31m"+"Linea " + AnalizadorLexico.saltoDeLinea + " Error: Falta de nombre en el tipo definido "+"\u001B[0m");}
 					| TYPEDEF ID_simple ASIGNACION '{' CTE_con_sig ',' CTE_con_sig '}' {System.out.println("\u001B[31m"+"Linea " + AnalizadorLexico.saltoDeLinea + ": Error: Falta el tipo base en la declaracion de subtipo "+"\u001B[0m");}
-					| TYPEDEF '<' tipo '>' ID_simple {System.out.println("\u001B[31m"+"Linea " + AnalizadorLexico.saltoDeLinea + ": Error: Falta de la palabra reservada TRIPLE "+"\u001B[0m");}
-					| TYPEDEF TRIPLE tipo '>' ID_simple {System.out.println("\u001B[31m"+"Linea " + AnalizadorLexico.saltoDeLinea + ": Error: Falta del '<' en TRIPLE"+"\u001B[0m");}
-					| TYPEDEF TRIPLE '<' tipo ID_simple {System.out.println("\u001B[31m"+"Linea " + AnalizadorLexico.saltoDeLinea + ": Error: Falta del '>' en TRIPLE"+"\u001B[0m");}
-					| TYPEDEF TRIPLE tipo ID_simple {System.out.println("\u001B[31m"+"Linea " + AnalizadorLexico.saltoDeLinea + ": Error: Faltan ambos '<>' en TRIPLE"+"\u001B[0m");}
-					| TYPEDEF TRIPLE '<' tipo '>' error {System.out.println("\u001B[31m"+"Linea " + AnalizadorLexico.saltoDeLinea + ": Error: Falta identificador al final de la declaracion"+"\u001B[0m");}			
+					| TYPEDEF '<' tipo '>' ID_simple {System.out.println("\u001B[31m"+"Linea " + AnalizadorLexico.saltoDeLinea + " Error: Falta de la palabra reservada TRIPLE "+"\u001B[0m");}
+					| TYPEDEF TRIPLE tipo '>' ID_simple {System.out.println("\u001B[31m"+"Linea " + AnalizadorLexico.saltoDeLinea + " Error: Falta del '<' en TRIPLE"+"\u001B[0m");}
+					| TYPEDEF TRIPLE '<' tipo ID_simple {System.out.println("\u001B[31m"+"Linea " + AnalizadorLexico.saltoDeLinea + " Error: Falta del '>' en TRIPLE"+"\u001B[0m");}
+					| TYPEDEF TRIPLE tipo ID_simple {System.out.println("\u001B[31m"+"Linea " + AnalizadorLexico.saltoDeLinea + " Error: Faltan ambos '<>' en TRIPLE"+"\u001B[0m");}
+					| TYPEDEF TRIPLE '<' tipo '>' error {System.out.println("\u001B[31m"+"Linea " + AnalizadorLexico.saltoDeLinea + " Error: Falta identificador al final de la declaracion"+"\u001B[0m");}			
 ;
 
-declaracion_funciones     : tipo FUN ID parametros_parentesis BEGIN cuerpo_funcion END {if(RETORNO==false){System.out.println("\u001B[31m"+"Linea " + AnalizadorLexico.saltoDeLinea + ": Erro: Faltan el RETORNO de al funcion "+"\u001B[0m");RETORNO=false;} System.out.println(" Linea " + AnalizadorLexico.saltoDeLinea + " declaracion de Funcion"); }
-                        | tipo FUN parametros_parentesis BEGIN cuerpo_funcion END {if(RETORNO==false){System.out.println("\u001B[31m"+"Linea " + AnalizadorLexico.saltoDeLinea + ": Erro: Faltan el RETORNO de al funcion "+"\u001B[0m");RETORNO=false;} System.out.println("\u001B[31m"+"Linea " + AnalizadorLexico.saltoDeLinea + ": Erro: Faltan el nombre en la funcion "+"\u001B[0m");}
+declaracion_funciones     : tipo FUN ID parametros_parentesis BEGIN cuerpo_funcion END {if(RETORNO==false){System.out.println("\u001B[31m"+"Linea " + AnalizadorLexico.saltoDeLinea + " Error: Faltan el RETORNO de al funcion "+"\u001B[0m");RETORNO=false;} System.out.println(" Linea " + AnalizadorLexico.saltoDeLinea + " declaracion de Funcion"); }
+                        | tipo FUN parametros_parentesis BEGIN cuerpo_funcion END {if(RETORNO==false){System.out.println("\u001B[31m"+"Linea " + AnalizadorLexico.saltoDeLinea + " Error: Faltan el RETORNO de al funcion "+"\u001B[0m");RETORNO=false;} System.out.println("\u001B[31m"+"Linea " + AnalizadorLexico.saltoDeLinea + ": Error: Faltan el nombre en la funcion "+"\u001B[0m");}
 ;
 
-parametros_parentesis: '(' parametro ')'
+parametros_parentesis: '(' tipo_primitivo ID_simple ')'
+					| '(' tipo_primitivo ')' {System.out.println("\u001B[31m"+"Linea " + AnalizadorLexico.saltoDeLinea +" Error: Falta el nombre del parametro en la funcion "+"\u001B[0m");} 
+					| '(' ID_simple ')' {System.out.println("\u001B[31m"+"Linea " + AnalizadorLexico.saltoDeLinea +" Error: Falta el tipo del parametro en la funcion "+"\u001B[0m");}
                     | '(' ')' {System.out.println("\u001B[31m"+"Linea " + AnalizadorLexico.saltoDeLinea +" Error: Falta el parametro en la funcion "+"\u001B[0m");}
-                    | '(' error ')' {System.out.println("\u001B[31m"+"Linea " + AnalizadorLexico.saltoDeLinea +" Error: Falta el parametro en la funcion. "+"\u001B[0m");}
-;
-
-parametro	: tipo ID_simple	
+                    | '(' error ')' {System.out.println("\u001B[31m"+"Linea " + AnalizadorLexico.saltoDeLinea +" Error: Se excedio el numero de parametros (1). "+"\u001B[0m");}
 ;
 
 cuerpo_funcion	: sentencias 
@@ -99,6 +101,7 @@ asignacion	: variable_simple ASIGNACION expresion_arit {System.out.println("Line
 invocacion	: ID_simple '(' expresion_arit ')' {System.out.println("Linea :" + AnalizadorLexico.saltoDeLinea + " Invocacion a funcion ");}
 			| ID_simple '(' tipo_primitivo '(' expresion_arit ')' ')' {System.out.println("Linea :" + AnalizadorLexico.saltoDeLinea +  " Invocacion con conversion ");}
 			| ID_simple '(' ')' {System.out.println("\u001B[31m"+"Linea :" + AnalizadorLexico.saltoDeLinea +  " Error:  faltan los parametros reales en la invocacion"+"\u001B[0m");}
+			| ID_simple '(' error ')' {System.out.println("\u001B[31m"+"Linea :" + AnalizadorLexico.saltoDeLinea +  " Error:  Se excedio el numero de parametros en la invocacion (1)"+"\u001B[0m");}
 ;
 
 list_expre	: list_expre ',' expresion_arit
@@ -108,12 +111,20 @@ list_expre	: list_expre ',' expresion_arit
 expresion_arit  : expresion_arit '+' termino 
                 | expresion_arit '-' termino 
                 | termino
-				| error {System.out.println("\u001B[31m"+"La expresion está mal escrita "+"\u001B[0m");} 
+				| error '+' error{System.out.println("\u001B[31m"+"Linea :" + AnalizadorLexico.saltoDeLinea +  " Error:  La expresion esta mal escrita, falta alguno de los operandos o ambos"+"\u001B[0m");}
+				| error '-' error{System.out.println("\u001B[31m"+"Linea :" + AnalizadorLexico.saltoDeLinea +  " Error:  La expresion esta mal escrita, falta alguno de los operandos o ambos"+"\u001B[0m");}
+				| expresion_arit '+' error {System.out.println("\u001B[31m"+"Linea :" + AnalizadorLexico.saltoDeLinea +  " Error:  La expresion esta mal escrita, falta el operando de la derecha"+"\u001B[0m");}
+				| expresion_arit '-' error {System.out.println("\u001B[31m"+"Linea :" + AnalizadorLexico.saltoDeLinea +  " Error:  La expresion esta mal escrita, falta el operando de la derecha"+"\u001B[0m");}
+				| error termino {System.out.println("\u001B[31m"+"Linea :" + AnalizadorLexico.saltoDeLinea +  " Error:  La expresion esta mal escrita, falta el operador"+"\u001B[0m");}
 ;
 
 termino : termino '*' factor 
         | termino '/' factor 
         | factor
+		| error '*' error{System.out.println("\u001B[31m"+"Linea :" + AnalizadorLexico.saltoDeLinea +  " Error:  La expresion esta mal escrita"+"\u001B[0m");}
+		| error '/' error{System.out.println("\u001B[31m"+"Linea :" + AnalizadorLexico.saltoDeLinea +  " Error:  La expresion esta mal escrita"+"\u001B[0m");}
+		| termino '*' error {System.out.println("\u001B[31m"+"Linea :" + AnalizadorLexico.saltoDeLinea +  " Error:  La expresion esta mal escrita"+"\u001B[0m");}
+		| termino '/' error {System.out.println("\u001B[31m"+"Linea :" + AnalizadorLexico.saltoDeLinea +  " Error:  La expresion esta mal escrita"+"\u001B[0m");}
 ;
 
 factor 	: variable_simple
@@ -122,9 +133,10 @@ factor 	: variable_simple
 		| variable_simple '{' CTE '}' 		 
 ;
 
-variables 	: variables ',' variable_simple  
+variables 	: variables ',' variable_simple 
+			| variables variable_simple {System.out.println("\u001B[31m"+"Linea " + AnalizadorLexico.saltoDeLinea + " Error: Falta ',' entre variables "+"\u001B[0m");}
 			| variable_simple
-;		
+;
 
 variable_simple : ID_simple
 ;
@@ -141,11 +153,17 @@ CTE_con_sig : CTE {if(estaRango($1.sval)) { $$.sval = $1.sval; } }
 
 sentencia_IF: IF condicion THEN bloque_unidad ';' bloque_else ';' END_IF {System.out.println("Linea " + AnalizadorLexico.saltoDeLinea +  ": Sentencia IF ");}
             | IF condicion THEN bloque_unidad ';' END_IF {System.out.println("Linea " + AnalizadorLexico.saltoDeLinea + ": Sentencia IF ");}
-            | IF condicion THEN bloque_unidad ';' {System.out.println("\u001B[31m"+"Linea " + AnalizadorLexico.saltoDeLinea + ": Error : Falta el END_IF en IF  "+"\u001B[0m");}
-            | IF condicion THEN bloque_unidad ';' bloque_else ';' {System.out.println("\u001B[31m"+"Linea " + AnalizadorLexico.saltoDeLinea + ": Error : Falta el END_IF en IF "+"\u001B[0m");}
-			| IF condicion THEN bloque_else ';' END_IF {System.out.println("\u001B[31m"+"Linea " + AnalizadorLexico.saltoDeLinea +  ": Error : Falta de contenido en bloque THEN"+"\u001B[0m");}
+			| IF condicion THEN bloque_else ';' END_IF {System.out.println("\u001B[31m"+"Linea " + AnalizadorLexico.saltoDeLinea +  " Error : Falta de contenido en bloque THEN"+"\u001B[0m");}
 			| IF condicion THEN END_IF {System.out.println("\u001B[31m"+"Linea :" + AnalizadorLexico.saltoDeLinea + " Error: Falta de contenido en bloque THEN."+"\u001B[0m");}
 			| IF condicion THEN bloque_unidad ';' ELSE END_IF {{System.out.println("\u001B[31m"+"Linea " + AnalizadorLexico.saltoDeLinea + " Error : falta cuerpo en el ELSE "+"\u001B[0m");};}
+
+			| IF condicion THEN bloque_unidad bloque_else ';' END_IF {System.out.println("\u001B[31m"+"Linea " + AnalizadorLexico.saltoDeLinea + " Error: Falta ';' al final de la sentencia "+"\u001B[0m");}
+			| IF condicion THEN bloque_unidad END_IF {System.out.println("\u001B[31m"+"Linea " + AnalizadorLexico.saltoDeLinea + " Error: Falta ';' al final de la sentencia "+"\u001B[0m");}
+			| IF condicion THEN bloque_unidad ';' bloque_else END_IF {System.out.println("\u001B[31m"+"Linea " + AnalizadorLexico.saltoDeLinea + " Error: Falta ';' al final de la sentencia "+"\u001B[0m");}
+			| IF condicion THEN bloque_unidad bloque_else END_IF {System.out.println("\u001B[31m"+"Linea " + AnalizadorLexico.saltoDeLinea + " Error: Falta ';' al final de los bloques del IF "+"\u001B[0m");}
+			
+			| IF condicion THEN bloque_unidad ';' error{System.out.println("\u001B[31m"+"Linea " + AnalizadorLexico.saltoDeLinea + ": Error : Falta el END_IF en IF  "+"\u001B[0m");}
+			| IF condicion THEN bloque_unidad ';' bloque_else ';' error{System.out.println("\u001B[31m"+"Linea " + AnalizadorLexico.saltoDeLinea + ": Error : Falta el END_IF en IF "+"\u001B[0m");}
 ;
 
 condicion	: '(' '(' list_expre ')' comparador '(' list_expre ')' ')' {System.out.println("Linea " + AnalizadorLexico.saltoDeLinea + ": Condicion con lista de expresiones ");}
@@ -156,6 +174,12 @@ condicion	: '(' '(' list_expre ')' comparador '(' list_expre ')' ')' {System.out
 			|  expresion_arit comparador expresion_arit ')' {System.out.println("\u001B[31m"+"Linea " + AnalizadorLexico.saltoDeLinea + "Error : Falta el '(' en la condicion "+"\u001B[0m");}
 			| '(' expresion_arit comparador expresion_arit  {System.out.println("\u001B[31m"+"Linea " + AnalizadorLexico.saltoDeLinea + "Error : Falta el ')' en la condicion "+"\u001B[0m");}
 			| expresion_arit comparador expresion_arit  {System.out.println("\u001B[31m"+"Linea " + AnalizadorLexico.saltoDeLinea + "Error : Faltan los parentesis en la condicion "+"\u001B[0m");}
+			
+			
+			|'(' '(' list_expre ')'  '(' list_expre ')' ')' {System.out.println("\u001B[31m"+"Linea " + AnalizadorLexico.saltoDeLinea + " Error : Falta el comparador "+"\u001B[0m");}
+			| '(' error ')' {System.out.println("\u001B[31m"+"Linea " + AnalizadorLexico.saltoDeLinea + " Error : Falta el comparador "+"\u001B[0m");}
+			|'(' '(' list_expre comparador '(' list_expre ')' ')' {System.out.println("\u001B[31m"+"Linea " + AnalizadorLexico.saltoDeLinea + " Error : Falta el ')' en la condicion luego de la lista de expresiones "+"\u001B[0m");}
+			|'(' '(' list_expre ')' comparador list_expre ')' ')' {System.out.println("\u001B[31m"+"Linea " + AnalizadorLexico.saltoDeLinea + " Error : Falta el '(' en la condicion luego del comparador"+"\u001B[0m");}
 ;
 
 comparador	: '>'
@@ -170,7 +194,8 @@ bloque_else: bloque_else_simple
 			| bloque_else_multiple
 ;
 
-bloque_else_multiple:	ELSE BEGIN bloque_sent_ejecutables END
+bloque_else_multiple:	ELSE BEGIN bloque_sent_ejecutables ';' END
+					| ELSE BEGIN bloque_sent_ejecutables END {System.out.println("\u001B[31m"+"Linea " + AnalizadorLexico.saltoDeLinea + " Error: Falta ';' al final de la sentencia "+"\u001B[0m");}
 ;
 
 bloque_else_simple:	ELSE bloque_sentencia_simple 
@@ -180,17 +205,20 @@ bloque_unidad	: bloque_unidad_simple
 				| bloque_unidad_multiple
 ;		
 
-bloque_unidad_multiple  : BEGIN bloque_sent_ejecutables END	
+bloque_unidad_multiple  : BEGIN bloque_sent_ejecutables ';' END
+						| BEGIN END {System.out.println("\u001B[31m"+"Linea " + AnalizadorLexico.saltoDeLinea +  " Error: falta el bloque de sentencias "+"\u001B[0m");}
+						| BEGIN bloque_sent_ejecutables END {System.out.println("\u001B[31m"+"Linea " + AnalizadorLexico.saltoDeLinea + " Error: Falta ';' al final de la sentencia "+"\u001B[0m");}
 ;
 
-bloque_unidad_simple:  bloque_sentencia_simple
+bloque_unidad_simple:  bloque_sentencia_simple 
 ;
 
 bloque_sent_ejecutables	: bloque_sent_ejecutables ';' bloque_sentencia_simple 
 						| bloque_sentencia_simple
+						| bloque_sent_ejecutables bloque_sentencia_simple {System.out.println("\u001B[31m"+"Linea " + AnalizadorLexico.saltoDeLinea + " Error: Falta ';' al final de la sentencia "+"\u001B[0m");}
 ;
 
-bloque_sentencia_simple: sentencia_ejecutable  
+bloque_sentencia_simple: sentencia_ejecutable
 ;
 
 cadena	: CADENAMULTILINEA {System.out.println("Linea " + AnalizadorLexico.saltoDeLinea + ": cadena multilinea ");}
@@ -211,7 +239,6 @@ sentencia_goto	: GOTO ETIQUETA {System.out.println("Linea " + AnalizadorLexico.s
 //Lo tenemos en cuenta en la regla Condicion
 //.................HACIA ARRIBA NO HAY ERRORES..........................
 
-
 %%																	 
 private static boolean RETORNO = false;
 int yylex() {
@@ -223,29 +250,33 @@ int yylex() {
 	return tokenSalida;
 }
 private static void yyerror(String string) {
-	System.out.println(string);
+	System.out.println();
 }
 
 private static void cambioCTENegativa(String key) {
 	String keyNeg = "-" + key;
-	if (!AnalizadorLexico.TablaDeSimbolos.containsKey(keyNeg)) {
-		AnalizadorLexico.TablaDeSimbolos.put(keyNeg, AnalizadorLexico.TablaDeSimbolos.get(key).getCopiaNeg());
-	}
-	AnalizadorLexico.TablaDeSimbolos.get(keyNeg).incrementarContDeRef();
-	System.out.println("Linea " + AnalizadorLexico.saltoDeLinea +  " se reconocio token negativo ");
-	// es ultimo ya decrementa
-	if (AnalizadorLexico.TablaDeSimbolos.get(key).esUltimo()) {
-		AnalizadorLexico.TablaDeSimbolos.remove(key);
+	if(AnalizadorLexico.TablaDeSimbolos.get(key) != null){
+		if (!AnalizadorLexico.TablaDeSimbolos.containsKey(keyNeg)) {
+			AnalizadorLexico.TablaDeSimbolos.put(keyNeg, AnalizadorLexico.TablaDeSimbolos.get(key).getCopiaNeg());
+		}
+		AnalizadorLexico.TablaDeSimbolos.get(keyNeg).incrementarContDeRef();
+		System.out.println("Linea " + AnalizadorLexico.saltoDeLinea +  " se reconocio token negativo ");
+		// es ultimo ya decrementa
+		if (AnalizadorLexico.TablaDeSimbolos.get(key).esUltimo()) {
+			AnalizadorLexico.TablaDeSimbolos.remove(key);
+		}
 	}
 }
 private static boolean estaRango(String key) {
-	if (AnalizadorLexico.TablaDeSimbolos.get(key).esEntero()) {
-		if (!AnalizadorLexico.TablaDeSimbolos.get(key).enRangoPositivo(key)) {
-				if (AnalizadorLexico.TablaDeSimbolos.get(key).esUltimo()) {
-					AnalizadorLexico.TablaDeSimbolos.remove(key);
-				}
-			yyerror("\u001B[31m"+"Linea " +"Linea " + AnalizadorLexico.saltoDeLinea + " Error: " +key +" fuera de rango."+"\u001B[0m");
-			return false;
+	if(AnalizadorLexico.TablaDeSimbolos.get(key) != null){
+		if (AnalizadorLexico.TablaDeSimbolos.get(key).esEntero()) {
+			if (!AnalizadorLexico.TablaDeSimbolos.get(key).enRangoPositivo(key)) {
+					if (AnalizadorLexico.TablaDeSimbolos.get(key).esUltimo()) {
+						AnalizadorLexico.TablaDeSimbolos.remove(key);
+					}
+				yyerror("\u001B[31m"+"Linea " +"Linea " + AnalizadorLexico.saltoDeLinea + " Error: " +key +" fuera de rango."+"\u001B[0m");
+				return false;
+			}
 		}
 	}
 	return true;

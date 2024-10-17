@@ -1,6 +1,6 @@
 BEGIN
 	adan := 20
-	integer adancsadjesaea, boro32, andr_ea;
+	integer adancsadjesaeagjnbjub, boro32, andr_ea;
 	boro := 32767;
 	boro := -32768;
 	boro := 32768;
@@ -31,5 +31,3 @@ BEGIN
 	 afuera@;
 	 a := 1 +2;
 END
-
-

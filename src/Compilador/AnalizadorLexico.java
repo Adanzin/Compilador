@@ -12,10 +12,13 @@ public class AnalizadorLexico {
 	public static boolean SEREPITE=false;
 	//COLUMNAS DE LA MATRIZ DE TRANSICION DE ESTADOS
     public static final char SALTO_DE_LINEA = '\n';
+    public static final char TABULACION = '\t';
+    public static final char BLANCO = ' ';
+    public static final char RETORNO_DE_CARRO = '\r';
 	private static final String ARCH_MATRIZ_ESTADOS = "resources\\matrizDeEstados.txt";
     private static final String ARCH_MATRIZ_ACCIONES = "resources\\matrizDeAcciones.txt";
 	private static final int CANTIDAD_ESTADOS = 14;
-	private static final int CANTIDAD_CARACTERES = 20;
+	private static final int CANTIDAD_CARACTERES = 21;
 	private static final int CERO = '0';
 	private static final int MENOR7 = '1';
 	private static final int MAYOR7 = '2';
@@ -49,9 +52,8 @@ public class AnalizadorLexico {
 			}else{
 				return LETRA;
 			}
-		}else {
-            return caracter;
-        }
+		}
+        return caracter;
         
     }
 
@@ -59,6 +61,7 @@ public class AnalizadorLexico {
         int caracter_actual;
 		// Ahora vamos a matchearlo con las columnas de la matriz de estado
         switch (getChar(caracter)) {
+        	
             case CERO:
                 caracter_actual = 0;
                 break;
@@ -106,43 +109,52 @@ public class AnalizadorLexico {
                 break;
             case SALTO_DE_LINEA:
             	saltoDeLinea++; // incremento el nro de linea
+                caracter_actual = 14;
+                break;
+            case RETORNO_DE_CARRO:
+                caracter_actual = 13;
+                break;
+            case TABULACION:
+                caracter_actual = 13;
+                break;
+            case BLANCO:
                 caracter_actual = 13;
                 break;
             case ':':
-                caracter_actual = 14;
-                break;
-            case '!':
-                caracter_actual = 14;
-                break;
-            case '=':
                 caracter_actual = 15;
                 break;
-            case '(':
+            case '!':
+                caracter_actual = 15;
+                break;
+            case '=':
                 caracter_actual = 16;
+                break;
+            case '(':
+                caracter_actual = 17;
                 break;
             case ')':
-                caracter_actual = 16;
+                caracter_actual = 17;
                 break;
             case '{':
-                caracter_actual = 16;
+                caracter_actual = 17;
                 break;
             case '}':
-                caracter_actual = 16;
+                caracter_actual = 17;
                 break;                
             case ';':
-                caracter_actual = 16;
+                caracter_actual = 17;
                 break;
             case '<':
-                caracter_actual = 17;
-                break;
-            case '>':
-                caracter_actual = 17;
-                break;
-            case '.':
                 caracter_actual = 18;
                 break;
-            default:
+            case '>':
+                caracter_actual = 18;
+                break;
+            case '.':
                 caracter_actual = 19;
+                break;
+            default:
+                caracter_actual = 20;
                 break;
         }
         //System.out.println("car "+caracter+" "+caracter_actual);
@@ -197,7 +209,7 @@ public class AnalizadorLexico {
 		// Recorrer cada carácter del archivo
 		//System.out.println("Entro al get token");		
 		try {
-            while ((caracter = archivo_original.read()) != -1) {
+            while ((caracter = archivo_original.read()) != -1) {            	
         		if(SEREPITE==true) {
         			try {
         				//System.out.println("se resetea >>>>>>>");

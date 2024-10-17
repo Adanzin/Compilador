@@ -32,6 +32,8 @@ public class AS_Identificador extends AccionSemantica {
 		cargarSalida("Identificador "+tokenString);
 		//Se repite el ultimo caracter leido
         AnalizadorLexico.SEREPITE=true;
+		if(car==AnalizadorLexico.SALTO_DE_LINEA) {
+			AnalizadorLexico.SEREPITE=false;}
         AnalizadorLexico.token_actual.setLength(0); //VACIAMOS EL BUFFER YA QUE SE ESPERA UN NUEVO TOKEN
         return salida; //devolvemos el token correspondiente
     }
