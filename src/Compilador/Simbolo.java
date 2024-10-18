@@ -4,6 +4,8 @@ public class Simbolo {
     private int entero;       // Tipo de variable
     private double doub; 
     private String id;
+    private String tipoVar;
+    private String uso;
     private int base;  // Base del n�mero (8 = octal, 10 = decimal, 16 = hexadecimal)
     private int contadorDeReferencias;
     private boolean esSubTipo;
@@ -12,14 +14,24 @@ public class Simbolo {
         this.entero=-1;
         this.doub=-1.0;
         this.id=null;
+        this.tipoVar=null;
+        this.uso=null;
         this.base = 10;  // Por defecto, base decimal
         this.contadorDeReferencias = 0;
         this.setEsSubTipo(false);
     }
-    public Simbolo(int e,double d, int b) {
+    public String getTipoVar() {
+		return tipoVar;
+	}
+	public void setTipoVar(String tipoVar) {
+		this.tipoVar = tipoVar;
+	}
+	public Simbolo(int e,double d, int b) {
         this.entero=e;
         this.doub=d;
         this.id=null;
+        this.tipoVar=null;
+        this.uso=null;
         this.base = b;  // Por defecto, base decimal
         this.contadorDeReferencias=0;
         this.setEsSubTipo(false);
@@ -30,6 +42,8 @@ public class Simbolo {
         this.entero=-1;
         this.doub=-1.0;
         this.id=null;
+        this.tipoVar=null;
+        this.uso=null;
         this.base = base; 
     }
     
@@ -91,6 +105,12 @@ public class Simbolo {
         this.id = id;
         this.contadorDeReferencias++;
     }
+    //amb va a venir del siguiente formato ".A.B"
+    public void agregarAmbito(String amb) {
+        this.id = this.id+amb;
+    }
+    
+    
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
@@ -138,7 +158,31 @@ public class Simbolo {
 	public void setEsSubTipo(boolean esSubTipo) {
 		this.esSubTipo = esSubTipo;
 	}
-    
-   
+
+	public String getTipo() {
+	    if (entero != -1) {
+	        if (base == 8) {
+	            return "Octal";
+	        } else {
+	            return "Entero";
+	        }
+	    }
+	    
+	    if (doub != -1.0) {
+	        return "Double";
+	    }
+	    
+	    if (tipoVar != null) {
+	        return tipoVar;
+	    }
+
+	    return null;
+	}
+	public String getUso() {
+		return uso;
+	}
+	public void setUso(String uso) {
+		this.uso = uso;
+	}
 
 }
