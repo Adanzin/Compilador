@@ -7,15 +7,18 @@ import java.util.Map;
 import Compilador.AnalizadorLexico;
 import Compilador.Simbolo;
 import Compilador.TablaPalabrasReservadas;
+import Compilador.Tipo;
 
 public class AS_Octal extends AccionSemantica {
     @Override
     public Short ejecutar(char car, Reader lector, StringBuilder token, TablaPalabrasReservadas PalabrasReservadas, Map<String, Simbolo> TablaDeSimbolos) {
-        int tokenint = Integer.valueOf(token.toString(),8); //paso de octal a int
+        int tokenOct = Integer.valueOf(token.toString(),10); 
+        int tokenint = Integer.valueOf(token.toString(),8);//paso de octal a int
         if(cumple(tokenint)) {
         	if(!TablaDeSimbolos.containsKey(token.toString())){
         		Simbolo simb = new Simbolo(8);
-        		simb.setEntero(tokenint);
+        		simb.setEntero(tokenOct);
+        		simb.setTipoVar(new Tipo("integer"));
         		TablaDeSimbolos.put(token.toString(),simb);
         		AnalizadorLexico.Lexema = token.toString();//LE PASO EL ID A LA TABLA DE SIMBOLOS AL PARSER.
         	}else {TablaDeSimbolos.get(token.toString()).incrementarContDeRef();}

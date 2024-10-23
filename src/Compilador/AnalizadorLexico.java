@@ -36,11 +36,12 @@ public class AnalizadorLexico {
     private static final int[][] transicion_estados = CargadorDeMatriz.CargarMatrizEstados(ARCH_MATRIZ_ESTADOS, CANTIDAD_ESTADOS, CANTIDAD_CARACTERES);
 
 	private static char getChar(char caracter) {
-        if (Character.isDigit(caracter)) {
-			if(caracter == 0){
+        int aux = Character.getNumericValue(caracter);
+		if (Character.isDigit(caracter)) {
+			if(aux == 0){				
 				return CERO;
 			}else{
-				if(1<= caracter && caracter  >= 7){ 
+				if(1<= aux && aux  <= 7){ 
 					return MENOR7;
 				}else{
 					return MAYOR7;
@@ -157,7 +158,6 @@ public class AnalizadorLexico {
                 caracter_actual = 20;
                 break;
         }
-        //System.out.println("car "+caracter+" "+caracter_actual);
         AccionSemantica accion_a_ejecutar = accionesSemanticas[estado_actual][caracter_actual];
         //System.out.println(accion_a_ejecutar.toString());
         Short identificador_token = accion_a_ejecutar.ejecutar(caracter, lector, token_actual,PalabrasReservadas,TablaDeSimbolos);//-1 si es activo, -2 si es error y el token si es fin de cadena

@@ -4,26 +4,28 @@ public class Simbolo {
     private int entero;       // Tipo de variable
     private double doub; 
     private String id;
-    private String tipoVar;
+    private Object tipoVar;
     private String uso;
     private int base;  // Base del n�mero (8 = octal, 10 = decimal, 16 = hexadecimal)
     private int contadorDeReferencias;
-    private boolean esSubTipo;
+    private boolean defPorUser;
+    private boolean seDeclaro;
     // Constructor
     public Simbolo() {
         this.entero=-1;
         this.doub=-1.0;
-        this.id=null;
         this.tipoVar=null;
+        this.id=null;
         this.uso=null;
+        this.seDeclaro=false;
         this.base = 10;  // Por defecto, base decimal
         this.contadorDeReferencias = 0;
-        this.setEsSubTipo(false);
+        this.defPorUser = false;
     }
-    public String getTipoVar() {
+    public Object getTipoVar() {
 		return tipoVar;
 	}
-	public void setTipoVar(String tipoVar) {
+	public void setTipoVar(Object tipoVar) {
 		this.tipoVar = tipoVar;
 	}
 	public Simbolo(int e,double d, int b) {
@@ -32,9 +34,10 @@ public class Simbolo {
         this.id=null;
         this.tipoVar=null;
         this.uso=null;
+        this.seDeclaro=false;
         this.base = b;  // Por defecto, base decimal
         this.contadorDeReferencias=0;
-        this.setEsSubTipo(false);
+        this.defPorUser = false;
     }
     
     
@@ -44,6 +47,7 @@ public class Simbolo {
         this.id=null;
         this.tipoVar=null;
         this.uso=null;
+        this.seDeclaro=false;
         this.base = base; 
     }
     
@@ -98,45 +102,66 @@ public class Simbolo {
         this.entero = entero;
         this.contadorDeReferencias++;
     }
-    public String getId() {
-        return id;
-    }
-    public void setId(String id) {
-        this.id = id;
-        this.contadorDeReferencias++;
-    }
+
     //amb va a venir del siguiente formato ".A.B"
     public void agregarAmbito(String amb) {
-        this.id = this.id+amb;
+        Simbolo simb = new Simbolo(this.entero, this.doub,this.tipoVar,this.uso,this.base,this.contadorDeReferencias,
+        		this.defPorUser,this.seDeclaro);
+        AnalizadorLexico.TablaDeSimbolos.put(id+amb, simb);
+        AnalizadorLexico.TablaDeSimbolos.remove(id);
     }
     
     
-    @Override
+    public Simbolo(int entero, double doub, Object tipoVar, String uso, int base, int contadorDeReferencias,
+			boolean esSubTipo, boolean seDeclaro) {
+		super();
+		this.entero = entero;
+		this.doub = doub;
+		this.tipoVar = tipoVar;
+		this.uso = uso;
+		this.base = base;
+		this.contadorDeReferencias = contadorDeReferencias;
+		this.defPorUser = esSubTipo;
+		this.seDeclaro = seDeclaro;
+	}
+	@Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append("<");
-        // Chequear si el entero fue inicializado
         if (entero != -1) {
-            sb.append(entero);
-            sb.append(", ");
+            sb.append("Es entero: " +entero);            
         }
 
-        // Chequear si el double fue inicializado
         if (doub != -1.0) {
-            sb.append(doub);
-            sb.append(", ");
+            sb.append("Es double: "+doub);
+            sb.append(" - ");
+        }
+         
+        if(this.base != 10) {
+            sb.append(" Es Octal");
+            sb.append(" - ");
         }
 
-        // Chequear si el id fue inicializado
-        if (id != null) {
-            sb.append(id);
-            sb.append(", ");
+        if(this.tipoVar!=null) {
+        	sb.append("Su tipo es " +tipoVar);
+            sb.append(" - ");
         }
-        sb.append(base);
-        sb.append(", ");
-        sb.append(contadorDeReferencias);
-        sb.append(", ");
-        sb.append(esSubTipo);
+        if(this.uso!=null) {
+            sb.append("Su uso " +uso);
+            sb.append(" - ");
+        }
+        if(this.contadorDeReferencias != 0) {
+        	sb.append(" La referencian "+contadorDeReferencias);
+            sb.append(" - ");	
+        }
+        if(this.defPorUser!=false) {
+        	sb.append(" Es un Tipo ");
+            sb.append(" - ");
+        }
+        if(this.seDeclaro!=false) {
+            sb.append(" se declaro: "+seDeclaro);
+        }
+
 
         // Si ningun valor fue inicializado
         if (sb.length() == 0) {
@@ -152,11 +177,11 @@ public class Simbolo {
     public void setBase(int base) {
         this.base = base;
     }
-	public boolean isEsSubTipo() {
-		return esSubTipo;
+	public boolean isEsTipo() {
+		return defPorUser;
 	}
-	public void setEsSubTipo(boolean esSubTipo) {
-		this.esSubTipo = esSubTipo;
+	public void setEsTipo(boolean es) {
+		this.defPorUser = es;
 	}
 
 	public String getTipo() {
@@ -173,7 +198,7 @@ public class Simbolo {
 	    }
 	    
 	    if (tipoVar != null) {
-	        return tipoVar;
+	        return tipoVar.toString();
 	    }
 
 	    return null;
@@ -184,5 +209,18 @@ public class Simbolo {
 	public void setUso(String uso) {
 		this.uso = uso;
 	}
-
+	
+	public boolean estaDeclarada(String amb) {
+		return seDeclaro;
+	}
+	public void fueDeclarada() {
+		this.seDeclaro=true;
+	}
+	public String getId() {
+		return id;
+	}
+	public void setId(String id) {
+		this.id = id;
+	}
+	
 }

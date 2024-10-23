@@ -7,6 +7,7 @@ import java.util.Map;
 import Compilador.AnalizadorLexico;
 import Compilador.Simbolo;
 import Compilador.TablaPalabrasReservadas;
+import Compilador.Tipo;
 
 public class AS_Double extends AccionSemantica {
     @Override
@@ -19,6 +20,7 @@ public class AS_Double extends AccionSemantica {
             if(!TablaDeSimbolos.containsKey(aux)){            	
 	        	Simbolo simb = new Simbolo();
 	        	simb.setDoub(tokenDouble);
+	        	simb.setTipoVar(new Tipo("double"));
 	        	TablaDeSimbolos.put(aux,simb);
 	        	AnalizadorLexico.Lexema = aux;  //LE PASO EL ID A LA TABLA DE SIMBOLOS AL PARSER.
 	        }else {TablaDeSimbolos.get(aux).incrementarContDeRef();}

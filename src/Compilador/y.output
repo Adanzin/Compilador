@@ -45,140 +45,142 @@
   36                      | TYPEDEF TRIPLE tipo ID_simple
   37                      | TYPEDEF TRIPLE '<' tipo '>' error
 
-  38  declaracion_funciones : tipo FUN ID parametros_parentesis BEGIN cuerpo_funcion END
-  39                        | tipo FUN parametros_parentesis BEGIN cuerpo_funcion END
+  38  declaracion_funciones : encabezado_funcion parametros_parentesis BEGIN cuerpo_funcion END
 
-  40  parametros_parentesis : '(' tipo_primitivo ID_simple ')'
-  41                        | '(' tipo_primitivo ')'
-  42                        | '(' ID_simple ')'
-  43                        | '(' ')'
-  44                        | '(' error ')'
+  39  encabezado_funcion : tipo FUN ID
+  40                     | tipo FUN
 
-  45  cuerpo_funcion : sentencias
+  41  parametros_parentesis : '(' tipo_primitivo ID_simple ')'
+  42                        | '(' tipo_primitivo ')'
+  43                        | '(' ID_simple ')'
+  44                        | '(' ')'
+  45                        | '(' error ')'
 
-  46  retorno : RET '(' expresion_arit ')'
+  46  cuerpo_funcion : sentencias
 
-  47  sentencia_ejecutable : asignacion
-  48                       | sentencia_IF
-  49                       | sentencia_WHILE
-  50                       | sentencia_goto
-  51                       | ETIQUETA
-  52                       | outf_rule
-  53                       | retorno
+  47  retorno : RET '(' expresion_arit ')'
 
-  54  outf_rule : OUTF '(' expresion_arit ')'
-  55            | OUTF '(' ')'
-  56            | OUTF '(' cadena ')'
-  57            | OUTF '(' sentencias ')'
+  48  sentencia_ejecutable : asignacion
+  49                       | sentencia_IF
+  50                       | sentencia_WHILE
+  51                       | sentencia_goto
+  52                       | ETIQUETA
+  53                       | outf_rule
+  54                       | retorno
 
-  58  asignacion : variable_simple ASIGNACION expresion_arit
-  59             | variable_simple '{' CTE '}' ASIGNACION expresion_arit
+  55  outf_rule : OUTF '(' expresion_arit ')'
+  56            | OUTF '(' ')'
+  57            | OUTF '(' cadena ')'
+  58            | OUTF '(' sentencias ')'
 
-  60  invocacion : ID_simple '(' expresion_arit ')'
-  61             | ID_simple '(' tipo_primitivo '(' expresion_arit ')' ')'
-  62             | ID_simple '(' ')'
-  63             | ID_simple '(' error ')'
+  59  asignacion : variable_simple ASIGNACION expresion_arit
+  60             | variable_simple '{' CTE '}' ASIGNACION expresion_arit
 
-  64  list_expre : list_expre ',' expresion_arit
-  65             | expresion_arit
+  61  invocacion : ID_simple '(' expresion_arit ')'
+  62             | ID_simple '(' tipo_primitivo '(' expresion_arit ')' ')'
+  63             | ID_simple '(' ')'
+  64             | ID_simple '(' error ')'
 
-  66  expresion_arit : expresion_arit '+' termino
-  67                 | expresion_arit '-' termino
-  68                 | termino
-  69                 | error '+' error
-  70                 | error '-' error
-  71                 | expresion_arit '+' error
-  72                 | expresion_arit '-' error
-  73                 | error termino
+  65  list_expre : list_expre ',' expresion_arit
+  66             | expresion_arit
 
-  74  termino : termino '*' factor
-  75          | termino '/' factor
-  76          | factor
-  77          | error '*' error
-  78          | error '/' error
-  79          | termino '*' error
-  80          | termino '/' error
+  67  expresion_arit : expresion_arit '+' termino
+  68                 | expresion_arit '-' termino
+  69                 | termino
+  70                 | error '+' error
+  71                 | error '-' error
+  72                 | expresion_arit '+' error
+  73                 | expresion_arit '-' error
+  74                 | error termino
 
-  81  factor : variable_simple
-  82         | CTE_con_sig
-  83         | invocacion
-  84         | variable_simple '{' CTE '}'
+  75  termino : termino '*' factor
+  76          | termino '/' factor
+  77          | factor
+  78          | error '*' error
+  79          | error '/' error
+  80          | termino '*' error
+  81          | termino '/' error
 
-  85  variables : variables ',' variable_simple
-  86            | variables variable_simple
-  87            | variable_simple
+  82  factor : variable_simple
+  83         | CTE_con_sig
+  84         | invocacion
+  85         | variable_simple '{' CTE '}'
 
-  88  variable_simple : ID_simple
+  86  variables : variables ',' variable_simple
+  87            | variables variable_simple
+  88            | variable_simple
 
-  89  ID_simple : ID
+  89  variable_simple : ID_simple
 
-  90  CTE_con_sig : CTE
-  91              | '-' CTE
-  92              | ERROR
-  93              | '-' ERROR
+  90  ID_simple : ID
 
-  94  sentencia_IF : IF condicion THEN bloque_unidad ';' bloque_else ';' END_IF
-  95               | IF condicion THEN bloque_unidad ';' END_IF
-  96               | IF condicion THEN bloque_else ';' END_IF
-  97               | IF condicion THEN END_IF
-  98               | IF condicion THEN bloque_unidad ';' ELSE END_IF
-  99               | IF condicion THEN bloque_unidad bloque_else ';' END_IF
- 100               | IF condicion THEN bloque_unidad END_IF
- 101               | IF condicion THEN bloque_unidad ';' bloque_else END_IF
- 102               | IF condicion THEN bloque_unidad bloque_else END_IF
- 103               | IF condicion THEN bloque_unidad ';' error
- 104               | IF condicion THEN bloque_unidad ';' bloque_else ';' error
+  91  CTE_con_sig : CTE
+  92              | '-' CTE
+  93              | ERROR
+  94              | '-' ERROR
 
- 105  condicion : '(' '(' list_expre ')' comparador '(' list_expre ')' ')'
- 106            | '(' list_expre ')' comparador '(' list_expre ')' ')'
- 107            | '(' '(' list_expre ')' comparador '(' list_expre ')'
- 108            | '(' list_expre ')' comparador '(' list_expre ')'
- 109            | '(' expresion_arit comparador expresion_arit ')'
- 110            | expresion_arit comparador expresion_arit ')'
- 111            | '(' expresion_arit comparador expresion_arit
- 112            | expresion_arit comparador expresion_arit
- 113            | '(' '(' list_expre ')' '(' list_expre ')' ')'
- 114            | '(' error ')'
- 115            | '(' '(' list_expre comparador '(' list_expre ')' ')'
- 116            | '(' '(' list_expre ')' comparador list_expre ')' ')'
+  95  sentencia_IF : IF condicion THEN bloque_unidad ';' bloque_else ';' END_IF
+  96               | IF condicion THEN bloque_unidad ';' END_IF
+  97               | IF condicion THEN bloque_else ';' END_IF
+  98               | IF condicion THEN END_IF
+  99               | IF condicion THEN bloque_unidad ';' ELSE END_IF
+ 100               | IF condicion THEN bloque_unidad bloque_else ';' END_IF
+ 101               | IF condicion THEN bloque_unidad END_IF
+ 102               | IF condicion THEN bloque_unidad ';' bloque_else END_IF
+ 103               | IF condicion THEN bloque_unidad bloque_else END_IF
+ 104               | IF condicion THEN bloque_unidad ';' error
+ 105               | IF condicion THEN bloque_unidad ';' bloque_else ';' error
 
- 117  comparador : '>'
- 118             | MAYORIGUAL
- 119             | '<'
- 120             | MENORIGUAL
- 121             | '='
- 122             | DISTINTO
+ 106  condicion : '(' '(' list_expre ')' comparador '(' list_expre ')' ')'
+ 107            | '(' list_expre ')' comparador '(' list_expre ')' ')'
+ 108            | '(' '(' list_expre ')' comparador '(' list_expre ')'
+ 109            | '(' list_expre ')' comparador '(' list_expre ')'
+ 110            | '(' expresion_arit comparador expresion_arit ')'
+ 111            | expresion_arit comparador expresion_arit ')'
+ 112            | '(' expresion_arit comparador expresion_arit
+ 113            | expresion_arit comparador expresion_arit
+ 114            | '(' '(' list_expre ')' '(' list_expre ')' ')'
+ 115            | '(' error ')'
+ 116            | '(' '(' list_expre comparador '(' list_expre ')' ')'
+ 117            | '(' '(' list_expre ')' comparador list_expre ')' ')'
 
- 123  bloque_else : bloque_else_simple
- 124              | bloque_else_multiple
+ 118  comparador : '>'
+ 119             | MAYORIGUAL
+ 120             | '<'
+ 121             | MENORIGUAL
+ 122             | '='
+ 123             | DISTINTO
 
- 125  bloque_else_multiple : ELSE BEGIN bloque_sent_ejecutables ';' END
- 126                       | ELSE BEGIN bloque_sent_ejecutables END
+ 124  bloque_else : bloque_else_simple
+ 125              | bloque_else_multiple
 
- 127  bloque_else_simple : ELSE bloque_sentencia_simple
+ 126  bloque_else_multiple : ELSE BEGIN bloque_sent_ejecutables ';' END
+ 127                       | ELSE BEGIN bloque_sent_ejecutables END
 
- 128  bloque_unidad : bloque_unidad_simple
- 129                | bloque_unidad_multiple
+ 128  bloque_else_simple : ELSE bloque_sentencia_simple
 
- 130  bloque_unidad_multiple : BEGIN bloque_sent_ejecutables ';' END
- 131                         | BEGIN END
- 132                         | BEGIN bloque_sent_ejecutables END
+ 129  bloque_unidad : bloque_unidad_simple
+ 130                | bloque_unidad_multiple
 
- 133  bloque_unidad_simple : bloque_sentencia_simple
+ 131  bloque_unidad_multiple : BEGIN bloque_sent_ejecutables ';' END
+ 132                         | BEGIN END
+ 133                         | BEGIN bloque_sent_ejecutables END
 
- 134  bloque_sent_ejecutables : bloque_sent_ejecutables ';' bloque_sentencia_simple
- 135                          | bloque_sentencia_simple
- 136                          | bloque_sent_ejecutables bloque_sentencia_simple
+ 134  bloque_unidad_simple : bloque_sentencia_simple
 
- 137  bloque_sentencia_simple : sentencia_ejecutable
+ 135  bloque_sent_ejecutables : bloque_sent_ejecutables ';' bloque_sentencia_simple
+ 136                          | bloque_sentencia_simple
+ 137                          | bloque_sent_ejecutables bloque_sentencia_simple
 
- 138  cadena : CADENAMULTILINEA
+ 138  bloque_sentencia_simple : sentencia_ejecutable
 
- 139  sentencia_WHILE : WHILE condicion bloque_unidad
- 140                  | WHILE condicion error
+ 139  cadena : CADENAMULTILINEA
 
- 141  sentencia_goto : GOTO ETIQUETA
- 142                 | GOTO error
+ 140  sentencia_WHILE : WHILE condicion bloque_unidad
+ 141                  | WHILE condicion error
+
+ 142  sentencia_goto : GOTO ETIQUETA
+ 143                 | GOTO error
 
 state 0
 	$accept : . programa $end  (0)
@@ -216,19 +218,20 @@ state 1
 	declaracion_subtipo  goto 21
 	tipo  goto 22
 	tipo_primitivo  goto 23
-	retorno  goto 24
-	asignacion  goto 25
-	sentencia_IF  goto 26
-	sentencia_WHILE  goto 27
-	sentencia_goto  goto 28
-	outf_rule  goto 29
-	variable_simple  goto 30
+	encabezado_funcion  goto 24
+	retorno  goto 25
+	asignacion  goto 26
+	sentencia_IF  goto 27
+	sentencia_WHILE  goto 28
+	sentencia_goto  goto 29
+	outf_rule  goto 30
+	variable_simple  goto 31
 
 
 state 2
-	ID_simple : ID .  (89)
+	ID_simple : ID .  (90)
 
-	.  reduce 89
+	.  reduce 90
 
 
 state 3
@@ -244,7 +247,7 @@ state 4
 	programa : ID_simple . sentencias  (5)
 
 	IF  shift 5
-	BEGIN  shift 31
+	BEGIN  shift 32
 	OUTF  shift 6
 	TYPEDEF  shift 7
 	RET  shift 8
@@ -257,7 +260,7 @@ state 4
 	.  error
 
 	ID_simple  goto 14
-	sentencias  goto 32
+	sentencias  goto 33
 	sentencia  goto 16
 	sentencia_declarativa  goto 17
 	sentencia_ejecutable  goto 18
@@ -266,53 +269,54 @@ state 4
 	declaracion_subtipo  goto 21
 	tipo  goto 22
 	tipo_primitivo  goto 23
-	retorno  goto 24
-	asignacion  goto 25
-	sentencia_IF  goto 26
-	sentencia_WHILE  goto 27
-	sentencia_goto  goto 28
-	outf_rule  goto 29
-	variable_simple  goto 30
+	encabezado_funcion  goto 24
+	retorno  goto 25
+	asignacion  goto 26
+	sentencia_IF  goto 27
+	sentencia_WHILE  goto 28
+	sentencia_goto  goto 29
+	outf_rule  goto 30
+	variable_simple  goto 31
 
 
 state 5
-	sentencia_IF : IF . condicion THEN bloque_unidad ';' bloque_else ';' END_IF  (94)
-	sentencia_IF : IF . condicion THEN bloque_unidad ';' END_IF  (95)
-	sentencia_IF : IF . condicion THEN bloque_else ';' END_IF  (96)
-	sentencia_IF : IF . condicion THEN END_IF  (97)
-	sentencia_IF : IF . condicion THEN bloque_unidad ';' ELSE END_IF  (98)
-	sentencia_IF : IF . condicion THEN bloque_unidad bloque_else ';' END_IF  (99)
-	sentencia_IF : IF . condicion THEN bloque_unidad END_IF  (100)
-	sentencia_IF : IF . condicion THEN bloque_unidad ';' bloque_else END_IF  (101)
-	sentencia_IF : IF . condicion THEN bloque_unidad bloque_else END_IF  (102)
-	sentencia_IF : IF . condicion THEN bloque_unidad ';' error  (103)
-	sentencia_IF : IF . condicion THEN bloque_unidad ';' bloque_else ';' error  (104)
+	sentencia_IF : IF . condicion THEN bloque_unidad ';' bloque_else ';' END_IF  (95)
+	sentencia_IF : IF . condicion THEN bloque_unidad ';' END_IF  (96)
+	sentencia_IF : IF . condicion THEN bloque_else ';' END_IF  (97)
+	sentencia_IF : IF . condicion THEN END_IF  (98)
+	sentencia_IF : IF . condicion THEN bloque_unidad ';' ELSE END_IF  (99)
+	sentencia_IF : IF . condicion THEN bloque_unidad bloque_else ';' END_IF  (100)
+	sentencia_IF : IF . condicion THEN bloque_unidad END_IF  (101)
+	sentencia_IF : IF . condicion THEN bloque_unidad ';' bloque_else END_IF  (102)
+	sentencia_IF : IF . condicion THEN bloque_unidad bloque_else END_IF  (103)
+	sentencia_IF : IF . condicion THEN bloque_unidad ';' error  (104)
+	sentencia_IF : IF . condicion THEN bloque_unidad ';' bloque_else ';' error  (105)
 
-	error  shift 33
-	CTE  shift 34
+	error  shift 34
+	CTE  shift 35
 	ID  shift 2
-	ERROR  shift 35
-	'('  shift 36
-	'-'  shift 37
+	ERROR  shift 36
+	'('  shift 37
+	'-'  shift 38
 	.  error
 
-	ID_simple  goto 38
-	CTE_con_sig  goto 39
-	expresion_arit  goto 40
-	variable_simple  goto 41
-	invocacion  goto 42
-	termino  goto 43
-	factor  goto 44
-	condicion  goto 45
+	ID_simple  goto 39
+	CTE_con_sig  goto 40
+	expresion_arit  goto 41
+	variable_simple  goto 42
+	invocacion  goto 43
+	termino  goto 44
+	factor  goto 45
+	condicion  goto 46
 
 
 state 6
-	outf_rule : OUTF . '(' expresion_arit ')'  (54)
-	outf_rule : OUTF . '(' ')'  (55)
-	outf_rule : OUTF . '(' cadena ')'  (56)
-	outf_rule : OUTF . '(' sentencias ')'  (57)
+	outf_rule : OUTF . '(' expresion_arit ')'  (55)
+	outf_rule : OUTF . '(' ')'  (56)
+	outf_rule : OUTF . '(' cadena ')'  (57)
+	outf_rule : OUTF . '(' sentencias ')'  (58)
 
-	'('  shift 46
+	'('  shift 47
 	.  error
 
 
@@ -335,56 +339,56 @@ state 7
 	declaracion_subtipo : TYPEDEF . TRIPLE '<' tipo '>' error  (37)
 
 	ID  shift 2
-	TRIPLE  shift 47
-	ASIGNACION  shift 48
-	'<'  shift 49
+	TRIPLE  shift 48
+	ASIGNACION  shift 49
+	'<'  shift 50
 	.  error
 
-	ID_simple  goto 50
+	ID_simple  goto 51
 
 
 state 8
-	retorno : RET . '(' expresion_arit ')'  (46)
+	retorno : RET . '(' expresion_arit ')'  (47)
 
-	'('  shift 51
+	'('  shift 52
 	.  error
 
 
 state 9
-	sentencia_WHILE : WHILE . condicion bloque_unidad  (139)
-	sentencia_WHILE : WHILE . condicion error  (140)
+	sentencia_WHILE : WHILE . condicion bloque_unidad  (140)
+	sentencia_WHILE : WHILE . condicion error  (141)
 
-	error  shift 33
-	CTE  shift 34
+	error  shift 34
+	CTE  shift 35
 	ID  shift 2
-	ERROR  shift 35
-	'('  shift 36
-	'-'  shift 37
+	ERROR  shift 36
+	'('  shift 37
+	'-'  shift 38
 	.  error
 
-	ID_simple  goto 38
-	CTE_con_sig  goto 39
-	expresion_arit  goto 40
-	variable_simple  goto 41
-	invocacion  goto 42
-	termino  goto 43
-	factor  goto 44
-	condicion  goto 52
+	ID_simple  goto 39
+	CTE_con_sig  goto 40
+	expresion_arit  goto 41
+	variable_simple  goto 42
+	invocacion  goto 43
+	termino  goto 44
+	factor  goto 45
+	condicion  goto 53
 
 
 state 10
-	sentencia_goto : GOTO . ETIQUETA  (141)
-	sentencia_goto : GOTO . error  (142)
+	sentencia_goto : GOTO . ETIQUETA  (142)
+	sentencia_goto : GOTO . error  (143)
 
-	error  shift 53
-	ETIQUETA  shift 54
+	error  shift 54
+	ETIQUETA  shift 55
 	.  error
 
 
 state 11
-	sentencia_ejecutable : ETIQUETA .  (51)
+	sentencia_ejecutable : ETIQUETA .  (52)
 
-	.  reduce 51
+	.  reduce 52
 
 
 state 12
@@ -401,12 +405,12 @@ state 13
 
 state 14
 	tipo : ID_simple .  (18)
-	variable_simple : ID_simple .  (88)
+	variable_simple : ID_simple .  (89)
 
 	FUN  reduce 18
 	ID  reduce 18
-	ASIGNACION  reduce 88
-	'{'  reduce 88
+	ASIGNACION  reduce 89
+	'{'  reduce 89
 
 
 state 15
@@ -414,7 +418,7 @@ state 15
 	sentencias : sentencias . sentencia  (6)
 
 	IF  shift 5
-	END  shift 55
+	END  shift 56
 	OUTF  shift 6
 	TYPEDEF  shift 7
 	RET  shift 8
@@ -427,7 +431,7 @@ state 15
 	.  error
 
 	ID_simple  goto 14
-	sentencia  goto 56
+	sentencia  goto 57
 	sentencia_declarativa  goto 17
 	sentencia_ejecutable  goto 18
 	declaracion_variable  goto 19
@@ -435,13 +439,14 @@ state 15
 	declaracion_subtipo  goto 21
 	tipo  goto 22
 	tipo_primitivo  goto 23
-	retorno  goto 24
-	asignacion  goto 25
-	sentencia_IF  goto 26
-	sentencia_WHILE  goto 27
-	sentencia_goto  goto 28
-	outf_rule  goto 29
-	variable_simple  goto 30
+	encabezado_funcion  goto 24
+	retorno  goto 25
+	asignacion  goto 26
+	sentencia_IF  goto 27
+	sentencia_WHILE  goto 28
+	sentencia_goto  goto 29
+	outf_rule  goto 30
+	variable_simple  goto 31
 
 
 state 16
@@ -460,7 +465,7 @@ state 18
 	sentencia : sentencia_ejecutable . ';'  (9)
 	sentencia : sentencia_ejecutable .  (10)
 
-	';'  shift 57
+	';'  shift 58
 	$end  reduce 10
 	IF  reduce 10
 	END  reduce 10
@@ -486,7 +491,7 @@ state 20
 	sentencia_declarativa : declaracion_funciones . ';'  (12)
 	sentencia_declarativa : declaracion_funciones .  (14)
 
-	';'  shift 58
+	';'  shift 59
 	$end  reduce 14
 	IF  reduce 14
 	END  reduce 14
@@ -506,7 +511,7 @@ state 21
 	sentencia_declarativa : declaracion_subtipo . ';'  (13)
 	sentencia_declarativa : declaracion_subtipo .  (15)
 
-	';'  shift 59
+	';'  shift 60
 	$end  reduce 15
 	IF  reduce 15
 	END  reduce 15
@@ -525,16 +530,16 @@ state 21
 state 22
 	declaracion_variable : tipo . variables ';'  (16)
 	declaracion_variable : tipo . variables error  (17)
-	declaracion_funciones : tipo . FUN ID parametros_parentesis BEGIN cuerpo_funcion END  (38)
-	declaracion_funciones : tipo . FUN parametros_parentesis BEGIN cuerpo_funcion END  (39)
+	encabezado_funcion : tipo . FUN ID  (39)
+	encabezado_funcion : tipo . FUN  (40)
 
-	FUN  shift 60
+	FUN  shift 61
 	ID  shift 2
 	.  error
 
-	ID_simple  goto 61
-	variables  goto 62
-	variable_simple  goto 63
+	ID_simple  goto 62
+	variables  goto 63
+	variable_simple  goto 64
 
 
 state 23
@@ -544,51 +549,60 @@ state 23
 
 
 state 24
-	sentencia_ejecutable : retorno .  (53)
+	declaracion_funciones : encabezado_funcion . parametros_parentesis BEGIN cuerpo_funcion END  (38)
 
-	.  reduce 53
+	'('  shift 65
+	.  error
+
+	parametros_parentesis  goto 66
 
 
 state 25
-	sentencia_ejecutable : asignacion .  (47)
+	sentencia_ejecutable : retorno .  (54)
 
-	.  reduce 47
+	.  reduce 54
 
 
 state 26
-	sentencia_ejecutable : sentencia_IF .  (48)
+	sentencia_ejecutable : asignacion .  (48)
 
 	.  reduce 48
 
 
 state 27
-	sentencia_ejecutable : sentencia_WHILE .  (49)
+	sentencia_ejecutable : sentencia_IF .  (49)
 
 	.  reduce 49
 
 
 state 28
-	sentencia_ejecutable : sentencia_goto .  (50)
+	sentencia_ejecutable : sentencia_WHILE .  (50)
 
 	.  reduce 50
 
 
 state 29
-	sentencia_ejecutable : outf_rule .  (52)
+	sentencia_ejecutable : sentencia_goto .  (51)
 
-	.  reduce 52
+	.  reduce 51
 
 
 state 30
-	asignacion : variable_simple . ASIGNACION expresion_arit  (58)
-	asignacion : variable_simple . '{' CTE '}' ASIGNACION expresion_arit  (59)
+	sentencia_ejecutable : outf_rule .  (53)
 
-	ASIGNACION  shift 64
-	'{'  shift 65
-	.  error
+	.  reduce 53
 
 
 state 31
+	asignacion : variable_simple . ASIGNACION expresion_arit  (59)
+	asignacion : variable_simple . '{' CTE '}' ASIGNACION expresion_arit  (60)
+
+	ASIGNACION  shift 67
+	'{'  shift 68
+	.  error
+
+
+state 32
 	programa : ID_simple BEGIN . sentencias END  (1)
 	programa : ID_simple BEGIN . sentencias  (3)
 
@@ -605,7 +619,7 @@ state 31
 	.  error
 
 	ID_simple  goto 14
-	sentencias  goto 66
+	sentencias  goto 69
 	sentencia  goto 16
 	sentencia_declarativa  goto 17
 	sentencia_ejecutable  goto 18
@@ -614,22 +628,23 @@ state 31
 	declaracion_subtipo  goto 21
 	tipo  goto 22
 	tipo_primitivo  goto 23
-	retorno  goto 24
-	asignacion  goto 25
-	sentencia_IF  goto 26
-	sentencia_WHILE  goto 27
-	sentencia_goto  goto 28
-	outf_rule  goto 29
-	variable_simple  goto 30
+	encabezado_funcion  goto 24
+	retorno  goto 25
+	asignacion  goto 26
+	sentencia_IF  goto 27
+	sentencia_WHILE  goto 28
+	sentencia_goto  goto 29
+	outf_rule  goto 30
+	variable_simple  goto 31
 
 
-state 32
+state 33
 	programa : ID_simple sentencias . END  (4)
 	programa : ID_simple sentencias .  (5)
 	sentencias : sentencias . sentencia  (6)
 
 	IF  shift 5
-	END  shift 67
+	END  shift 70
 	OUTF  shift 6
 	TYPEDEF  shift 7
 	RET  shift 8
@@ -642,7 +657,7 @@ state 32
 	$end  reduce 5
 
 	ID_simple  goto 14
-	sentencia  goto 56
+	sentencia  goto 57
 	sentencia_declarativa  goto 17
 	sentencia_ejecutable  goto 18
 	declaracion_variable  goto 19
@@ -650,290 +665,291 @@ state 32
 	declaracion_subtipo  goto 21
 	tipo  goto 22
 	tipo_primitivo  goto 23
-	retorno  goto 24
-	asignacion  goto 25
-	sentencia_IF  goto 26
-	sentencia_WHILE  goto 27
-	sentencia_goto  goto 28
-	outf_rule  goto 29
-	variable_simple  goto 30
-
-
-state 33
-	expresion_arit : error . '+' error  (69)
-	expresion_arit : error . '-' error  (70)
-	expresion_arit : error . termino  (73)
-	termino : error . '*' error  (77)
-	termino : error . '/' error  (78)
-
-	error  shift 68
-	CTE  shift 34
-	ID  shift 2
-	ERROR  shift 35
-	'+'  shift 69
-	'-'  shift 70
-	'*'  shift 71
-	'/'  shift 72
-	.  error
-
-	ID_simple  goto 38
-	CTE_con_sig  goto 39
-	variable_simple  goto 41
-	invocacion  goto 42
-	termino  goto 73
-	factor  goto 44
+	encabezado_funcion  goto 24
+	retorno  goto 25
+	asignacion  goto 26
+	sentencia_IF  goto 27
+	sentencia_WHILE  goto 28
+	sentencia_goto  goto 29
+	outf_rule  goto 30
+	variable_simple  goto 31
 
 
 state 34
-	CTE_con_sig : CTE .  (90)
+	expresion_arit : error . '+' error  (70)
+	expresion_arit : error . '-' error  (71)
+	expresion_arit : error . termino  (74)
+	termino : error . '*' error  (78)
+	termino : error . '/' error  (79)
 
-	.  reduce 90
+	error  shift 71
+	CTE  shift 35
+	ID  shift 2
+	ERROR  shift 36
+	'+'  shift 72
+	'-'  shift 73
+	'*'  shift 74
+	'/'  shift 75
+	.  error
+
+	ID_simple  goto 39
+	CTE_con_sig  goto 40
+	variable_simple  goto 42
+	invocacion  goto 43
+	termino  goto 76
+	factor  goto 45
 
 
 state 35
-	CTE_con_sig : ERROR .  (92)
+	CTE_con_sig : CTE .  (91)
 
-	.  reduce 92
+	.  reduce 91
 
 
 state 36
-	condicion : '(' . '(' list_expre ')' comparador '(' list_expre ')' ')'  (105)
-	condicion : '(' . list_expre ')' comparador '(' list_expre ')' ')'  (106)
-	condicion : '(' . '(' list_expre ')' comparador '(' list_expre ')'  (107)
-	condicion : '(' . list_expre ')' comparador '(' list_expre ')'  (108)
-	condicion : '(' . expresion_arit comparador expresion_arit ')'  (109)
-	condicion : '(' . expresion_arit comparador expresion_arit  (111)
-	condicion : '(' . '(' list_expre ')' '(' list_expre ')' ')'  (113)
-	condicion : '(' . error ')'  (114)
-	condicion : '(' . '(' list_expre comparador '(' list_expre ')' ')'  (115)
-	condicion : '(' . '(' list_expre ')' comparador list_expre ')' ')'  (116)
+	CTE_con_sig : ERROR .  (93)
 
-	error  shift 74
-	CTE  shift 34
-	ID  shift 2
-	ERROR  shift 35
-	'('  shift 75
-	'-'  shift 37
-	.  error
-
-	ID_simple  goto 38
-	CTE_con_sig  goto 39
-	expresion_arit  goto 76
-	variable_simple  goto 41
-	invocacion  goto 42
-	list_expre  goto 77
-	termino  goto 43
-	factor  goto 44
+	.  reduce 93
 
 
 state 37
-	CTE_con_sig : '-' . CTE  (91)
-	CTE_con_sig : '-' . ERROR  (93)
+	condicion : '(' . '(' list_expre ')' comparador '(' list_expre ')' ')'  (106)
+	condicion : '(' . list_expre ')' comparador '(' list_expre ')' ')'  (107)
+	condicion : '(' . '(' list_expre ')' comparador '(' list_expre ')'  (108)
+	condicion : '(' . list_expre ')' comparador '(' list_expre ')'  (109)
+	condicion : '(' . expresion_arit comparador expresion_arit ')'  (110)
+	condicion : '(' . expresion_arit comparador expresion_arit  (112)
+	condicion : '(' . '(' list_expre ')' '(' list_expre ')' ')'  (114)
+	condicion : '(' . error ')'  (115)
+	condicion : '(' . '(' list_expre comparador '(' list_expre ')' ')'  (116)
+	condicion : '(' . '(' list_expre ')' comparador list_expre ')' ')'  (117)
 
-	CTE  shift 78
-	ERROR  shift 79
+	error  shift 77
+	CTE  shift 35
+	ID  shift 2
+	ERROR  shift 36
+	'('  shift 78
+	'-'  shift 38
 	.  error
+
+	ID_simple  goto 39
+	CTE_con_sig  goto 40
+	expresion_arit  goto 79
+	variable_simple  goto 42
+	invocacion  goto 43
+	list_expre  goto 80
+	termino  goto 44
+	factor  goto 45
 
 
 state 38
-	invocacion : ID_simple . '(' expresion_arit ')'  (60)
-	invocacion : ID_simple . '(' tipo_primitivo '(' expresion_arit ')' ')'  (61)
-	invocacion : ID_simple . '(' ')'  (62)
-	invocacion : ID_simple . '(' error ')'  (63)
-	variable_simple : ID_simple .  (88)
+	CTE_con_sig : '-' . CTE  (92)
+	CTE_con_sig : '-' . ERROR  (94)
 
-	'('  shift 80
-	$end  reduce 88
-	error  reduce 88
-	IF  reduce 88
-	THEN  reduce 88
-	ELSE  reduce 88
-	BEGIN  reduce 88
-	END  reduce 88
-	END_IF  reduce 88
-	OUTF  reduce 88
-	TYPEDEF  reduce 88
-	RET  reduce 88
-	ID  reduce 88
-	WHILE  reduce 88
-	GOTO  reduce 88
-	ETIQUETA  reduce 88
-	MAYORIGUAL  reduce 88
-	MENORIGUAL  reduce 88
-	DISTINTO  reduce 88
-	INTEGER  reduce 88
-	DOUBLE  reduce 88
-	';'  reduce 88
-	'{'  reduce 88
-	','  reduce 88
-	'<'  reduce 88
-	'>'  reduce 88
-	')'  reduce 88
-	'+'  reduce 88
-	'-'  reduce 88
-	'*'  reduce 88
-	'/'  reduce 88
-	'='  reduce 88
+	CTE  shift 81
+	ERROR  shift 82
+	.  error
 
 
 state 39
-	factor : CTE_con_sig .  (82)
+	invocacion : ID_simple . '(' expresion_arit ')'  (61)
+	invocacion : ID_simple . '(' tipo_primitivo '(' expresion_arit ')' ')'  (62)
+	invocacion : ID_simple . '(' ')'  (63)
+	invocacion : ID_simple . '(' error ')'  (64)
+	variable_simple : ID_simple .  (89)
 
-	.  reduce 82
+	'('  shift 83
+	$end  reduce 89
+	error  reduce 89
+	IF  reduce 89
+	THEN  reduce 89
+	ELSE  reduce 89
+	BEGIN  reduce 89
+	END  reduce 89
+	END_IF  reduce 89
+	OUTF  reduce 89
+	TYPEDEF  reduce 89
+	RET  reduce 89
+	ID  reduce 89
+	WHILE  reduce 89
+	GOTO  reduce 89
+	ETIQUETA  reduce 89
+	MAYORIGUAL  reduce 89
+	MENORIGUAL  reduce 89
+	DISTINTO  reduce 89
+	INTEGER  reduce 89
+	DOUBLE  reduce 89
+	';'  reduce 89
+	'{'  reduce 89
+	','  reduce 89
+	'<'  reduce 89
+	'>'  reduce 89
+	')'  reduce 89
+	'+'  reduce 89
+	'-'  reduce 89
+	'*'  reduce 89
+	'/'  reduce 89
+	'='  reduce 89
 
 
 state 40
-	expresion_arit : expresion_arit . '+' termino  (66)
-	expresion_arit : expresion_arit . '-' termino  (67)
-	expresion_arit : expresion_arit . '+' error  (71)
-	expresion_arit : expresion_arit . '-' error  (72)
-	condicion : expresion_arit . comparador expresion_arit ')'  (110)
-	condicion : expresion_arit . comparador expresion_arit  (112)
-
-	MAYORIGUAL  shift 81
-	MENORIGUAL  shift 82
-	DISTINTO  shift 83
-	'<'  shift 84
-	'>'  shift 85
-	'+'  shift 86
-	'-'  shift 87
-	'='  shift 88
-	.  error
-
-	comparador  goto 89
-
-
-state 41
-	factor : variable_simple .  (81)
-	factor : variable_simple . '{' CTE '}'  (84)
-
-	'{'  shift 90
-	$end  reduce 81
-	error  reduce 81
-	IF  reduce 81
-	THEN  reduce 81
-	ELSE  reduce 81
-	BEGIN  reduce 81
-	END  reduce 81
-	END_IF  reduce 81
-	OUTF  reduce 81
-	TYPEDEF  reduce 81
-	RET  reduce 81
-	ID  reduce 81
-	WHILE  reduce 81
-	GOTO  reduce 81
-	ETIQUETA  reduce 81
-	MAYORIGUAL  reduce 81
-	MENORIGUAL  reduce 81
-	DISTINTO  reduce 81
-	INTEGER  reduce 81
-	DOUBLE  reduce 81
-	';'  reduce 81
-	','  reduce 81
-	'<'  reduce 81
-	'>'  reduce 81
-	')'  reduce 81
-	'+'  reduce 81
-	'-'  reduce 81
-	'*'  reduce 81
-	'/'  reduce 81
-	'='  reduce 81
-
-
-state 42
-	factor : invocacion .  (83)
+	factor : CTE_con_sig .  (83)
 
 	.  reduce 83
 
 
-state 43
-	expresion_arit : termino .  (68)
-	termino : termino . '*' factor  (74)
-	termino : termino . '/' factor  (75)
-	termino : termino . '*' error  (79)
-	termino : termino . '/' error  (80)
+state 41
+	expresion_arit : expresion_arit . '+' termino  (67)
+	expresion_arit : expresion_arit . '-' termino  (68)
+	expresion_arit : expresion_arit . '+' error  (72)
+	expresion_arit : expresion_arit . '-' error  (73)
+	condicion : expresion_arit . comparador expresion_arit ')'  (111)
+	condicion : expresion_arit . comparador expresion_arit  (113)
 
-	'*'  shift 91
-	'/'  shift 92
-	$end  reduce 68
-	error  reduce 68
-	IF  reduce 68
-	THEN  reduce 68
-	ELSE  reduce 68
-	BEGIN  reduce 68
-	END  reduce 68
-	END_IF  reduce 68
-	OUTF  reduce 68
-	TYPEDEF  reduce 68
-	RET  reduce 68
-	ID  reduce 68
-	WHILE  reduce 68
-	GOTO  reduce 68
-	ETIQUETA  reduce 68
-	MAYORIGUAL  reduce 68
-	MENORIGUAL  reduce 68
-	DISTINTO  reduce 68
-	INTEGER  reduce 68
-	DOUBLE  reduce 68
-	';'  reduce 68
-	','  reduce 68
-	'<'  reduce 68
-	'>'  reduce 68
-	')'  reduce 68
-	'+'  reduce 68
-	'-'  reduce 68
-	'='  reduce 68
+	MAYORIGUAL  shift 84
+	MENORIGUAL  shift 85
+	DISTINTO  shift 86
+	'<'  shift 87
+	'>'  shift 88
+	'+'  shift 89
+	'-'  shift 90
+	'='  shift 91
+	.  error
+
+	comparador  goto 92
+
+
+state 42
+	factor : variable_simple .  (82)
+	factor : variable_simple . '{' CTE '}'  (85)
+
+	'{'  shift 93
+	$end  reduce 82
+	error  reduce 82
+	IF  reduce 82
+	THEN  reduce 82
+	ELSE  reduce 82
+	BEGIN  reduce 82
+	END  reduce 82
+	END_IF  reduce 82
+	OUTF  reduce 82
+	TYPEDEF  reduce 82
+	RET  reduce 82
+	ID  reduce 82
+	WHILE  reduce 82
+	GOTO  reduce 82
+	ETIQUETA  reduce 82
+	MAYORIGUAL  reduce 82
+	MENORIGUAL  reduce 82
+	DISTINTO  reduce 82
+	INTEGER  reduce 82
+	DOUBLE  reduce 82
+	';'  reduce 82
+	','  reduce 82
+	'<'  reduce 82
+	'>'  reduce 82
+	')'  reduce 82
+	'+'  reduce 82
+	'-'  reduce 82
+	'*'  reduce 82
+	'/'  reduce 82
+	'='  reduce 82
+
+
+state 43
+	factor : invocacion .  (84)
+
+	.  reduce 84
 
 
 state 44
-	termino : factor .  (76)
+	expresion_arit : termino .  (69)
+	termino : termino . '*' factor  (75)
+	termino : termino . '/' factor  (76)
+	termino : termino . '*' error  (80)
+	termino : termino . '/' error  (81)
 
-	.  reduce 76
+	'*'  shift 94
+	'/'  shift 95
+	$end  reduce 69
+	error  reduce 69
+	IF  reduce 69
+	THEN  reduce 69
+	ELSE  reduce 69
+	BEGIN  reduce 69
+	END  reduce 69
+	END_IF  reduce 69
+	OUTF  reduce 69
+	TYPEDEF  reduce 69
+	RET  reduce 69
+	ID  reduce 69
+	WHILE  reduce 69
+	GOTO  reduce 69
+	ETIQUETA  reduce 69
+	MAYORIGUAL  reduce 69
+	MENORIGUAL  reduce 69
+	DISTINTO  reduce 69
+	INTEGER  reduce 69
+	DOUBLE  reduce 69
+	';'  reduce 69
+	','  reduce 69
+	'<'  reduce 69
+	'>'  reduce 69
+	')'  reduce 69
+	'+'  reduce 69
+	'-'  reduce 69
+	'='  reduce 69
 
 
 state 45
-	sentencia_IF : IF condicion . THEN bloque_unidad ';' bloque_else ';' END_IF  (94)
-	sentencia_IF : IF condicion . THEN bloque_unidad ';' END_IF  (95)
-	sentencia_IF : IF condicion . THEN bloque_else ';' END_IF  (96)
-	sentencia_IF : IF condicion . THEN END_IF  (97)
-	sentencia_IF : IF condicion . THEN bloque_unidad ';' ELSE END_IF  (98)
-	sentencia_IF : IF condicion . THEN bloque_unidad bloque_else ';' END_IF  (99)
-	sentencia_IF : IF condicion . THEN bloque_unidad END_IF  (100)
-	sentencia_IF : IF condicion . THEN bloque_unidad ';' bloque_else END_IF  (101)
-	sentencia_IF : IF condicion . THEN bloque_unidad bloque_else END_IF  (102)
-	sentencia_IF : IF condicion . THEN bloque_unidad ';' error  (103)
-	sentencia_IF : IF condicion . THEN bloque_unidad ';' bloque_else ';' error  (104)
+	termino : factor .  (77)
 
-	THEN  shift 93
-	.  error
+	.  reduce 77
 
 
 state 46
-	outf_rule : OUTF '(' . expresion_arit ')'  (54)
-	outf_rule : OUTF '(' . ')'  (55)
-	outf_rule : OUTF '(' . cadena ')'  (56)
-	outf_rule : OUTF '(' . sentencias ')'  (57)
+	sentencia_IF : IF condicion . THEN bloque_unidad ';' bloque_else ';' END_IF  (95)
+	sentencia_IF : IF condicion . THEN bloque_unidad ';' END_IF  (96)
+	sentencia_IF : IF condicion . THEN bloque_else ';' END_IF  (97)
+	sentencia_IF : IF condicion . THEN END_IF  (98)
+	sentencia_IF : IF condicion . THEN bloque_unidad ';' ELSE END_IF  (99)
+	sentencia_IF : IF condicion . THEN bloque_unidad bloque_else ';' END_IF  (100)
+	sentencia_IF : IF condicion . THEN bloque_unidad END_IF  (101)
+	sentencia_IF : IF condicion . THEN bloque_unidad ';' bloque_else END_IF  (102)
+	sentencia_IF : IF condicion . THEN bloque_unidad bloque_else END_IF  (103)
+	sentencia_IF : IF condicion . THEN bloque_unidad ';' error  (104)
+	sentencia_IF : IF condicion . THEN bloque_unidad ';' bloque_else ';' error  (105)
 
-	error  shift 33
+	THEN  shift 96
+	.  error
+
+
+state 47
+	outf_rule : OUTF '(' . expresion_arit ')'  (55)
+	outf_rule : OUTF '(' . ')'  (56)
+	outf_rule : OUTF '(' . cadena ')'  (57)
+	outf_rule : OUTF '(' . sentencias ')'  (58)
+
+	error  shift 34
 	IF  shift 5
 	OUTF  shift 6
 	TYPEDEF  shift 7
 	RET  shift 8
-	CTE  shift 34
+	CTE  shift 35
 	ID  shift 2
-	CADENAMULTILINEA  shift 94
+	CADENAMULTILINEA  shift 97
 	WHILE  shift 9
 	GOTO  shift 10
 	ETIQUETA  shift 11
 	INTEGER  shift 12
 	DOUBLE  shift 13
-	ERROR  shift 35
-	')'  shift 95
-	'-'  shift 37
+	ERROR  shift 36
+	')'  shift 98
+	'-'  shift 38
 	.  error
 
-	ID_simple  goto 96
-	sentencias  goto 97
+	ID_simple  goto 99
+	sentencias  goto 100
 	sentencia  goto 16
 	sentencia_declarativa  goto 17
 	sentencia_ejecutable  goto 18
@@ -942,22 +958,23 @@ state 46
 	declaracion_subtipo  goto 21
 	tipo  goto 22
 	tipo_primitivo  goto 23
-	CTE_con_sig  goto 39
-	retorno  goto 24
-	expresion_arit  goto 98
-	asignacion  goto 25
-	sentencia_IF  goto 26
-	sentencia_WHILE  goto 27
-	sentencia_goto  goto 28
-	outf_rule  goto 29
-	cadena  goto 99
-	variable_simple  goto 100
-	invocacion  goto 42
-	termino  goto 43
-	factor  goto 44
+	CTE_con_sig  goto 40
+	encabezado_funcion  goto 24
+	retorno  goto 25
+	expresion_arit  goto 101
+	asignacion  goto 26
+	sentencia_IF  goto 27
+	sentencia_WHILE  goto 28
+	sentencia_goto  goto 29
+	outf_rule  goto 30
+	cadena  goto 102
+	variable_simple  goto 103
+	invocacion  goto 43
+	termino  goto 44
+	factor  goto 45
 
 
-state 47
+state 48
 	declaracion_subtipo : TYPEDEF TRIPLE . '<' tipo '>' ID_simple  (26)
 	declaracion_subtipo : TYPEDEF TRIPLE . tipo '>' ID_simple  (34)
 	declaracion_subtipo : TYPEDEF TRIPLE . '<' tipo ID_simple  (35)
@@ -967,15 +984,15 @@ state 47
 	ID  shift 2
 	INTEGER  shift 12
 	DOUBLE  shift 13
-	'<'  shift 101
+	'<'  shift 104
 	.  error
 
-	ID_simple  goto 102
-	tipo  goto 103
+	ID_simple  goto 105
+	tipo  goto 106
 	tipo_primitivo  goto 23
 
 
-state 48
+state 49
 	declaracion_subtipo : TYPEDEF ASIGNACION . tipo '{' CTE_con_sig ',' CTE_con_sig '}'  (31)
 
 	ID  shift 2
@@ -983,12 +1000,12 @@ state 48
 	DOUBLE  shift 13
 	.  error
 
-	ID_simple  goto 102
-	tipo  goto 104
+	ID_simple  goto 105
+	tipo  goto 107
 	tipo_primitivo  goto 23
 
 
-state 49
+state 50
 	declaracion_subtipo : TYPEDEF '<' . tipo '>' ID_simple  (33)
 
 	ID  shift 2
@@ -996,12 +1013,12 @@ state 49
 	DOUBLE  shift 13
 	.  error
 
-	ID_simple  goto 102
-	tipo  goto 105
+	ID_simple  goto 105
+	tipo  goto 108
 	tipo_primitivo  goto 23
 
 
-state 50
+state 51
 	declaracion_subtipo : TYPEDEF ID_simple . ASIGNACION tipo '{' CTE_con_sig ',' CTE_con_sig '}'  (22)
 	declaracion_subtipo : TYPEDEF ID_simple . ASIGNACION tipo CTE_con_sig ',' CTE_con_sig '}'  (23)
 	declaracion_subtipo : TYPEDEF ID_simple . ASIGNACION tipo '{' CTE_con_sig ',' CTE_con_sig  (24)
@@ -1012,36 +1029,36 @@ state 50
 	declaracion_subtipo : TYPEDEF ID_simple . ASIGNACION tipo '{' '}'  (30)
 	declaracion_subtipo : TYPEDEF ID_simple . ASIGNACION '{' CTE_con_sig ',' CTE_con_sig '}'  (32)
 
-	ASIGNACION  shift 106
+	ASIGNACION  shift 109
 	.  error
-
-
-state 51
-	retorno : RET '(' . expresion_arit ')'  (46)
-
-	error  shift 33
-	CTE  shift 34
-	ID  shift 2
-	ERROR  shift 35
-	'-'  shift 37
-	.  error
-
-	ID_simple  goto 38
-	CTE_con_sig  goto 39
-	expresion_arit  goto 107
-	variable_simple  goto 41
-	invocacion  goto 42
-	termino  goto 43
-	factor  goto 44
 
 
 state 52
-	sentencia_WHILE : WHILE condicion . bloque_unidad  (139)
-	sentencia_WHILE : WHILE condicion . error  (140)
+	retorno : RET '(' . expresion_arit ')'  (47)
 
-	error  shift 108
+	error  shift 34
+	CTE  shift 35
+	ID  shift 2
+	ERROR  shift 36
+	'-'  shift 38
+	.  error
+
+	ID_simple  goto 39
+	CTE_con_sig  goto 40
+	expresion_arit  goto 110
+	variable_simple  goto 42
+	invocacion  goto 43
+	termino  goto 44
+	factor  goto 45
+
+
+state 53
+	sentencia_WHILE : WHILE condicion . bloque_unidad  (140)
+	sentencia_WHILE : WHILE condicion . error  (141)
+
+	error  shift 111
 	IF  shift 5
-	BEGIN  shift 109
+	BEGIN  shift 112
 	OUTF  shift 6
 	RET  shift 8
 	ID  shift 2
@@ -1050,135 +1067,157 @@ state 52
 	ETIQUETA  shift 11
 	.  error
 
-	ID_simple  goto 61
-	sentencia_ejecutable  goto 110
-	retorno  goto 24
-	asignacion  goto 25
-	sentencia_IF  goto 26
-	sentencia_WHILE  goto 27
-	sentencia_goto  goto 28
-	outf_rule  goto 29
-	variable_simple  goto 30
-	bloque_unidad  goto 111
-	bloque_sentencia_simple  goto 112
-	bloque_unidad_simple  goto 113
-	bloque_unidad_multiple  goto 114
+	ID_simple  goto 62
+	sentencia_ejecutable  goto 113
+	retorno  goto 25
+	asignacion  goto 26
+	sentencia_IF  goto 27
+	sentencia_WHILE  goto 28
+	sentencia_goto  goto 29
+	outf_rule  goto 30
+	variable_simple  goto 31
+	bloque_unidad  goto 114
+	bloque_sentencia_simple  goto 115
+	bloque_unidad_simple  goto 116
+	bloque_unidad_multiple  goto 117
 
 
-state 53
-	sentencia_goto : GOTO error .  (142)
+state 54
+	sentencia_goto : GOTO error .  (143)
+
+	.  reduce 143
+
+
+state 55
+	sentencia_goto : GOTO ETIQUETA .  (142)
 
 	.  reduce 142
 
 
-state 54
-	sentencia_goto : GOTO ETIQUETA .  (141)
-
-	.  reduce 141
-
-
-state 55
+state 56
 	programa : BEGIN sentencias END .  (2)
 
 	.  reduce 2
 
 
-state 56
+state 57
 	sentencias : sentencias sentencia .  (6)
 
 	.  reduce 6
 
 
-state 57
+state 58
 	sentencia : sentencia_ejecutable ';' .  (9)
 
 	.  reduce 9
 
 
-state 58
+state 59
 	sentencia_declarativa : declaracion_funciones ';' .  (12)
 
 	.  reduce 12
 
 
-state 59
+state 60
 	sentencia_declarativa : declaracion_subtipo ';' .  (13)
 
 	.  reduce 13
 
 
-state 60
-	declaracion_funciones : tipo FUN . ID parametros_parentesis BEGIN cuerpo_funcion END  (38)
-	declaracion_funciones : tipo FUN . parametros_parentesis BEGIN cuerpo_funcion END  (39)
+state 61
+	encabezado_funcion : tipo FUN . ID  (39)
+	encabezado_funcion : tipo FUN .  (40)
 
-	ID  shift 115
-	'('  shift 116
+	ID  shift 118
+	'('  reduce 40
+
+
+state 62
+	variable_simple : ID_simple .  (89)
+
+	.  reduce 89
+
+
+state 63
+	declaracion_variable : tipo variables . ';'  (16)
+	declaracion_variable : tipo variables . error  (17)
+	variables : variables . ',' variable_simple  (86)
+	variables : variables . variable_simple  (87)
+
+	error  shift 119
+	ID  shift 2
+	';'  shift 120
+	','  shift 121
 	.  error
 
-	parametros_parentesis  goto 117
+	ID_simple  goto 62
+	variable_simple  goto 122
 
 
-state 61
-	variable_simple : ID_simple .  (88)
+state 64
+	variables : variable_simple .  (88)
 
 	.  reduce 88
 
 
-state 62
-	declaracion_variable : tipo variables . ';'  (16)
-	declaracion_variable : tipo variables . error  (17)
-	variables : variables . ',' variable_simple  (85)
-	variables : variables . variable_simple  (86)
-
-	error  shift 118
-	ID  shift 2
-	';'  shift 119
-	','  shift 120
-	.  error
-
-	ID_simple  goto 61
-	variable_simple  goto 121
-
-
-state 63
-	variables : variable_simple .  (87)
-
-	.  reduce 87
-
-
-state 64
-	asignacion : variable_simple ASIGNACION . expresion_arit  (58)
-
-	error  shift 33
-	CTE  shift 34
-	ID  shift 2
-	ERROR  shift 35
-	'-'  shift 37
-	.  error
-
-	ID_simple  goto 38
-	CTE_con_sig  goto 39
-	expresion_arit  goto 122
-	variable_simple  goto 41
-	invocacion  goto 42
-	termino  goto 43
-	factor  goto 44
-
-
 state 65
-	asignacion : variable_simple '{' . CTE '}' ASIGNACION expresion_arit  (59)
+	parametros_parentesis : '(' . tipo_primitivo ID_simple ')'  (41)
+	parametros_parentesis : '(' . tipo_primitivo ')'  (42)
+	parametros_parentesis : '(' . ID_simple ')'  (43)
+	parametros_parentesis : '(' . ')'  (44)
+	parametros_parentesis : '(' . error ')'  (45)
 
-	CTE  shift 123
+	error  shift 123
+	ID  shift 2
+	INTEGER  shift 12
+	DOUBLE  shift 13
+	')'  shift 124
 	.  error
+
+	ID_simple  goto 125
+	tipo_primitivo  goto 126
 
 
 state 66
+	declaracion_funciones : encabezado_funcion parametros_parentesis . BEGIN cuerpo_funcion END  (38)
+
+	BEGIN  shift 127
+	.  error
+
+
+state 67
+	asignacion : variable_simple ASIGNACION . expresion_arit  (59)
+
+	error  shift 34
+	CTE  shift 35
+	ID  shift 2
+	ERROR  shift 36
+	'-'  shift 38
+	.  error
+
+	ID_simple  goto 39
+	CTE_con_sig  goto 40
+	expresion_arit  goto 128
+	variable_simple  goto 42
+	invocacion  goto 43
+	termino  goto 44
+	factor  goto 45
+
+
+state 68
+	asignacion : variable_simple '{' . CTE '}' ASIGNACION expresion_arit  (60)
+
+	CTE  shift 129
+	.  error
+
+
+state 69
 	programa : ID_simple BEGIN sentencias . END  (1)
 	programa : ID_simple BEGIN sentencias .  (3)
 	sentencias : sentencias . sentencia  (6)
 
 	IF  shift 5
-	END  shift 124
+	END  shift 130
 	OUTF  shift 6
 	TYPEDEF  shift 7
 	RET  shift 8
@@ -1191,7 +1230,7 @@ state 66
 	$end  reduce 3
 
 	ID_simple  goto 14
-	sentencia  goto 56
+	sentencia  goto 57
 	sentencia_declarativa  goto 17
 	sentencia_ejecutable  goto 18
 	declaracion_variable  goto 19
@@ -1199,377 +1238,378 @@ state 66
 	declaracion_subtipo  goto 21
 	tipo  goto 22
 	tipo_primitivo  goto 23
-	retorno  goto 24
-	asignacion  goto 25
-	sentencia_IF  goto 26
-	sentencia_WHILE  goto 27
-	sentencia_goto  goto 28
-	outf_rule  goto 29
-	variable_simple  goto 30
+	encabezado_funcion  goto 24
+	retorno  goto 25
+	asignacion  goto 26
+	sentencia_IF  goto 27
+	sentencia_WHILE  goto 28
+	sentencia_goto  goto 29
+	outf_rule  goto 30
+	variable_simple  goto 31
 
 
-state 67
+state 70
 	programa : ID_simple sentencias END .  (4)
 
 	.  reduce 4
 
 
-state 68
-	termino : error . '*' error  (77)
-	termino : error . '/' error  (78)
-
-	'*'  shift 71
-	'/'  shift 72
-	.  error
-
-
-state 69
-	expresion_arit : error '+' . error  (69)
-
-	error  shift 125
-	.  error
-
-
-state 70
-	expresion_arit : error '-' . error  (70)
-	CTE_con_sig : '-' . CTE  (91)
-	CTE_con_sig : '-' . ERROR  (93)
-
-	error  shift 126
-	CTE  shift 78
-	ERROR  shift 79
-	.  error
-
-
 state 71
-	termino : error '*' . error  (77)
+	termino : error . '*' error  (78)
+	termino : error . '/' error  (79)
 
-	error  shift 127
+	'*'  shift 74
+	'/'  shift 75
 	.  error
 
 
 state 72
-	termino : error '/' . error  (78)
+	expresion_arit : error '+' . error  (70)
 
-	error  shift 128
+	error  shift 131
 	.  error
 
 
 state 73
-	expresion_arit : error termino .  (73)
-	termino : termino . '*' factor  (74)
-	termino : termino . '/' factor  (75)
-	termino : termino . '*' error  (79)
-	termino : termino . '/' error  (80)
+	expresion_arit : error '-' . error  (71)
+	CTE_con_sig : '-' . CTE  (92)
+	CTE_con_sig : '-' . ERROR  (94)
 
-	'*'  shift 91
-	'/'  shift 92
-	$end  reduce 73
-	error  reduce 73
-	IF  reduce 73
-	THEN  reduce 73
-	ELSE  reduce 73
-	BEGIN  reduce 73
-	END  reduce 73
-	END_IF  reduce 73
-	OUTF  reduce 73
-	TYPEDEF  reduce 73
-	RET  reduce 73
-	ID  reduce 73
-	WHILE  reduce 73
-	GOTO  reduce 73
-	ETIQUETA  reduce 73
-	MAYORIGUAL  reduce 73
-	MENORIGUAL  reduce 73
-	DISTINTO  reduce 73
-	INTEGER  reduce 73
-	DOUBLE  reduce 73
-	';'  reduce 73
-	','  reduce 73
-	'<'  reduce 73
-	'>'  reduce 73
-	')'  reduce 73
-	'+'  reduce 73
-	'-'  reduce 73
-	'='  reduce 73
+	error  shift 132
+	CTE  shift 81
+	ERROR  shift 82
+	.  error
 
 
 state 74
-	expresion_arit : error . '+' error  (69)
-	expresion_arit : error . '-' error  (70)
-	expresion_arit : error . termino  (73)
-	termino : error . '*' error  (77)
-	termino : error . '/' error  (78)
-	condicion : '(' error . ')'  (114)
+	termino : error '*' . error  (78)
 
-	error  shift 68
-	CTE  shift 34
-	ID  shift 2
-	ERROR  shift 35
-	')'  shift 129
-	'+'  shift 69
-	'-'  shift 70
-	'*'  shift 71
-	'/'  shift 72
+	error  shift 133
 	.  error
-
-	ID_simple  goto 38
-	CTE_con_sig  goto 39
-	variable_simple  goto 41
-	invocacion  goto 42
-	termino  goto 73
-	factor  goto 44
 
 
 state 75
-	condicion : '(' '(' . list_expre ')' comparador '(' list_expre ')' ')'  (105)
-	condicion : '(' '(' . list_expre ')' comparador '(' list_expre ')'  (107)
-	condicion : '(' '(' . list_expre ')' '(' list_expre ')' ')'  (113)
-	condicion : '(' '(' . list_expre comparador '(' list_expre ')' ')'  (115)
-	condicion : '(' '(' . list_expre ')' comparador list_expre ')' ')'  (116)
+	termino : error '/' . error  (79)
 
-	error  shift 33
-	CTE  shift 34
-	ID  shift 2
-	ERROR  shift 35
-	'-'  shift 37
+	error  shift 134
 	.  error
-
-	ID_simple  goto 38
-	CTE_con_sig  goto 39
-	expresion_arit  goto 130
-	variable_simple  goto 41
-	invocacion  goto 42
-	list_expre  goto 131
-	termino  goto 43
-	factor  goto 44
 
 
 state 76
-	list_expre : expresion_arit .  (65)
-	expresion_arit : expresion_arit . '+' termino  (66)
-	expresion_arit : expresion_arit . '-' termino  (67)
-	expresion_arit : expresion_arit . '+' error  (71)
-	expresion_arit : expresion_arit . '-' error  (72)
-	condicion : '(' expresion_arit . comparador expresion_arit ')'  (109)
-	condicion : '(' expresion_arit . comparador expresion_arit  (111)
+	expresion_arit : error termino .  (74)
+	termino : termino . '*' factor  (75)
+	termino : termino . '/' factor  (76)
+	termino : termino . '*' error  (80)
+	termino : termino . '/' error  (81)
 
-	MAYORIGUAL  shift 81
-	MENORIGUAL  shift 82
-	DISTINTO  shift 83
-	'<'  shift 84
-	'>'  shift 85
-	'+'  shift 86
-	'-'  shift 87
-	'='  shift 88
-	','  reduce 65
-	')'  reduce 65
-
-	comparador  goto 132
+	'*'  shift 94
+	'/'  shift 95
+	$end  reduce 74
+	error  reduce 74
+	IF  reduce 74
+	THEN  reduce 74
+	ELSE  reduce 74
+	BEGIN  reduce 74
+	END  reduce 74
+	END_IF  reduce 74
+	OUTF  reduce 74
+	TYPEDEF  reduce 74
+	RET  reduce 74
+	ID  reduce 74
+	WHILE  reduce 74
+	GOTO  reduce 74
+	ETIQUETA  reduce 74
+	MAYORIGUAL  reduce 74
+	MENORIGUAL  reduce 74
+	DISTINTO  reduce 74
+	INTEGER  reduce 74
+	DOUBLE  reduce 74
+	';'  reduce 74
+	','  reduce 74
+	'<'  reduce 74
+	'>'  reduce 74
+	')'  reduce 74
+	'+'  reduce 74
+	'-'  reduce 74
+	'='  reduce 74
 
 
 state 77
-	list_expre : list_expre . ',' expresion_arit  (64)
-	condicion : '(' list_expre . ')' comparador '(' list_expre ')' ')'  (106)
-	condicion : '(' list_expre . ')' comparador '(' list_expre ')'  (108)
+	expresion_arit : error . '+' error  (70)
+	expresion_arit : error . '-' error  (71)
+	expresion_arit : error . termino  (74)
+	termino : error . '*' error  (78)
+	termino : error . '/' error  (79)
+	condicion : '(' error . ')'  (115)
 
-	','  shift 133
-	')'  shift 134
+	error  shift 71
+	CTE  shift 35
+	ID  shift 2
+	ERROR  shift 36
+	')'  shift 135
+	'+'  shift 72
+	'-'  shift 73
+	'*'  shift 74
+	'/'  shift 75
 	.  error
+
+	ID_simple  goto 39
+	CTE_con_sig  goto 40
+	variable_simple  goto 42
+	invocacion  goto 43
+	termino  goto 76
+	factor  goto 45
 
 
 state 78
-	CTE_con_sig : '-' CTE .  (91)
+	condicion : '(' '(' . list_expre ')' comparador '(' list_expre ')' ')'  (106)
+	condicion : '(' '(' . list_expre ')' comparador '(' list_expre ')'  (108)
+	condicion : '(' '(' . list_expre ')' '(' list_expre ')' ')'  (114)
+	condicion : '(' '(' . list_expre comparador '(' list_expre ')' ')'  (116)
+	condicion : '(' '(' . list_expre ')' comparador list_expre ')' ')'  (117)
 
-	.  reduce 91
+	error  shift 34
+	CTE  shift 35
+	ID  shift 2
+	ERROR  shift 36
+	'-'  shift 38
+	.  error
+
+	ID_simple  goto 39
+	CTE_con_sig  goto 40
+	expresion_arit  goto 136
+	variable_simple  goto 42
+	invocacion  goto 43
+	list_expre  goto 137
+	termino  goto 44
+	factor  goto 45
 
 
 state 79
-	CTE_con_sig : '-' ERROR .  (93)
+	list_expre : expresion_arit .  (66)
+	expresion_arit : expresion_arit . '+' termino  (67)
+	expresion_arit : expresion_arit . '-' termino  (68)
+	expresion_arit : expresion_arit . '+' error  (72)
+	expresion_arit : expresion_arit . '-' error  (73)
+	condicion : '(' expresion_arit . comparador expresion_arit ')'  (110)
+	condicion : '(' expresion_arit . comparador expresion_arit  (112)
 
-	.  reduce 93
+	MAYORIGUAL  shift 84
+	MENORIGUAL  shift 85
+	DISTINTO  shift 86
+	'<'  shift 87
+	'>'  shift 88
+	'+'  shift 89
+	'-'  shift 90
+	'='  shift 91
+	','  reduce 66
+	')'  reduce 66
+
+	comparador  goto 138
 
 
 state 80
-	invocacion : ID_simple '(' . expresion_arit ')'  (60)
-	invocacion : ID_simple '(' . tipo_primitivo '(' expresion_arit ')' ')'  (61)
-	invocacion : ID_simple '(' . ')'  (62)
-	invocacion : ID_simple '(' . error ')'  (63)
+	list_expre : list_expre . ',' expresion_arit  (65)
+	condicion : '(' list_expre . ')' comparador '(' list_expre ')' ')'  (107)
+	condicion : '(' list_expre . ')' comparador '(' list_expre ')'  (109)
 
-	error  shift 135
-	CTE  shift 34
-	ID  shift 2
-	INTEGER  shift 12
-	DOUBLE  shift 13
-	ERROR  shift 35
-	')'  shift 136
-	'-'  shift 37
+	','  shift 139
+	')'  shift 140
 	.  error
-
-	ID_simple  goto 38
-	tipo_primitivo  goto 137
-	CTE_con_sig  goto 39
-	expresion_arit  goto 138
-	variable_simple  goto 41
-	invocacion  goto 42
-	termino  goto 43
-	factor  goto 44
 
 
 state 81
-	comparador : MAYORIGUAL .  (118)
+	CTE_con_sig : '-' CTE .  (92)
 
-	.  reduce 118
+	.  reduce 92
 
 
 state 82
-	comparador : MENORIGUAL .  (120)
+	CTE_con_sig : '-' ERROR .  (94)
 
-	.  reduce 120
+	.  reduce 94
 
 
 state 83
-	comparador : DISTINTO .  (122)
+	invocacion : ID_simple '(' . expresion_arit ')'  (61)
+	invocacion : ID_simple '(' . tipo_primitivo '(' expresion_arit ')' ')'  (62)
+	invocacion : ID_simple '(' . ')'  (63)
+	invocacion : ID_simple '(' . error ')'  (64)
 
-	.  reduce 122
+	error  shift 141
+	CTE  shift 35
+	ID  shift 2
+	INTEGER  shift 12
+	DOUBLE  shift 13
+	ERROR  shift 36
+	')'  shift 142
+	'-'  shift 38
+	.  error
+
+	ID_simple  goto 39
+	tipo_primitivo  goto 143
+	CTE_con_sig  goto 40
+	expresion_arit  goto 144
+	variable_simple  goto 42
+	invocacion  goto 43
+	termino  goto 44
+	factor  goto 45
 
 
 state 84
-	comparador : '<' .  (119)
+	comparador : MAYORIGUAL .  (119)
 
 	.  reduce 119
 
 
 state 85
-	comparador : '>' .  (117)
-
-	.  reduce 117
-
-
-state 86
-	expresion_arit : expresion_arit '+' . termino  (66)
-	expresion_arit : expresion_arit '+' . error  (71)
-
-	error  shift 139
-	CTE  shift 34
-	ID  shift 2
-	ERROR  shift 35
-	'-'  shift 37
-	.  error
-
-	ID_simple  goto 38
-	CTE_con_sig  goto 39
-	variable_simple  goto 41
-	invocacion  goto 42
-	termino  goto 140
-	factor  goto 44
-
-
-state 87
-	expresion_arit : expresion_arit '-' . termino  (67)
-	expresion_arit : expresion_arit '-' . error  (72)
-
-	error  shift 141
-	CTE  shift 34
-	ID  shift 2
-	ERROR  shift 35
-	'-'  shift 37
-	.  error
-
-	ID_simple  goto 38
-	CTE_con_sig  goto 39
-	variable_simple  goto 41
-	invocacion  goto 42
-	termino  goto 142
-	factor  goto 44
-
-
-state 88
-	comparador : '=' .  (121)
+	comparador : MENORIGUAL .  (121)
 
 	.  reduce 121
 
 
-state 89
-	condicion : expresion_arit comparador . expresion_arit ')'  (110)
-	condicion : expresion_arit comparador . expresion_arit  (112)
+state 86
+	comparador : DISTINTO .  (123)
 
-	error  shift 33
-	CTE  shift 34
+	.  reduce 123
+
+
+state 87
+	comparador : '<' .  (120)
+
+	.  reduce 120
+
+
+state 88
+	comparador : '>' .  (118)
+
+	.  reduce 118
+
+
+state 89
+	expresion_arit : expresion_arit '+' . termino  (67)
+	expresion_arit : expresion_arit '+' . error  (72)
+
+	error  shift 145
+	CTE  shift 35
 	ID  shift 2
-	ERROR  shift 35
-	'-'  shift 37
+	ERROR  shift 36
+	'-'  shift 38
 	.  error
 
-	ID_simple  goto 38
-	CTE_con_sig  goto 39
-	expresion_arit  goto 143
-	variable_simple  goto 41
-	invocacion  goto 42
-	termino  goto 43
-	factor  goto 44
+	ID_simple  goto 39
+	CTE_con_sig  goto 40
+	variable_simple  goto 42
+	invocacion  goto 43
+	termino  goto 146
+	factor  goto 45
 
 
 state 90
-	factor : variable_simple '{' . CTE '}'  (84)
+	expresion_arit : expresion_arit '-' . termino  (68)
+	expresion_arit : expresion_arit '-' . error  (73)
 
-	CTE  shift 144
+	error  shift 147
+	CTE  shift 35
+	ID  shift 2
+	ERROR  shift 36
+	'-'  shift 38
 	.  error
+
+	ID_simple  goto 39
+	CTE_con_sig  goto 40
+	variable_simple  goto 42
+	invocacion  goto 43
+	termino  goto 148
+	factor  goto 45
 
 
 state 91
-	termino : termino '*' . factor  (74)
-	termino : termino '*' . error  (79)
+	comparador : '=' .  (122)
 
-	error  shift 145
-	CTE  shift 34
-	ID  shift 2
-	ERROR  shift 35
-	'-'  shift 37
-	.  error
-
-	ID_simple  goto 38
-	CTE_con_sig  goto 39
-	variable_simple  goto 41
-	invocacion  goto 42
-	factor  goto 146
+	.  reduce 122
 
 
 state 92
-	termino : termino '/' . factor  (75)
-	termino : termino '/' . error  (80)
+	condicion : expresion_arit comparador . expresion_arit ')'  (111)
+	condicion : expresion_arit comparador . expresion_arit  (113)
 
-	error  shift 147
-	CTE  shift 34
+	error  shift 34
+	CTE  shift 35
 	ID  shift 2
-	ERROR  shift 35
-	'-'  shift 37
+	ERROR  shift 36
+	'-'  shift 38
 	.  error
 
-	ID_simple  goto 38
-	CTE_con_sig  goto 39
-	variable_simple  goto 41
-	invocacion  goto 42
-	factor  goto 148
+	ID_simple  goto 39
+	CTE_con_sig  goto 40
+	expresion_arit  goto 149
+	variable_simple  goto 42
+	invocacion  goto 43
+	termino  goto 44
+	factor  goto 45
 
 
 state 93
-	sentencia_IF : IF condicion THEN . bloque_unidad ';' bloque_else ';' END_IF  (94)
-	sentencia_IF : IF condicion THEN . bloque_unidad ';' END_IF  (95)
-	sentencia_IF : IF condicion THEN . bloque_else ';' END_IF  (96)
-	sentencia_IF : IF condicion THEN . END_IF  (97)
-	sentencia_IF : IF condicion THEN . bloque_unidad ';' ELSE END_IF  (98)
-	sentencia_IF : IF condicion THEN . bloque_unidad bloque_else ';' END_IF  (99)
-	sentencia_IF : IF condicion THEN . bloque_unidad END_IF  (100)
-	sentencia_IF : IF condicion THEN . bloque_unidad ';' bloque_else END_IF  (101)
-	sentencia_IF : IF condicion THEN . bloque_unidad bloque_else END_IF  (102)
-	sentencia_IF : IF condicion THEN . bloque_unidad ';' error  (103)
-	sentencia_IF : IF condicion THEN . bloque_unidad ';' bloque_else ';' error  (104)
+	factor : variable_simple '{' . CTE '}'  (85)
+
+	CTE  shift 150
+	.  error
+
+
+state 94
+	termino : termino '*' . factor  (75)
+	termino : termino '*' . error  (80)
+
+	error  shift 151
+	CTE  shift 35
+	ID  shift 2
+	ERROR  shift 36
+	'-'  shift 38
+	.  error
+
+	ID_simple  goto 39
+	CTE_con_sig  goto 40
+	variable_simple  goto 42
+	invocacion  goto 43
+	factor  goto 152
+
+
+state 95
+	termino : termino '/' . factor  (76)
+	termino : termino '/' . error  (81)
+
+	error  shift 153
+	CTE  shift 35
+	ID  shift 2
+	ERROR  shift 36
+	'-'  shift 38
+	.  error
+
+	ID_simple  goto 39
+	CTE_con_sig  goto 40
+	variable_simple  goto 42
+	invocacion  goto 43
+	factor  goto 154
+
+
+state 96
+	sentencia_IF : IF condicion THEN . bloque_unidad ';' bloque_else ';' END_IF  (95)
+	sentencia_IF : IF condicion THEN . bloque_unidad ';' END_IF  (96)
+	sentencia_IF : IF condicion THEN . bloque_else ';' END_IF  (97)
+	sentencia_IF : IF condicion THEN . END_IF  (98)
+	sentencia_IF : IF condicion THEN . bloque_unidad ';' ELSE END_IF  (99)
+	sentencia_IF : IF condicion THEN . bloque_unidad bloque_else ';' END_IF  (100)
+	sentencia_IF : IF condicion THEN . bloque_unidad END_IF  (101)
+	sentencia_IF : IF condicion THEN . bloque_unidad ';' bloque_else END_IF  (102)
+	sentencia_IF : IF condicion THEN . bloque_unidad bloque_else END_IF  (103)
+	sentencia_IF : IF condicion THEN . bloque_unidad ';' error  (104)
+	sentencia_IF : IF condicion THEN . bloque_unidad ';' bloque_else ';' error  (105)
 
 	IF  shift 5
-	ELSE  shift 149
-	BEGIN  shift 109
-	END_IF  shift 150
+	ELSE  shift 155
+	BEGIN  shift 112
+	END_IF  shift 156
 	OUTF  shift 6
 	RET  shift 8
 	ID  shift 2
@@ -1578,59 +1618,59 @@ state 93
 	ETIQUETA  shift 11
 	.  error
 
-	ID_simple  goto 61
-	sentencia_ejecutable  goto 110
-	retorno  goto 24
-	asignacion  goto 25
-	sentencia_IF  goto 26
-	sentencia_WHILE  goto 27
-	sentencia_goto  goto 28
-	outf_rule  goto 29
-	variable_simple  goto 30
-	bloque_unidad  goto 151
-	bloque_else  goto 152
-	bloque_else_simple  goto 153
-	bloque_else_multiple  goto 154
-	bloque_sentencia_simple  goto 112
-	bloque_unidad_simple  goto 113
-	bloque_unidad_multiple  goto 114
-
-
-state 94
-	cadena : CADENAMULTILINEA .  (138)
-
-	.  reduce 138
-
-
-state 95
-	outf_rule : OUTF '(' ')' .  (55)
-
-	.  reduce 55
-
-
-state 96
-	tipo : ID_simple .  (18)
-	invocacion : ID_simple . '(' expresion_arit ')'  (60)
-	invocacion : ID_simple . '(' tipo_primitivo '(' expresion_arit ')' ')'  (61)
-	invocacion : ID_simple . '(' ')'  (62)
-	invocacion : ID_simple . '(' error ')'  (63)
-	variable_simple : ID_simple .  (88)
-
-	'('  shift 80
-	FUN  reduce 18
-	ID  reduce 18
-	ASIGNACION  reduce 88
-	'{'  reduce 88
-	')'  reduce 88
-	'+'  reduce 88
-	'-'  reduce 88
-	'*'  reduce 88
-	'/'  reduce 88
+	ID_simple  goto 62
+	sentencia_ejecutable  goto 113
+	retorno  goto 25
+	asignacion  goto 26
+	sentencia_IF  goto 27
+	sentencia_WHILE  goto 28
+	sentencia_goto  goto 29
+	outf_rule  goto 30
+	variable_simple  goto 31
+	bloque_unidad  goto 157
+	bloque_else  goto 158
+	bloque_else_simple  goto 159
+	bloque_else_multiple  goto 160
+	bloque_sentencia_simple  goto 115
+	bloque_unidad_simple  goto 116
+	bloque_unidad_multiple  goto 117
 
 
 state 97
+	cadena : CADENAMULTILINEA .  (139)
+
+	.  reduce 139
+
+
+state 98
+	outf_rule : OUTF '(' ')' .  (56)
+
+	.  reduce 56
+
+
+state 99
+	tipo : ID_simple .  (18)
+	invocacion : ID_simple . '(' expresion_arit ')'  (61)
+	invocacion : ID_simple . '(' tipo_primitivo '(' expresion_arit ')' ')'  (62)
+	invocacion : ID_simple . '(' ')'  (63)
+	invocacion : ID_simple . '(' error ')'  (64)
+	variable_simple : ID_simple .  (89)
+
+	'('  shift 83
+	FUN  reduce 18
+	ID  reduce 18
+	ASIGNACION  reduce 89
+	'{'  reduce 89
+	')'  reduce 89
+	'+'  reduce 89
+	'-'  reduce 89
+	'*'  reduce 89
+	'/'  reduce 89
+
+
+state 100
 	sentencias : sentencias . sentencia  (6)
-	outf_rule : OUTF '(' sentencias . ')'  (57)
+	outf_rule : OUTF '(' sentencias . ')'  (58)
 
 	IF  shift 5
 	OUTF  shift 6
@@ -1642,11 +1682,11 @@ state 97
 	ETIQUETA  shift 11
 	INTEGER  shift 12
 	DOUBLE  shift 13
-	')'  shift 155
+	')'  shift 161
 	.  error
 
 	ID_simple  goto 14
-	sentencia  goto 56
+	sentencia  goto 57
 	sentencia_declarativa  goto 17
 	sentencia_ejecutable  goto 18
 	declaracion_variable  goto 19
@@ -1654,51 +1694,52 @@ state 97
 	declaracion_subtipo  goto 21
 	tipo  goto 22
 	tipo_primitivo  goto 23
-	retorno  goto 24
-	asignacion  goto 25
-	sentencia_IF  goto 26
-	sentencia_WHILE  goto 27
-	sentencia_goto  goto 28
-	outf_rule  goto 29
-	variable_simple  goto 30
-
-
-state 98
-	outf_rule : OUTF '(' expresion_arit . ')'  (54)
-	expresion_arit : expresion_arit . '+' termino  (66)
-	expresion_arit : expresion_arit . '-' termino  (67)
-	expresion_arit : expresion_arit . '+' error  (71)
-	expresion_arit : expresion_arit . '-' error  (72)
-
-	')'  shift 156
-	'+'  shift 86
-	'-'  shift 87
-	.  error
-
-
-state 99
-	outf_rule : OUTF '(' cadena . ')'  (56)
-
-	')'  shift 157
-	.  error
-
-
-state 100
-	asignacion : variable_simple . ASIGNACION expresion_arit  (58)
-	asignacion : variable_simple . '{' CTE '}' ASIGNACION expresion_arit  (59)
-	factor : variable_simple .  (81)
-	factor : variable_simple . '{' CTE '}'  (84)
-
-	ASIGNACION  shift 64
-	'{'  shift 158
-	')'  reduce 81
-	'+'  reduce 81
-	'-'  reduce 81
-	'*'  reduce 81
-	'/'  reduce 81
+	encabezado_funcion  goto 24
+	retorno  goto 25
+	asignacion  goto 26
+	sentencia_IF  goto 27
+	sentencia_WHILE  goto 28
+	sentencia_goto  goto 29
+	outf_rule  goto 30
+	variable_simple  goto 31
 
 
 state 101
+	outf_rule : OUTF '(' expresion_arit . ')'  (55)
+	expresion_arit : expresion_arit . '+' termino  (67)
+	expresion_arit : expresion_arit . '-' termino  (68)
+	expresion_arit : expresion_arit . '+' error  (72)
+	expresion_arit : expresion_arit . '-' error  (73)
+
+	')'  shift 162
+	'+'  shift 89
+	'-'  shift 90
+	.  error
+
+
+state 102
+	outf_rule : OUTF '(' cadena . ')'  (57)
+
+	')'  shift 163
+	.  error
+
+
+state 103
+	asignacion : variable_simple . ASIGNACION expresion_arit  (59)
+	asignacion : variable_simple . '{' CTE '}' ASIGNACION expresion_arit  (60)
+	factor : variable_simple .  (82)
+	factor : variable_simple . '{' CTE '}'  (85)
+
+	ASIGNACION  shift 67
+	'{'  shift 164
+	')'  reduce 82
+	'+'  reduce 82
+	'-'  reduce 82
+	'*'  reduce 82
+	'/'  reduce 82
+
+
+state 104
 	declaracion_subtipo : TYPEDEF TRIPLE '<' . tipo '>' ID_simple  (26)
 	declaracion_subtipo : TYPEDEF TRIPLE '<' . tipo ID_simple  (35)
 	declaracion_subtipo : TYPEDEF TRIPLE '<' . tipo '>' error  (37)
@@ -1708,43 +1749,43 @@ state 101
 	DOUBLE  shift 13
 	.  error
 
-	ID_simple  goto 102
-	tipo  goto 159
+	ID_simple  goto 105
+	tipo  goto 165
 	tipo_primitivo  goto 23
 
 
-state 102
+state 105
 	tipo : ID_simple .  (18)
 
 	.  reduce 18
 
 
-state 103
+state 106
 	declaracion_subtipo : TYPEDEF TRIPLE tipo . '>' ID_simple  (34)
 	declaracion_subtipo : TYPEDEF TRIPLE tipo . ID_simple  (36)
 
 	ID  shift 2
-	'>'  shift 160
+	'>'  shift 166
 	.  error
 
-	ID_simple  goto 161
+	ID_simple  goto 167
 
 
-state 104
+state 107
 	declaracion_subtipo : TYPEDEF ASIGNACION tipo . '{' CTE_con_sig ',' CTE_con_sig '}'  (31)
 
-	'{'  shift 162
+	'{'  shift 168
 	.  error
 
 
-state 105
+state 108
 	declaracion_subtipo : TYPEDEF '<' tipo . '>' ID_simple  (33)
 
-	'>'  shift 163
+	'>'  shift 169
 	.  error
 
 
-state 106
+state 109
 	declaracion_subtipo : TYPEDEF ID_simple ASIGNACION . tipo '{' CTE_con_sig ',' CTE_con_sig '}'  (22)
 	declaracion_subtipo : TYPEDEF ID_simple ASIGNACION . tipo CTE_con_sig ',' CTE_con_sig '}'  (23)
 	declaracion_subtipo : TYPEDEF ID_simple ASIGNACION . tipo '{' CTE_con_sig ',' CTE_con_sig  (24)
@@ -1758,40 +1799,40 @@ state 106
 	ID  shift 2
 	INTEGER  shift 12
 	DOUBLE  shift 13
-	'{'  shift 164
+	'{'  shift 170
 	.  error
 
-	ID_simple  goto 102
-	tipo  goto 165
+	ID_simple  goto 105
+	tipo  goto 171
 	tipo_primitivo  goto 23
 
 
-state 107
-	retorno : RET '(' expresion_arit . ')'  (46)
-	expresion_arit : expresion_arit . '+' termino  (66)
-	expresion_arit : expresion_arit . '-' termino  (67)
-	expresion_arit : expresion_arit . '+' error  (71)
-	expresion_arit : expresion_arit . '-' error  (72)
+state 110
+	retorno : RET '(' expresion_arit . ')'  (47)
+	expresion_arit : expresion_arit . '+' termino  (67)
+	expresion_arit : expresion_arit . '-' termino  (68)
+	expresion_arit : expresion_arit . '+' error  (72)
+	expresion_arit : expresion_arit . '-' error  (73)
 
-	')'  shift 166
-	'+'  shift 86
-	'-'  shift 87
+	')'  shift 172
+	'+'  shift 89
+	'-'  shift 90
 	.  error
 
 
-state 108
-	sentencia_WHILE : WHILE condicion error .  (140)
+state 111
+	sentencia_WHILE : WHILE condicion error .  (141)
 
-	.  reduce 140
+	.  reduce 141
 
 
-state 109
-	bloque_unidad_multiple : BEGIN . bloque_sent_ejecutables ';' END  (130)
-	bloque_unidad_multiple : BEGIN . END  (131)
-	bloque_unidad_multiple : BEGIN . bloque_sent_ejecutables END  (132)
+state 112
+	bloque_unidad_multiple : BEGIN . bloque_sent_ejecutables ';' END  (131)
+	bloque_unidad_multiple : BEGIN . END  (132)
+	bloque_unidad_multiple : BEGIN . bloque_sent_ejecutables END  (133)
 
 	IF  shift 5
-	END  shift 167
+	END  shift 173
 	OUTF  shift 6
 	RET  shift 8
 	ID  shift 2
@@ -1800,411 +1841,374 @@ state 109
 	ETIQUETA  shift 11
 	.  error
 
-	ID_simple  goto 61
-	sentencia_ejecutable  goto 110
-	retorno  goto 24
-	asignacion  goto 25
-	sentencia_IF  goto 26
-	sentencia_WHILE  goto 27
-	sentencia_goto  goto 28
-	outf_rule  goto 29
-	variable_simple  goto 30
-	bloque_sent_ejecutables  goto 168
-	bloque_sentencia_simple  goto 169
-
-
-state 110
-	bloque_sentencia_simple : sentencia_ejecutable .  (137)
-
-	.  reduce 137
-
-
-state 111
-	sentencia_WHILE : WHILE condicion bloque_unidad .  (139)
-
-	.  reduce 139
-
-
-state 112
-	bloque_unidad_simple : bloque_sentencia_simple .  (133)
-
-	.  reduce 133
+	ID_simple  goto 62
+	sentencia_ejecutable  goto 113
+	retorno  goto 25
+	asignacion  goto 26
+	sentencia_IF  goto 27
+	sentencia_WHILE  goto 28
+	sentencia_goto  goto 29
+	outf_rule  goto 30
+	variable_simple  goto 31
+	bloque_sent_ejecutables  goto 174
+	bloque_sentencia_simple  goto 175
 
 
 state 113
-	bloque_unidad : bloque_unidad_simple .  (128)
+	bloque_sentencia_simple : sentencia_ejecutable .  (138)
 
-	.  reduce 128
+	.  reduce 138
 
 
 state 114
-	bloque_unidad : bloque_unidad_multiple .  (129)
+	sentencia_WHILE : WHILE condicion bloque_unidad .  (140)
+
+	.  reduce 140
+
+
+state 115
+	bloque_unidad_simple : bloque_sentencia_simple .  (134)
+
+	.  reduce 134
+
+
+state 116
+	bloque_unidad : bloque_unidad_simple .  (129)
 
 	.  reduce 129
 
 
-state 115
-	declaracion_funciones : tipo FUN ID . parametros_parentesis BEGIN cuerpo_funcion END  (38)
-
-	'('  shift 116
-	.  error
-
-	parametros_parentesis  goto 170
-
-
-state 116
-	parametros_parentesis : '(' . tipo_primitivo ID_simple ')'  (40)
-	parametros_parentesis : '(' . tipo_primitivo ')'  (41)
-	parametros_parentesis : '(' . ID_simple ')'  (42)
-	parametros_parentesis : '(' . ')'  (43)
-	parametros_parentesis : '(' . error ')'  (44)
-
-	error  shift 171
-	ID  shift 2
-	INTEGER  shift 12
-	DOUBLE  shift 13
-	')'  shift 172
-	.  error
-
-	ID_simple  goto 173
-	tipo_primitivo  goto 174
-
-
 state 117
-	declaracion_funciones : tipo FUN parametros_parentesis . BEGIN cuerpo_funcion END  (39)
+	bloque_unidad : bloque_unidad_multiple .  (130)
 
-	BEGIN  shift 175
-	.  error
+	.  reduce 130
 
 
 state 118
+	encabezado_funcion : tipo FUN ID .  (39)
+
+	.  reduce 39
+
+
+state 119
 	declaracion_variable : tipo variables error .  (17)
 
 	.  reduce 17
 
 
-state 119
+state 120
 	declaracion_variable : tipo variables ';' .  (16)
 
 	.  reduce 16
 
 
-state 120
-	variables : variables ',' . variable_simple  (85)
+state 121
+	variables : variables ',' . variable_simple  (86)
 
 	ID  shift 2
 	.  error
 
-	ID_simple  goto 61
+	ID_simple  goto 62
 	variable_simple  goto 176
 
 
-state 121
-	variables : variables variable_simple .  (86)
-
-	.  reduce 86
-
-
 state 122
-	asignacion : variable_simple ASIGNACION expresion_arit .  (58)
-	expresion_arit : expresion_arit . '+' termino  (66)
-	expresion_arit : expresion_arit . '-' termino  (67)
-	expresion_arit : expresion_arit . '+' error  (71)
-	expresion_arit : expresion_arit . '-' error  (72)
+	variables : variables variable_simple .  (87)
 
-	'+'  shift 86
-	'-'  shift 87
-	$end  reduce 58
-	IF  reduce 58
-	ELSE  reduce 58
-	END  reduce 58
-	END_IF  reduce 58
-	OUTF  reduce 58
-	TYPEDEF  reduce 58
-	RET  reduce 58
-	ID  reduce 58
-	WHILE  reduce 58
-	GOTO  reduce 58
-	ETIQUETA  reduce 58
-	INTEGER  reduce 58
-	DOUBLE  reduce 58
-	';'  reduce 58
-	')'  reduce 58
+	.  reduce 87
 
 
 state 123
-	asignacion : variable_simple '{' CTE . '}' ASIGNACION expresion_arit  (59)
+	parametros_parentesis : '(' error . ')'  (45)
 
-	'}'  shift 177
+	')'  shift 177
 	.  error
 
 
 state 124
+	parametros_parentesis : '(' ')' .  (44)
+
+	.  reduce 44
+
+
+state 125
+	parametros_parentesis : '(' ID_simple . ')'  (43)
+
+	')'  shift 178
+	.  error
+
+
+state 126
+	parametros_parentesis : '(' tipo_primitivo . ID_simple ')'  (41)
+	parametros_parentesis : '(' tipo_primitivo . ')'  (42)
+
+	ID  shift 2
+	')'  shift 179
+	.  error
+
+	ID_simple  goto 180
+
+
+state 127
+	declaracion_funciones : encabezado_funcion parametros_parentesis BEGIN . cuerpo_funcion END  (38)
+
+	IF  shift 5
+	OUTF  shift 6
+	TYPEDEF  shift 7
+	RET  shift 8
+	ID  shift 2
+	WHILE  shift 9
+	GOTO  shift 10
+	ETIQUETA  shift 11
+	INTEGER  shift 12
+	DOUBLE  shift 13
+	.  error
+
+	ID_simple  goto 14
+	sentencias  goto 181
+	sentencia  goto 16
+	sentencia_declarativa  goto 17
+	sentencia_ejecutable  goto 18
+	declaracion_variable  goto 19
+	declaracion_funciones  goto 20
+	declaracion_subtipo  goto 21
+	tipo  goto 22
+	tipo_primitivo  goto 23
+	encabezado_funcion  goto 24
+	cuerpo_funcion  goto 182
+	retorno  goto 25
+	asignacion  goto 26
+	sentencia_IF  goto 27
+	sentencia_WHILE  goto 28
+	sentencia_goto  goto 29
+	outf_rule  goto 30
+	variable_simple  goto 31
+
+
+state 128
+	asignacion : variable_simple ASIGNACION expresion_arit .  (59)
+	expresion_arit : expresion_arit . '+' termino  (67)
+	expresion_arit : expresion_arit . '-' termino  (68)
+	expresion_arit : expresion_arit . '+' error  (72)
+	expresion_arit : expresion_arit . '-' error  (73)
+
+	'+'  shift 89
+	'-'  shift 90
+	$end  reduce 59
+	IF  reduce 59
+	ELSE  reduce 59
+	END  reduce 59
+	END_IF  reduce 59
+	OUTF  reduce 59
+	TYPEDEF  reduce 59
+	RET  reduce 59
+	ID  reduce 59
+	WHILE  reduce 59
+	GOTO  reduce 59
+	ETIQUETA  reduce 59
+	INTEGER  reduce 59
+	DOUBLE  reduce 59
+	';'  reduce 59
+	')'  reduce 59
+
+
+state 129
+	asignacion : variable_simple '{' CTE . '}' ASIGNACION expresion_arit  (60)
+
+	'}'  shift 183
+	.  error
+
+
+state 130
 	programa : ID_simple BEGIN sentencias END .  (1)
 
 	.  reduce 1
 
 
-state 125
-	expresion_arit : error '+' error .  (69)
-
-	.  reduce 69
-
-
-state 126
-	expresion_arit : error '-' error .  (70)
+state 131
+	expresion_arit : error '+' error .  (70)
 
 	.  reduce 70
 
 
-state 127
-	termino : error '*' error .  (77)
+state 132
+	expresion_arit : error '-' error .  (71)
 
-	.  reduce 77
+	.  reduce 71
 
 
-state 128
-	termino : error '/' error .  (78)
+state 133
+	termino : error '*' error .  (78)
 
 	.  reduce 78
 
 
-state 129
-	condicion : '(' error ')' .  (114)
-
-	.  reduce 114
-
-
-state 130
-	list_expre : expresion_arit .  (65)
-	expresion_arit : expresion_arit . '+' termino  (66)
-	expresion_arit : expresion_arit . '-' termino  (67)
-	expresion_arit : expresion_arit . '+' error  (71)
-	expresion_arit : expresion_arit . '-' error  (72)
-
-	'+'  shift 86
-	'-'  shift 87
-	MAYORIGUAL  reduce 65
-	MENORIGUAL  reduce 65
-	DISTINTO  reduce 65
-	','  reduce 65
-	'<'  reduce 65
-	'>'  reduce 65
-	')'  reduce 65
-	'='  reduce 65
-
-
-state 131
-	list_expre : list_expre . ',' expresion_arit  (64)
-	condicion : '(' '(' list_expre . ')' comparador '(' list_expre ')' ')'  (105)
-	condicion : '(' '(' list_expre . ')' comparador '(' list_expre ')'  (107)
-	condicion : '(' '(' list_expre . ')' '(' list_expre ')' ')'  (113)
-	condicion : '(' '(' list_expre . comparador '(' list_expre ')' ')'  (115)
-	condicion : '(' '(' list_expre . ')' comparador list_expre ')' ')'  (116)
-
-	MAYORIGUAL  shift 81
-	MENORIGUAL  shift 82
-	DISTINTO  shift 83
-	','  shift 133
-	'<'  shift 84
-	'>'  shift 85
-	')'  shift 178
-	'='  shift 88
-	.  error
-
-	comparador  goto 179
-
-
-state 132
-	condicion : '(' expresion_arit comparador . expresion_arit ')'  (109)
-	condicion : '(' expresion_arit comparador . expresion_arit  (111)
-
-	error  shift 33
-	CTE  shift 34
-	ID  shift 2
-	ERROR  shift 35
-	'-'  shift 37
-	.  error
-
-	ID_simple  goto 38
-	CTE_con_sig  goto 39
-	expresion_arit  goto 180
-	variable_simple  goto 41
-	invocacion  goto 42
-	termino  goto 43
-	factor  goto 44
-
-
-state 133
-	list_expre : list_expre ',' . expresion_arit  (64)
-
-	error  shift 33
-	CTE  shift 34
-	ID  shift 2
-	ERROR  shift 35
-	'-'  shift 37
-	.  error
-
-	ID_simple  goto 38
-	CTE_con_sig  goto 39
-	expresion_arit  goto 181
-	variable_simple  goto 41
-	invocacion  goto 42
-	termino  goto 43
-	factor  goto 44
-
-
 state 134
-	condicion : '(' list_expre ')' . comparador '(' list_expre ')' ')'  (106)
-	condicion : '(' list_expre ')' . comparador '(' list_expre ')'  (108)
+	termino : error '/' error .  (79)
 
-	MAYORIGUAL  shift 81
-	MENORIGUAL  shift 82
-	DISTINTO  shift 83
-	'<'  shift 84
-	'>'  shift 85
-	'='  shift 88
-	.  error
-
-	comparador  goto 182
+	.  reduce 79
 
 
 state 135
-	invocacion : ID_simple '(' error . ')'  (63)
-	expresion_arit : error . '+' error  (69)
-	expresion_arit : error . '-' error  (70)
-	expresion_arit : error . termino  (73)
-	termino : error . '*' error  (77)
-	termino : error . '/' error  (78)
+	condicion : '(' error ')' .  (115)
 
-	error  shift 68
-	CTE  shift 34
-	ID  shift 2
-	ERROR  shift 35
-	')'  shift 183
-	'+'  shift 69
-	'-'  shift 70
-	'*'  shift 71
-	'/'  shift 72
-	.  error
-
-	ID_simple  goto 38
-	CTE_con_sig  goto 39
-	variable_simple  goto 41
-	invocacion  goto 42
-	termino  goto 73
-	factor  goto 44
+	.  reduce 115
 
 
 state 136
-	invocacion : ID_simple '(' ')' .  (62)
+	list_expre : expresion_arit .  (66)
+	expresion_arit : expresion_arit . '+' termino  (67)
+	expresion_arit : expresion_arit . '-' termino  (68)
+	expresion_arit : expresion_arit . '+' error  (72)
+	expresion_arit : expresion_arit . '-' error  (73)
 
-	.  reduce 62
-
-
-state 137
-	invocacion : ID_simple '(' tipo_primitivo . '(' expresion_arit ')' ')'  (61)
-
-	'('  shift 184
-	.  error
-
-
-state 138
-	invocacion : ID_simple '(' expresion_arit . ')'  (60)
-	expresion_arit : expresion_arit . '+' termino  (66)
-	expresion_arit : expresion_arit . '-' termino  (67)
-	expresion_arit : expresion_arit . '+' error  (71)
-	expresion_arit : expresion_arit . '-' error  (72)
-
-	')'  shift 185
-	'+'  shift 86
-	'-'  shift 87
-	.  error
-
-
-state 139
-	expresion_arit : expresion_arit '+' error .  (71)
-	termino : error . '*' error  (77)
-	termino : error . '/' error  (78)
-
-	'*'  shift 71
-	'/'  shift 72
-	$end  reduce 71
-	error  reduce 71
-	IF  reduce 71
-	THEN  reduce 71
-	ELSE  reduce 71
-	BEGIN  reduce 71
-	END  reduce 71
-	END_IF  reduce 71
-	OUTF  reduce 71
-	TYPEDEF  reduce 71
-	RET  reduce 71
-	ID  reduce 71
-	WHILE  reduce 71
-	GOTO  reduce 71
-	ETIQUETA  reduce 71
-	MAYORIGUAL  reduce 71
-	MENORIGUAL  reduce 71
-	DISTINTO  reduce 71
-	INTEGER  reduce 71
-	DOUBLE  reduce 71
-	';'  reduce 71
-	','  reduce 71
-	'<'  reduce 71
-	'>'  reduce 71
-	')'  reduce 71
-	'+'  reduce 71
-	'-'  reduce 71
-	'='  reduce 71
-
-
-state 140
-	expresion_arit : expresion_arit '+' termino .  (66)
-	termino : termino . '*' factor  (74)
-	termino : termino . '/' factor  (75)
-	termino : termino . '*' error  (79)
-	termino : termino . '/' error  (80)
-
-	'*'  shift 91
-	'/'  shift 92
-	$end  reduce 66
-	error  reduce 66
-	IF  reduce 66
-	THEN  reduce 66
-	ELSE  reduce 66
-	BEGIN  reduce 66
-	END  reduce 66
-	END_IF  reduce 66
-	OUTF  reduce 66
-	TYPEDEF  reduce 66
-	RET  reduce 66
-	ID  reduce 66
-	WHILE  reduce 66
-	GOTO  reduce 66
-	ETIQUETA  reduce 66
+	'+'  shift 89
+	'-'  shift 90
 	MAYORIGUAL  reduce 66
 	MENORIGUAL  reduce 66
 	DISTINTO  reduce 66
-	INTEGER  reduce 66
-	DOUBLE  reduce 66
-	';'  reduce 66
 	','  reduce 66
 	'<'  reduce 66
 	'>'  reduce 66
 	')'  reduce 66
-	'+'  reduce 66
-	'-'  reduce 66
 	'='  reduce 66
 
 
-state 141
-	expresion_arit : expresion_arit '-' error .  (72)
-	termino : error . '*' error  (77)
-	termino : error . '/' error  (78)
+state 137
+	list_expre : list_expre . ',' expresion_arit  (65)
+	condicion : '(' '(' list_expre . ')' comparador '(' list_expre ')' ')'  (106)
+	condicion : '(' '(' list_expre . ')' comparador '(' list_expre ')'  (108)
+	condicion : '(' '(' list_expre . ')' '(' list_expre ')' ')'  (114)
+	condicion : '(' '(' list_expre . comparador '(' list_expre ')' ')'  (116)
+	condicion : '(' '(' list_expre . ')' comparador list_expre ')' ')'  (117)
 
-	'*'  shift 71
-	'/'  shift 72
+	MAYORIGUAL  shift 84
+	MENORIGUAL  shift 85
+	DISTINTO  shift 86
+	','  shift 139
+	'<'  shift 87
+	'>'  shift 88
+	')'  shift 184
+	'='  shift 91
+	.  error
+
+	comparador  goto 185
+
+
+state 138
+	condicion : '(' expresion_arit comparador . expresion_arit ')'  (110)
+	condicion : '(' expresion_arit comparador . expresion_arit  (112)
+
+	error  shift 34
+	CTE  shift 35
+	ID  shift 2
+	ERROR  shift 36
+	'-'  shift 38
+	.  error
+
+	ID_simple  goto 39
+	CTE_con_sig  goto 40
+	expresion_arit  goto 186
+	variable_simple  goto 42
+	invocacion  goto 43
+	termino  goto 44
+	factor  goto 45
+
+
+state 139
+	list_expre : list_expre ',' . expresion_arit  (65)
+
+	error  shift 34
+	CTE  shift 35
+	ID  shift 2
+	ERROR  shift 36
+	'-'  shift 38
+	.  error
+
+	ID_simple  goto 39
+	CTE_con_sig  goto 40
+	expresion_arit  goto 187
+	variable_simple  goto 42
+	invocacion  goto 43
+	termino  goto 44
+	factor  goto 45
+
+
+state 140
+	condicion : '(' list_expre ')' . comparador '(' list_expre ')' ')'  (107)
+	condicion : '(' list_expre ')' . comparador '(' list_expre ')'  (109)
+
+	MAYORIGUAL  shift 84
+	MENORIGUAL  shift 85
+	DISTINTO  shift 86
+	'<'  shift 87
+	'>'  shift 88
+	'='  shift 91
+	.  error
+
+	comparador  goto 188
+
+
+state 141
+	invocacion : ID_simple '(' error . ')'  (64)
+	expresion_arit : error . '+' error  (70)
+	expresion_arit : error . '-' error  (71)
+	expresion_arit : error . termino  (74)
+	termino : error . '*' error  (78)
+	termino : error . '/' error  (79)
+
+	error  shift 71
+	CTE  shift 35
+	ID  shift 2
+	ERROR  shift 36
+	')'  shift 189
+	'+'  shift 72
+	'-'  shift 73
+	'*'  shift 74
+	'/'  shift 75
+	.  error
+
+	ID_simple  goto 39
+	CTE_con_sig  goto 40
+	variable_simple  goto 42
+	invocacion  goto 43
+	termino  goto 76
+	factor  goto 45
+
+
+state 142
+	invocacion : ID_simple '(' ')' .  (63)
+
+	.  reduce 63
+
+
+state 143
+	invocacion : ID_simple '(' tipo_primitivo . '(' expresion_arit ')' ')'  (62)
+
+	'('  shift 190
+	.  error
+
+
+state 144
+	invocacion : ID_simple '(' expresion_arit . ')'  (61)
+	expresion_arit : expresion_arit . '+' termino  (67)
+	expresion_arit : expresion_arit . '-' termino  (68)
+	expresion_arit : expresion_arit . '+' error  (72)
+	expresion_arit : expresion_arit . '-' error  (73)
+
+	')'  shift 191
+	'+'  shift 89
+	'-'  shift 90
+	.  error
+
+
+state 145
+	expresion_arit : expresion_arit '+' error .  (72)
+	termino : error . '*' error  (78)
+	termino : error . '/' error  (79)
+
+	'*'  shift 74
+	'/'  shift 75
 	$end  reduce 72
 	error  reduce 72
 	IF  reduce 72
@@ -2235,15 +2239,15 @@ state 141
 	'='  reduce 72
 
 
-state 142
-	expresion_arit : expresion_arit '-' termino .  (67)
-	termino : termino . '*' factor  (74)
-	termino : termino . '/' factor  (75)
-	termino : termino . '*' error  (79)
-	termino : termino . '/' error  (80)
+state 146
+	expresion_arit : expresion_arit '+' termino .  (67)
+	termino : termino . '*' factor  (75)
+	termino : termino . '/' factor  (76)
+	termino : termino . '*' error  (80)
+	termino : termino . '/' error  (81)
 
-	'*'  shift 91
-	'/'  shift 92
+	'*'  shift 94
+	'/'  shift 95
 	$end  reduce 67
 	error  reduce 67
 	IF  reduce 67
@@ -2274,17 +2278,475 @@ state 142
 	'='  reduce 67
 
 
-state 143
-	expresion_arit : expresion_arit . '+' termino  (66)
-	expresion_arit : expresion_arit . '-' termino  (67)
-	expresion_arit : expresion_arit . '+' error  (71)
-	expresion_arit : expresion_arit . '-' error  (72)
-	condicion : expresion_arit comparador expresion_arit . ')'  (110)
-	condicion : expresion_arit comparador expresion_arit .  (112)
+state 147
+	expresion_arit : expresion_arit '-' error .  (73)
+	termino : error . '*' error  (78)
+	termino : error . '/' error  (79)
 
-	')'  shift 186
-	'+'  shift 86
-	'-'  shift 87
+	'*'  shift 74
+	'/'  shift 75
+	$end  reduce 73
+	error  reduce 73
+	IF  reduce 73
+	THEN  reduce 73
+	ELSE  reduce 73
+	BEGIN  reduce 73
+	END  reduce 73
+	END_IF  reduce 73
+	OUTF  reduce 73
+	TYPEDEF  reduce 73
+	RET  reduce 73
+	ID  reduce 73
+	WHILE  reduce 73
+	GOTO  reduce 73
+	ETIQUETA  reduce 73
+	MAYORIGUAL  reduce 73
+	MENORIGUAL  reduce 73
+	DISTINTO  reduce 73
+	INTEGER  reduce 73
+	DOUBLE  reduce 73
+	';'  reduce 73
+	','  reduce 73
+	'<'  reduce 73
+	'>'  reduce 73
+	')'  reduce 73
+	'+'  reduce 73
+	'-'  reduce 73
+	'='  reduce 73
+
+
+state 148
+	expresion_arit : expresion_arit '-' termino .  (68)
+	termino : termino . '*' factor  (75)
+	termino : termino . '/' factor  (76)
+	termino : termino . '*' error  (80)
+	termino : termino . '/' error  (81)
+
+	'*'  shift 94
+	'/'  shift 95
+	$end  reduce 68
+	error  reduce 68
+	IF  reduce 68
+	THEN  reduce 68
+	ELSE  reduce 68
+	BEGIN  reduce 68
+	END  reduce 68
+	END_IF  reduce 68
+	OUTF  reduce 68
+	TYPEDEF  reduce 68
+	RET  reduce 68
+	ID  reduce 68
+	WHILE  reduce 68
+	GOTO  reduce 68
+	ETIQUETA  reduce 68
+	MAYORIGUAL  reduce 68
+	MENORIGUAL  reduce 68
+	DISTINTO  reduce 68
+	INTEGER  reduce 68
+	DOUBLE  reduce 68
+	';'  reduce 68
+	','  reduce 68
+	'<'  reduce 68
+	'>'  reduce 68
+	')'  reduce 68
+	'+'  reduce 68
+	'-'  reduce 68
+	'='  reduce 68
+
+
+state 149
+	expresion_arit : expresion_arit . '+' termino  (67)
+	expresion_arit : expresion_arit . '-' termino  (68)
+	expresion_arit : expresion_arit . '+' error  (72)
+	expresion_arit : expresion_arit . '-' error  (73)
+	condicion : expresion_arit comparador expresion_arit . ')'  (111)
+	condicion : expresion_arit comparador expresion_arit .  (113)
+
+	')'  shift 192
+	'+'  shift 89
+	'-'  shift 90
+	error  reduce 113
+	IF  reduce 113
+	THEN  reduce 113
+	BEGIN  reduce 113
+	OUTF  reduce 113
+	RET  reduce 113
+	ID  reduce 113
+	WHILE  reduce 113
+	GOTO  reduce 113
+	ETIQUETA  reduce 113
+
+
+state 150
+	factor : variable_simple '{' CTE . '}'  (85)
+
+	'}'  shift 193
+	.  error
+
+
+state 151
+	termino : termino '*' error .  (80)
+
+	.  reduce 80
+
+
+state 152
+	termino : termino '*' factor .  (75)
+
+	.  reduce 75
+
+
+state 153
+	termino : termino '/' error .  (81)
+
+	.  reduce 81
+
+
+state 154
+	termino : termino '/' factor .  (76)
+
+	.  reduce 76
+
+
+state 155
+	bloque_else_multiple : ELSE . BEGIN bloque_sent_ejecutables ';' END  (126)
+	bloque_else_multiple : ELSE . BEGIN bloque_sent_ejecutables END  (127)
+	bloque_else_simple : ELSE . bloque_sentencia_simple  (128)
+
+	IF  shift 5
+	BEGIN  shift 194
+	OUTF  shift 6
+	RET  shift 8
+	ID  shift 2
+	WHILE  shift 9
+	GOTO  shift 10
+	ETIQUETA  shift 11
+	.  error
+
+	ID_simple  goto 62
+	sentencia_ejecutable  goto 113
+	retorno  goto 25
+	asignacion  goto 26
+	sentencia_IF  goto 27
+	sentencia_WHILE  goto 28
+	sentencia_goto  goto 29
+	outf_rule  goto 30
+	variable_simple  goto 31
+	bloque_sentencia_simple  goto 195
+
+
+state 156
+	sentencia_IF : IF condicion THEN END_IF .  (98)
+
+	.  reduce 98
+
+
+state 157
+	sentencia_IF : IF condicion THEN bloque_unidad . ';' bloque_else ';' END_IF  (95)
+	sentencia_IF : IF condicion THEN bloque_unidad . ';' END_IF  (96)
+	sentencia_IF : IF condicion THEN bloque_unidad . ';' ELSE END_IF  (99)
+	sentencia_IF : IF condicion THEN bloque_unidad . bloque_else ';' END_IF  (100)
+	sentencia_IF : IF condicion THEN bloque_unidad . END_IF  (101)
+	sentencia_IF : IF condicion THEN bloque_unidad . ';' bloque_else END_IF  (102)
+	sentencia_IF : IF condicion THEN bloque_unidad . bloque_else END_IF  (103)
+	sentencia_IF : IF condicion THEN bloque_unidad . ';' error  (104)
+	sentencia_IF : IF condicion THEN bloque_unidad . ';' bloque_else ';' error  (105)
+
+	ELSE  shift 155
+	END_IF  shift 196
+	';'  shift 197
+	.  error
+
+	bloque_else  goto 198
+	bloque_else_simple  goto 159
+	bloque_else_multiple  goto 160
+
+
+state 158
+	sentencia_IF : IF condicion THEN bloque_else . ';' END_IF  (97)
+
+	';'  shift 199
+	.  error
+
+
+state 159
+	bloque_else : bloque_else_simple .  (124)
+
+	.  reduce 124
+
+
+state 160
+	bloque_else : bloque_else_multiple .  (125)
+
+	.  reduce 125
+
+
+state 161
+	outf_rule : OUTF '(' sentencias ')' .  (58)
+
+	.  reduce 58
+
+
+state 162
+	outf_rule : OUTF '(' expresion_arit ')' .  (55)
+
+	.  reduce 55
+
+
+state 163
+	outf_rule : OUTF '(' cadena ')' .  (57)
+
+	.  reduce 57
+
+
+state 164
+	asignacion : variable_simple '{' . CTE '}' ASIGNACION expresion_arit  (60)
+	factor : variable_simple '{' . CTE '}'  (85)
+
+	CTE  shift 200
+	.  error
+
+
+state 165
+	declaracion_subtipo : TYPEDEF TRIPLE '<' tipo . '>' ID_simple  (26)
+	declaracion_subtipo : TYPEDEF TRIPLE '<' tipo . ID_simple  (35)
+	declaracion_subtipo : TYPEDEF TRIPLE '<' tipo . '>' error  (37)
+
+	ID  shift 2
+	'>'  shift 201
+	.  error
+
+	ID_simple  goto 202
+
+
+state 166
+	declaracion_subtipo : TYPEDEF TRIPLE tipo '>' . ID_simple  (34)
+
+	ID  shift 2
+	.  error
+
+	ID_simple  goto 203
+
+
+state 167
+	declaracion_subtipo : TYPEDEF TRIPLE tipo ID_simple .  (36)
+
+	.  reduce 36
+
+
+state 168
+	declaracion_subtipo : TYPEDEF ASIGNACION tipo '{' . CTE_con_sig ',' CTE_con_sig '}'  (31)
+
+	CTE  shift 35
+	ERROR  shift 36
+	'-'  shift 38
+	.  error
+
+	CTE_con_sig  goto 204
+
+
+state 169
+	declaracion_subtipo : TYPEDEF '<' tipo '>' . ID_simple  (33)
+
+	ID  shift 2
+	.  error
+
+	ID_simple  goto 205
+
+
+state 170
+	declaracion_subtipo : TYPEDEF ID_simple ASIGNACION '{' . CTE_con_sig ',' CTE_con_sig '}'  (32)
+
+	CTE  shift 35
+	ERROR  shift 36
+	'-'  shift 38
+	.  error
+
+	CTE_con_sig  goto 206
+
+
+state 171
+	declaracion_subtipo : TYPEDEF ID_simple ASIGNACION tipo . '{' CTE_con_sig ',' CTE_con_sig '}'  (22)
+	declaracion_subtipo : TYPEDEF ID_simple ASIGNACION tipo . CTE_con_sig ',' CTE_con_sig '}'  (23)
+	declaracion_subtipo : TYPEDEF ID_simple ASIGNACION tipo . '{' CTE_con_sig ',' CTE_con_sig  (24)
+	declaracion_subtipo : TYPEDEF ID_simple ASIGNACION tipo . CTE_con_sig ',' CTE_con_sig  (25)
+	declaracion_subtipo : TYPEDEF ID_simple ASIGNACION tipo . '{' ',' CTE_con_sig '}'  (27)
+	declaracion_subtipo : TYPEDEF ID_simple ASIGNACION tipo . '{' CTE_con_sig '}'  (28)
+	declaracion_subtipo : TYPEDEF ID_simple ASIGNACION tipo . '{' CTE_con_sig ',' '}'  (29)
+	declaracion_subtipo : TYPEDEF ID_simple ASIGNACION tipo . '{' '}'  (30)
+
+	CTE  shift 35
+	ERROR  shift 36
+	'{'  shift 207
+	'-'  shift 38
+	.  error
+
+	CTE_con_sig  goto 208
+
+
+state 172
+	retorno : RET '(' expresion_arit ')' .  (47)
+
+	.  reduce 47
+
+
+state 173
+	bloque_unidad_multiple : BEGIN END .  (132)
+
+	.  reduce 132
+
+
+state 174
+	bloque_unidad_multiple : BEGIN bloque_sent_ejecutables . ';' END  (131)
+	bloque_unidad_multiple : BEGIN bloque_sent_ejecutables . END  (133)
+	bloque_sent_ejecutables : bloque_sent_ejecutables . ';' bloque_sentencia_simple  (135)
+	bloque_sent_ejecutables : bloque_sent_ejecutables . bloque_sentencia_simple  (137)
+
+	IF  shift 5
+	END  shift 209
+	OUTF  shift 6
+	RET  shift 8
+	ID  shift 2
+	WHILE  shift 9
+	GOTO  shift 10
+	ETIQUETA  shift 11
+	';'  shift 210
+	.  error
+
+	ID_simple  goto 62
+	sentencia_ejecutable  goto 113
+	retorno  goto 25
+	asignacion  goto 26
+	sentencia_IF  goto 27
+	sentencia_WHILE  goto 28
+	sentencia_goto  goto 29
+	outf_rule  goto 30
+	variable_simple  goto 31
+	bloque_sentencia_simple  goto 211
+
+
+state 175
+	bloque_sent_ejecutables : bloque_sentencia_simple .  (136)
+
+	.  reduce 136
+
+
+state 176
+	variables : variables ',' variable_simple .  (86)
+
+	.  reduce 86
+
+
+state 177
+	parametros_parentesis : '(' error ')' .  (45)
+
+	.  reduce 45
+
+
+state 178
+	parametros_parentesis : '(' ID_simple ')' .  (43)
+
+	.  reduce 43
+
+
+state 179
+	parametros_parentesis : '(' tipo_primitivo ')' .  (42)
+
+	.  reduce 42
+
+
+state 180
+	parametros_parentesis : '(' tipo_primitivo ID_simple . ')'  (41)
+
+	')'  shift 212
+	.  error
+
+
+state 181
+	sentencias : sentencias . sentencia  (6)
+	cuerpo_funcion : sentencias .  (46)
+
+	IF  shift 5
+	OUTF  shift 6
+	TYPEDEF  shift 7
+	RET  shift 8
+	ID  shift 2
+	WHILE  shift 9
+	GOTO  shift 10
+	ETIQUETA  shift 11
+	INTEGER  shift 12
+	DOUBLE  shift 13
+	END  reduce 46
+
+	ID_simple  goto 14
+	sentencia  goto 57
+	sentencia_declarativa  goto 17
+	sentencia_ejecutable  goto 18
+	declaracion_variable  goto 19
+	declaracion_funciones  goto 20
+	declaracion_subtipo  goto 21
+	tipo  goto 22
+	tipo_primitivo  goto 23
+	encabezado_funcion  goto 24
+	retorno  goto 25
+	asignacion  goto 26
+	sentencia_IF  goto 27
+	sentencia_WHILE  goto 28
+	sentencia_goto  goto 29
+	outf_rule  goto 30
+	variable_simple  goto 31
+
+
+state 182
+	declaracion_funciones : encabezado_funcion parametros_parentesis BEGIN cuerpo_funcion . END  (38)
+
+	END  shift 213
+	.  error
+
+
+state 183
+	asignacion : variable_simple '{' CTE '}' . ASIGNACION expresion_arit  (60)
+
+	ASIGNACION  shift 214
+	.  error
+
+
+state 184
+	condicion : '(' '(' list_expre ')' . comparador '(' list_expre ')' ')'  (106)
+	condicion : '(' '(' list_expre ')' . comparador '(' list_expre ')'  (108)
+	condicion : '(' '(' list_expre ')' . '(' list_expre ')' ')'  (114)
+	condicion : '(' '(' list_expre ')' . comparador list_expre ')' ')'  (117)
+
+	MAYORIGUAL  shift 84
+	MENORIGUAL  shift 85
+	DISTINTO  shift 86
+	'<'  shift 87
+	'>'  shift 88
+	'('  shift 215
+	'='  shift 91
+	.  error
+
+	comparador  goto 216
+
+
+state 185
+	condicion : '(' '(' list_expre comparador . '(' list_expre ')' ')'  (116)
+
+	'('  shift 217
+	.  error
+
+
+state 186
+	expresion_arit : expresion_arit . '+' termino  (67)
+	expresion_arit : expresion_arit . '-' termino  (68)
+	expresion_arit : expresion_arit . '+' error  (72)
+	expresion_arit : expresion_arit . '-' error  (73)
+	condicion : '(' expresion_arit comparador expresion_arit . ')'  (110)
+	condicion : '(' expresion_arit comparador expresion_arit .  (112)
+
+	')'  shift 218
+	'+'  shift 89
+	'-'  shift 90
 	error  reduce 112
 	IF  reduce 112
 	THEN  reduce 112
@@ -2297,467 +2759,79 @@ state 143
 	ETIQUETA  reduce 112
 
 
-state 144
-	factor : variable_simple '{' CTE . '}'  (84)
+state 187
+	list_expre : list_expre ',' expresion_arit .  (65)
+	expresion_arit : expresion_arit . '+' termino  (67)
+	expresion_arit : expresion_arit . '-' termino  (68)
+	expresion_arit : expresion_arit . '+' error  (72)
+	expresion_arit : expresion_arit . '-' error  (73)
 
-	'}'  shift 187
+	'+'  shift 89
+	'-'  shift 90
+	MAYORIGUAL  reduce 65
+	MENORIGUAL  reduce 65
+	DISTINTO  reduce 65
+	','  reduce 65
+	'<'  reduce 65
+	'>'  reduce 65
+	')'  reduce 65
+	'='  reduce 65
+
+
+state 188
+	condicion : '(' list_expre ')' comparador . '(' list_expre ')' ')'  (107)
+	condicion : '(' list_expre ')' comparador . '(' list_expre ')'  (109)
+
+	'('  shift 219
 	.  error
 
 
-state 145
-	termino : termino '*' error .  (79)
+state 189
+	invocacion : ID_simple '(' error ')' .  (64)
 
-	.  reduce 79
-
-
-state 146
-	termino : termino '*' factor .  (74)
-
-	.  reduce 74
+	.  reduce 64
 
 
-state 147
-	termino : termino '/' error .  (80)
+state 190
+	invocacion : ID_simple '(' tipo_primitivo '(' . expresion_arit ')' ')'  (62)
 
-	.  reduce 80
-
-
-state 148
-	termino : termino '/' factor .  (75)
-
-	.  reduce 75
-
-
-state 149
-	bloque_else_multiple : ELSE . BEGIN bloque_sent_ejecutables ';' END  (125)
-	bloque_else_multiple : ELSE . BEGIN bloque_sent_ejecutables END  (126)
-	bloque_else_simple : ELSE . bloque_sentencia_simple  (127)
-
-	IF  shift 5
-	BEGIN  shift 188
-	OUTF  shift 6
-	RET  shift 8
+	error  shift 34
+	CTE  shift 35
 	ID  shift 2
-	WHILE  shift 9
-	GOTO  shift 10
-	ETIQUETA  shift 11
+	ERROR  shift 36
+	'-'  shift 38
 	.  error
 
-	ID_simple  goto 61
-	sentencia_ejecutable  goto 110
-	retorno  goto 24
-	asignacion  goto 25
-	sentencia_IF  goto 26
-	sentencia_WHILE  goto 27
-	sentencia_goto  goto 28
-	outf_rule  goto 29
-	variable_simple  goto 30
-	bloque_sentencia_simple  goto 189
+	ID_simple  goto 39
+	CTE_con_sig  goto 40
+	expresion_arit  goto 220
+	variable_simple  goto 42
+	invocacion  goto 43
+	termino  goto 44
+	factor  goto 45
 
 
-state 150
-	sentencia_IF : IF condicion THEN END_IF .  (97)
+state 191
+	invocacion : ID_simple '(' expresion_arit ')' .  (61)
 
-	.  reduce 97
+	.  reduce 61
 
 
-state 151
-	sentencia_IF : IF condicion THEN bloque_unidad . ';' bloque_else ';' END_IF  (94)
-	sentencia_IF : IF condicion THEN bloque_unidad . ';' END_IF  (95)
-	sentencia_IF : IF condicion THEN bloque_unidad . ';' ELSE END_IF  (98)
-	sentencia_IF : IF condicion THEN bloque_unidad . bloque_else ';' END_IF  (99)
-	sentencia_IF : IF condicion THEN bloque_unidad . END_IF  (100)
-	sentencia_IF : IF condicion THEN bloque_unidad . ';' bloque_else END_IF  (101)
-	sentencia_IF : IF condicion THEN bloque_unidad . bloque_else END_IF  (102)
-	sentencia_IF : IF condicion THEN bloque_unidad . ';' error  (103)
-	sentencia_IF : IF condicion THEN bloque_unidad . ';' bloque_else ';' error  (104)
+state 192
+	condicion : expresion_arit comparador expresion_arit ')' .  (111)
 
-	ELSE  shift 149
-	END_IF  shift 190
-	';'  shift 191
-	.  error
+	.  reduce 111
 
-	bloque_else  goto 192
-	bloque_else_simple  goto 153
-	bloque_else_multiple  goto 154
 
-
-state 152
-	sentencia_IF : IF condicion THEN bloque_else . ';' END_IF  (96)
-
-	';'  shift 193
-	.  error
-
-
-state 153
-	bloque_else : bloque_else_simple .  (123)
-
-	.  reduce 123
-
-
-state 154
-	bloque_else : bloque_else_multiple .  (124)
-
-	.  reduce 124
-
-
-state 155
-	outf_rule : OUTF '(' sentencias ')' .  (57)
-
-	.  reduce 57
-
-
-state 156
-	outf_rule : OUTF '(' expresion_arit ')' .  (54)
-
-	.  reduce 54
-
-
-state 157
-	outf_rule : OUTF '(' cadena ')' .  (56)
-
-	.  reduce 56
-
-
-state 158
-	asignacion : variable_simple '{' . CTE '}' ASIGNACION expresion_arit  (59)
-	factor : variable_simple '{' . CTE '}'  (84)
-
-	CTE  shift 194
-	.  error
-
-
-state 159
-	declaracion_subtipo : TYPEDEF TRIPLE '<' tipo . '>' ID_simple  (26)
-	declaracion_subtipo : TYPEDEF TRIPLE '<' tipo . ID_simple  (35)
-	declaracion_subtipo : TYPEDEF TRIPLE '<' tipo . '>' error  (37)
-
-	ID  shift 2
-	'>'  shift 195
-	.  error
-
-	ID_simple  goto 196
-
-
-state 160
-	declaracion_subtipo : TYPEDEF TRIPLE tipo '>' . ID_simple  (34)
-
-	ID  shift 2
-	.  error
-
-	ID_simple  goto 197
-
-
-state 161
-	declaracion_subtipo : TYPEDEF TRIPLE tipo ID_simple .  (36)
-
-	.  reduce 36
-
-
-state 162
-	declaracion_subtipo : TYPEDEF ASIGNACION tipo '{' . CTE_con_sig ',' CTE_con_sig '}'  (31)
-
-	CTE  shift 34
-	ERROR  shift 35
-	'-'  shift 37
-	.  error
-
-	CTE_con_sig  goto 198
-
-
-state 163
-	declaracion_subtipo : TYPEDEF '<' tipo '>' . ID_simple  (33)
-
-	ID  shift 2
-	.  error
-
-	ID_simple  goto 199
-
-
-state 164
-	declaracion_subtipo : TYPEDEF ID_simple ASIGNACION '{' . CTE_con_sig ',' CTE_con_sig '}'  (32)
-
-	CTE  shift 34
-	ERROR  shift 35
-	'-'  shift 37
-	.  error
-
-	CTE_con_sig  goto 200
-
-
-state 165
-	declaracion_subtipo : TYPEDEF ID_simple ASIGNACION tipo . '{' CTE_con_sig ',' CTE_con_sig '}'  (22)
-	declaracion_subtipo : TYPEDEF ID_simple ASIGNACION tipo . CTE_con_sig ',' CTE_con_sig '}'  (23)
-	declaracion_subtipo : TYPEDEF ID_simple ASIGNACION tipo . '{' CTE_con_sig ',' CTE_con_sig  (24)
-	declaracion_subtipo : TYPEDEF ID_simple ASIGNACION tipo . CTE_con_sig ',' CTE_con_sig  (25)
-	declaracion_subtipo : TYPEDEF ID_simple ASIGNACION tipo . '{' ',' CTE_con_sig '}'  (27)
-	declaracion_subtipo : TYPEDEF ID_simple ASIGNACION tipo . '{' CTE_con_sig '}'  (28)
-	declaracion_subtipo : TYPEDEF ID_simple ASIGNACION tipo . '{' CTE_con_sig ',' '}'  (29)
-	declaracion_subtipo : TYPEDEF ID_simple ASIGNACION tipo . '{' '}'  (30)
-
-	CTE  shift 34
-	ERROR  shift 35
-	'{'  shift 201
-	'-'  shift 37
-	.  error
-
-	CTE_con_sig  goto 202
-
-
-state 166
-	retorno : RET '(' expresion_arit ')' .  (46)
-
-	.  reduce 46
-
-
-state 167
-	bloque_unidad_multiple : BEGIN END .  (131)
-
-	.  reduce 131
-
-
-state 168
-	bloque_unidad_multiple : BEGIN bloque_sent_ejecutables . ';' END  (130)
-	bloque_unidad_multiple : BEGIN bloque_sent_ejecutables . END  (132)
-	bloque_sent_ejecutables : bloque_sent_ejecutables . ';' bloque_sentencia_simple  (134)
-	bloque_sent_ejecutables : bloque_sent_ejecutables . bloque_sentencia_simple  (136)
-
-	IF  shift 5
-	END  shift 203
-	OUTF  shift 6
-	RET  shift 8
-	ID  shift 2
-	WHILE  shift 9
-	GOTO  shift 10
-	ETIQUETA  shift 11
-	';'  shift 204
-	.  error
-
-	ID_simple  goto 61
-	sentencia_ejecutable  goto 110
-	retorno  goto 24
-	asignacion  goto 25
-	sentencia_IF  goto 26
-	sentencia_WHILE  goto 27
-	sentencia_goto  goto 28
-	outf_rule  goto 29
-	variable_simple  goto 30
-	bloque_sentencia_simple  goto 205
-
-
-state 169
-	bloque_sent_ejecutables : bloque_sentencia_simple .  (135)
-
-	.  reduce 135
-
-
-state 170
-	declaracion_funciones : tipo FUN ID parametros_parentesis . BEGIN cuerpo_funcion END  (38)
-
-	BEGIN  shift 206
-	.  error
-
-
-state 171
-	parametros_parentesis : '(' error . ')'  (44)
-
-	')'  shift 207
-	.  error
-
-
-state 172
-	parametros_parentesis : '(' ')' .  (43)
-
-	.  reduce 43
-
-
-state 173
-	parametros_parentesis : '(' ID_simple . ')'  (42)
-
-	')'  shift 208
-	.  error
-
-
-state 174
-	parametros_parentesis : '(' tipo_primitivo . ID_simple ')'  (40)
-	parametros_parentesis : '(' tipo_primitivo . ')'  (41)
-
-	ID  shift 2
-	')'  shift 209
-	.  error
-
-	ID_simple  goto 210
-
-
-state 175
-	declaracion_funciones : tipo FUN parametros_parentesis BEGIN . cuerpo_funcion END  (39)
-
-	IF  shift 5
-	OUTF  shift 6
-	TYPEDEF  shift 7
-	RET  shift 8
-	ID  shift 2
-	WHILE  shift 9
-	GOTO  shift 10
-	ETIQUETA  shift 11
-	INTEGER  shift 12
-	DOUBLE  shift 13
-	.  error
-
-	ID_simple  goto 14
-	sentencias  goto 211
-	sentencia  goto 16
-	sentencia_declarativa  goto 17
-	sentencia_ejecutable  goto 18
-	declaracion_variable  goto 19
-	declaracion_funciones  goto 20
-	declaracion_subtipo  goto 21
-	tipo  goto 22
-	tipo_primitivo  goto 23
-	cuerpo_funcion  goto 212
-	retorno  goto 24
-	asignacion  goto 25
-	sentencia_IF  goto 26
-	sentencia_WHILE  goto 27
-	sentencia_goto  goto 28
-	outf_rule  goto 29
-	variable_simple  goto 30
-
-
-state 176
-	variables : variables ',' variable_simple .  (85)
+state 193
+	factor : variable_simple '{' CTE '}' .  (85)
 
 	.  reduce 85
 
 
-state 177
-	asignacion : variable_simple '{' CTE '}' . ASIGNACION expresion_arit  (59)
-
-	ASIGNACION  shift 213
-	.  error
-
-
-state 178
-	condicion : '(' '(' list_expre ')' . comparador '(' list_expre ')' ')'  (105)
-	condicion : '(' '(' list_expre ')' . comparador '(' list_expre ')'  (107)
-	condicion : '(' '(' list_expre ')' . '(' list_expre ')' ')'  (113)
-	condicion : '(' '(' list_expre ')' . comparador list_expre ')' ')'  (116)
-
-	MAYORIGUAL  shift 81
-	MENORIGUAL  shift 82
-	DISTINTO  shift 83
-	'<'  shift 84
-	'>'  shift 85
-	'('  shift 214
-	'='  shift 88
-	.  error
-
-	comparador  goto 215
-
-
-state 179
-	condicion : '(' '(' list_expre comparador . '(' list_expre ')' ')'  (115)
-
-	'('  shift 216
-	.  error
-
-
-state 180
-	expresion_arit : expresion_arit . '+' termino  (66)
-	expresion_arit : expresion_arit . '-' termino  (67)
-	expresion_arit : expresion_arit . '+' error  (71)
-	expresion_arit : expresion_arit . '-' error  (72)
-	condicion : '(' expresion_arit comparador expresion_arit . ')'  (109)
-	condicion : '(' expresion_arit comparador expresion_arit .  (111)
-
-	')'  shift 217
-	'+'  shift 86
-	'-'  shift 87
-	error  reduce 111
-	IF  reduce 111
-	THEN  reduce 111
-	BEGIN  reduce 111
-	OUTF  reduce 111
-	RET  reduce 111
-	ID  reduce 111
-	WHILE  reduce 111
-	GOTO  reduce 111
-	ETIQUETA  reduce 111
-
-
-state 181
-	list_expre : list_expre ',' expresion_arit .  (64)
-	expresion_arit : expresion_arit . '+' termino  (66)
-	expresion_arit : expresion_arit . '-' termino  (67)
-	expresion_arit : expresion_arit . '+' error  (71)
-	expresion_arit : expresion_arit . '-' error  (72)
-
-	'+'  shift 86
-	'-'  shift 87
-	MAYORIGUAL  reduce 64
-	MENORIGUAL  reduce 64
-	DISTINTO  reduce 64
-	','  reduce 64
-	'<'  reduce 64
-	'>'  reduce 64
-	')'  reduce 64
-	'='  reduce 64
-
-
-state 182
-	condicion : '(' list_expre ')' comparador . '(' list_expre ')' ')'  (106)
-	condicion : '(' list_expre ')' comparador . '(' list_expre ')'  (108)
-
-	'('  shift 218
-	.  error
-
-
-state 183
-	invocacion : ID_simple '(' error ')' .  (63)
-
-	.  reduce 63
-
-
-state 184
-	invocacion : ID_simple '(' tipo_primitivo '(' . expresion_arit ')' ')'  (61)
-
-	error  shift 33
-	CTE  shift 34
-	ID  shift 2
-	ERROR  shift 35
-	'-'  shift 37
-	.  error
-
-	ID_simple  goto 38
-	CTE_con_sig  goto 39
-	expresion_arit  goto 219
-	variable_simple  goto 41
-	invocacion  goto 42
-	termino  goto 43
-	factor  goto 44
-
-
-state 185
-	invocacion : ID_simple '(' expresion_arit ')' .  (60)
-
-	.  reduce 60
-
-
-state 186
-	condicion : expresion_arit comparador expresion_arit ')' .  (110)
-
-	.  reduce 110
-
-
-state 187
-	factor : variable_simple '{' CTE '}' .  (84)
-
-	.  reduce 84
-
-
-state 188
-	bloque_else_multiple : ELSE BEGIN . bloque_sent_ejecutables ';' END  (125)
-	bloque_else_multiple : ELSE BEGIN . bloque_sent_ejecutables END  (126)
+state 194
+	bloque_else_multiple : ELSE BEGIN . bloque_sent_ejecutables ';' END  (126)
+	bloque_else_multiple : ELSE BEGIN . bloque_sent_ejecutables END  (127)
 
 	IF  shift 5
 	OUTF  shift 6
@@ -2768,117 +2842,117 @@ state 188
 	ETIQUETA  shift 11
 	.  error
 
-	ID_simple  goto 61
-	sentencia_ejecutable  goto 110
-	retorno  goto 24
-	asignacion  goto 25
-	sentencia_IF  goto 26
-	sentencia_WHILE  goto 27
-	sentencia_goto  goto 28
-	outf_rule  goto 29
-	variable_simple  goto 30
-	bloque_sent_ejecutables  goto 220
-	bloque_sentencia_simple  goto 169
-
-
-state 189
-	bloque_else_simple : ELSE bloque_sentencia_simple .  (127)
-
-	.  reduce 127
-
-
-state 190
-	sentencia_IF : IF condicion THEN bloque_unidad END_IF .  (100)
-
-	.  reduce 100
-
-
-state 191
-	sentencia_IF : IF condicion THEN bloque_unidad ';' . bloque_else ';' END_IF  (94)
-	sentencia_IF : IF condicion THEN bloque_unidad ';' . END_IF  (95)
-	sentencia_IF : IF condicion THEN bloque_unidad ';' . ELSE END_IF  (98)
-	sentencia_IF : IF condicion THEN bloque_unidad ';' . bloque_else END_IF  (101)
-	sentencia_IF : IF condicion THEN bloque_unidad ';' . error  (103)
-	sentencia_IF : IF condicion THEN bloque_unidad ';' . bloque_else ';' error  (104)
-
-	error  shift 221
-	ELSE  shift 222
-	END_IF  shift 223
-	.  error
-
-	bloque_else  goto 224
-	bloque_else_simple  goto 153
-	bloque_else_multiple  goto 154
-
-
-state 192
-	sentencia_IF : IF condicion THEN bloque_unidad bloque_else . ';' END_IF  (99)
-	sentencia_IF : IF condicion THEN bloque_unidad bloque_else . END_IF  (102)
-
-	END_IF  shift 225
-	';'  shift 226
-	.  error
-
-
-state 193
-	sentencia_IF : IF condicion THEN bloque_else ';' . END_IF  (96)
-
-	END_IF  shift 227
-	.  error
-
-
-state 194
-	asignacion : variable_simple '{' CTE . '}' ASIGNACION expresion_arit  (59)
-	factor : variable_simple '{' CTE . '}'  (84)
-
-	'}'  shift 228
-	.  error
+	ID_simple  goto 62
+	sentencia_ejecutable  goto 113
+	retorno  goto 25
+	asignacion  goto 26
+	sentencia_IF  goto 27
+	sentencia_WHILE  goto 28
+	sentencia_goto  goto 29
+	outf_rule  goto 30
+	variable_simple  goto 31
+	bloque_sent_ejecutables  goto 221
+	bloque_sentencia_simple  goto 175
 
 
 state 195
-	declaracion_subtipo : TYPEDEF TRIPLE '<' tipo '>' . ID_simple  (26)
-	declaracion_subtipo : TYPEDEF TRIPLE '<' tipo '>' . error  (37)
+	bloque_else_simple : ELSE bloque_sentencia_simple .  (128)
 
-	error  shift 229
-	ID  shift 2
-	.  error
-
-	ID_simple  goto 230
+	.  reduce 128
 
 
 state 196
+	sentencia_IF : IF condicion THEN bloque_unidad END_IF .  (101)
+
+	.  reduce 101
+
+
+state 197
+	sentencia_IF : IF condicion THEN bloque_unidad ';' . bloque_else ';' END_IF  (95)
+	sentencia_IF : IF condicion THEN bloque_unidad ';' . END_IF  (96)
+	sentencia_IF : IF condicion THEN bloque_unidad ';' . ELSE END_IF  (99)
+	sentencia_IF : IF condicion THEN bloque_unidad ';' . bloque_else END_IF  (102)
+	sentencia_IF : IF condicion THEN bloque_unidad ';' . error  (104)
+	sentencia_IF : IF condicion THEN bloque_unidad ';' . bloque_else ';' error  (105)
+
+	error  shift 222
+	ELSE  shift 223
+	END_IF  shift 224
+	.  error
+
+	bloque_else  goto 225
+	bloque_else_simple  goto 159
+	bloque_else_multiple  goto 160
+
+
+state 198
+	sentencia_IF : IF condicion THEN bloque_unidad bloque_else . ';' END_IF  (100)
+	sentencia_IF : IF condicion THEN bloque_unidad bloque_else . END_IF  (103)
+
+	END_IF  shift 226
+	';'  shift 227
+	.  error
+
+
+state 199
+	sentencia_IF : IF condicion THEN bloque_else ';' . END_IF  (97)
+
+	END_IF  shift 228
+	.  error
+
+
+state 200
+	asignacion : variable_simple '{' CTE . '}' ASIGNACION expresion_arit  (60)
+	factor : variable_simple '{' CTE . '}'  (85)
+
+	'}'  shift 229
+	.  error
+
+
+state 201
+	declaracion_subtipo : TYPEDEF TRIPLE '<' tipo '>' . ID_simple  (26)
+	declaracion_subtipo : TYPEDEF TRIPLE '<' tipo '>' . error  (37)
+
+	error  shift 230
+	ID  shift 2
+	.  error
+
+	ID_simple  goto 231
+
+
+state 202
 	declaracion_subtipo : TYPEDEF TRIPLE '<' tipo ID_simple .  (35)
 
 	.  reduce 35
 
 
-state 197
+state 203
 	declaracion_subtipo : TYPEDEF TRIPLE tipo '>' ID_simple .  (34)
 
 	.  reduce 34
 
 
-state 198
+state 204
 	declaracion_subtipo : TYPEDEF ASIGNACION tipo '{' CTE_con_sig . ',' CTE_con_sig '}'  (31)
-
-	','  shift 231
-	.  error
-
-
-state 199
-	declaracion_subtipo : TYPEDEF '<' tipo '>' ID_simple .  (33)
-
-	.  reduce 33
-
-
-state 200
-	declaracion_subtipo : TYPEDEF ID_simple ASIGNACION '{' CTE_con_sig . ',' CTE_con_sig '}'  (32)
 
 	','  shift 232
 	.  error
 
 
-state 201
+state 205
+	declaracion_subtipo : TYPEDEF '<' tipo '>' ID_simple .  (33)
+
+	.  reduce 33
+
+
+state 206
+	declaracion_subtipo : TYPEDEF ID_simple ASIGNACION '{' CTE_con_sig . ',' CTE_con_sig '}'  (32)
+
+	','  shift 233
+	.  error
+
+
+state 207
 	declaracion_subtipo : TYPEDEF ID_simple ASIGNACION tipo '{' . CTE_con_sig ',' CTE_con_sig '}'  (22)
 	declaracion_subtipo : TYPEDEF ID_simple ASIGNACION tipo '{' . CTE_con_sig ',' CTE_con_sig  (24)
 	declaracion_subtipo : TYPEDEF ID_simple ASIGNACION tipo '{' . ',' CTE_con_sig '}'  (27)
@@ -2886,329 +2960,240 @@ state 201
 	declaracion_subtipo : TYPEDEF ID_simple ASIGNACION tipo '{' . CTE_con_sig ',' '}'  (29)
 	declaracion_subtipo : TYPEDEF ID_simple ASIGNACION tipo '{' . '}'  (30)
 
-	CTE  shift 34
-	ERROR  shift 35
-	','  shift 233
-	'}'  shift 234
-	'-'  shift 37
+	CTE  shift 35
+	ERROR  shift 36
+	','  shift 234
+	'}'  shift 235
+	'-'  shift 38
 	.  error
 
-	CTE_con_sig  goto 235
-
-
-state 202
-	declaracion_subtipo : TYPEDEF ID_simple ASIGNACION tipo CTE_con_sig . ',' CTE_con_sig '}'  (23)
-	declaracion_subtipo : TYPEDEF ID_simple ASIGNACION tipo CTE_con_sig . ',' CTE_con_sig  (25)
-
-	','  shift 236
-	.  error
-
-
-state 203
-	bloque_unidad_multiple : BEGIN bloque_sent_ejecutables END .  (132)
-
-	.  reduce 132
-
-
-state 204
-	bloque_unidad_multiple : BEGIN bloque_sent_ejecutables ';' . END  (130)
-	bloque_sent_ejecutables : bloque_sent_ejecutables ';' . bloque_sentencia_simple  (134)
-
-	IF  shift 5
-	END  shift 237
-	OUTF  shift 6
-	RET  shift 8
-	ID  shift 2
-	WHILE  shift 9
-	GOTO  shift 10
-	ETIQUETA  shift 11
-	.  error
-
-	ID_simple  goto 61
-	sentencia_ejecutable  goto 110
-	retorno  goto 24
-	asignacion  goto 25
-	sentencia_IF  goto 26
-	sentencia_WHILE  goto 27
-	sentencia_goto  goto 28
-	outf_rule  goto 29
-	variable_simple  goto 30
-	bloque_sentencia_simple  goto 238
-
-
-state 205
-	bloque_sent_ejecutables : bloque_sent_ejecutables bloque_sentencia_simple .  (136)
-
-	.  reduce 136
-
-
-state 206
-	declaracion_funciones : tipo FUN ID parametros_parentesis BEGIN . cuerpo_funcion END  (38)
-
-	IF  shift 5
-	OUTF  shift 6
-	TYPEDEF  shift 7
-	RET  shift 8
-	ID  shift 2
-	WHILE  shift 9
-	GOTO  shift 10
-	ETIQUETA  shift 11
-	INTEGER  shift 12
-	DOUBLE  shift 13
-	.  error
-
-	ID_simple  goto 14
-	sentencias  goto 211
-	sentencia  goto 16
-	sentencia_declarativa  goto 17
-	sentencia_ejecutable  goto 18
-	declaracion_variable  goto 19
-	declaracion_funciones  goto 20
-	declaracion_subtipo  goto 21
-	tipo  goto 22
-	tipo_primitivo  goto 23
-	cuerpo_funcion  goto 239
-	retorno  goto 24
-	asignacion  goto 25
-	sentencia_IF  goto 26
-	sentencia_WHILE  goto 27
-	sentencia_goto  goto 28
-	outf_rule  goto 29
-	variable_simple  goto 30
-
-
-state 207
-	parametros_parentesis : '(' error ')' .  (44)
-
-	.  reduce 44
+	CTE_con_sig  goto 236
 
 
 state 208
-	parametros_parentesis : '(' ID_simple ')' .  (42)
+	declaracion_subtipo : TYPEDEF ID_simple ASIGNACION tipo CTE_con_sig . ',' CTE_con_sig '}'  (23)
+	declaracion_subtipo : TYPEDEF ID_simple ASIGNACION tipo CTE_con_sig . ',' CTE_con_sig  (25)
 
-	.  reduce 42
+	','  shift 237
+	.  error
 
 
 state 209
-	parametros_parentesis : '(' tipo_primitivo ')' .  (41)
+	bloque_unidad_multiple : BEGIN bloque_sent_ejecutables END .  (133)
+
+	.  reduce 133
+
+
+state 210
+	bloque_unidad_multiple : BEGIN bloque_sent_ejecutables ';' . END  (131)
+	bloque_sent_ejecutables : bloque_sent_ejecutables ';' . bloque_sentencia_simple  (135)
+
+	IF  shift 5
+	END  shift 238
+	OUTF  shift 6
+	RET  shift 8
+	ID  shift 2
+	WHILE  shift 9
+	GOTO  shift 10
+	ETIQUETA  shift 11
+	.  error
+
+	ID_simple  goto 62
+	sentencia_ejecutable  goto 113
+	retorno  goto 25
+	asignacion  goto 26
+	sentencia_IF  goto 27
+	sentencia_WHILE  goto 28
+	sentencia_goto  goto 29
+	outf_rule  goto 30
+	variable_simple  goto 31
+	bloque_sentencia_simple  goto 239
+
+
+state 211
+	bloque_sent_ejecutables : bloque_sent_ejecutables bloque_sentencia_simple .  (137)
+
+	.  reduce 137
+
+
+state 212
+	parametros_parentesis : '(' tipo_primitivo ID_simple ')' .  (41)
 
 	.  reduce 41
 
 
-state 210
-	parametros_parentesis : '(' tipo_primitivo ID_simple . ')'  (40)
-
-	')'  shift 240
-	.  error
-
-
-state 211
-	sentencias : sentencias . sentencia  (6)
-	cuerpo_funcion : sentencias .  (45)
-
-	IF  shift 5
-	OUTF  shift 6
-	TYPEDEF  shift 7
-	RET  shift 8
-	ID  shift 2
-	WHILE  shift 9
-	GOTO  shift 10
-	ETIQUETA  shift 11
-	INTEGER  shift 12
-	DOUBLE  shift 13
-	END  reduce 45
-
-	ID_simple  goto 14
-	sentencia  goto 56
-	sentencia_declarativa  goto 17
-	sentencia_ejecutable  goto 18
-	declaracion_variable  goto 19
-	declaracion_funciones  goto 20
-	declaracion_subtipo  goto 21
-	tipo  goto 22
-	tipo_primitivo  goto 23
-	retorno  goto 24
-	asignacion  goto 25
-	sentencia_IF  goto 26
-	sentencia_WHILE  goto 27
-	sentencia_goto  goto 28
-	outf_rule  goto 29
-	variable_simple  goto 30
-
-
-state 212
-	declaracion_funciones : tipo FUN parametros_parentesis BEGIN cuerpo_funcion . END  (39)
-
-	END  shift 241
-	.  error
-
-
 state 213
-	asignacion : variable_simple '{' CTE '}' ASIGNACION . expresion_arit  (59)
+	declaracion_funciones : encabezado_funcion parametros_parentesis BEGIN cuerpo_funcion END .  (38)
 
-	error  shift 33
-	CTE  shift 34
-	ID  shift 2
-	ERROR  shift 35
-	'-'  shift 37
-	.  error
-
-	ID_simple  goto 38
-	CTE_con_sig  goto 39
-	expresion_arit  goto 242
-	variable_simple  goto 41
-	invocacion  goto 42
-	termino  goto 43
-	factor  goto 44
+	.  reduce 38
 
 
 state 214
-	condicion : '(' '(' list_expre ')' '(' . list_expre ')' ')'  (113)
+	asignacion : variable_simple '{' CTE '}' ASIGNACION . expresion_arit  (60)
 
-	error  shift 33
-	CTE  shift 34
+	error  shift 34
+	CTE  shift 35
 	ID  shift 2
-	ERROR  shift 35
-	'-'  shift 37
+	ERROR  shift 36
+	'-'  shift 38
 	.  error
 
-	ID_simple  goto 38
-	CTE_con_sig  goto 39
-	expresion_arit  goto 130
-	variable_simple  goto 41
-	invocacion  goto 42
-	list_expre  goto 243
-	termino  goto 43
-	factor  goto 44
+	ID_simple  goto 39
+	CTE_con_sig  goto 40
+	expresion_arit  goto 240
+	variable_simple  goto 42
+	invocacion  goto 43
+	termino  goto 44
+	factor  goto 45
 
 
 state 215
-	condicion : '(' '(' list_expre ')' comparador . '(' list_expre ')' ')'  (105)
-	condicion : '(' '(' list_expre ')' comparador . '(' list_expre ')'  (107)
-	condicion : '(' '(' list_expre ')' comparador . list_expre ')' ')'  (116)
+	condicion : '(' '(' list_expre ')' '(' . list_expre ')' ')'  (114)
 
-	error  shift 33
-	CTE  shift 34
+	error  shift 34
+	CTE  shift 35
 	ID  shift 2
-	ERROR  shift 35
-	'('  shift 244
-	'-'  shift 37
+	ERROR  shift 36
+	'-'  shift 38
 	.  error
 
-	ID_simple  goto 38
-	CTE_con_sig  goto 39
-	expresion_arit  goto 130
-	variable_simple  goto 41
-	invocacion  goto 42
-	list_expre  goto 245
-	termino  goto 43
-	factor  goto 44
+	ID_simple  goto 39
+	CTE_con_sig  goto 40
+	expresion_arit  goto 136
+	variable_simple  goto 42
+	invocacion  goto 43
+	list_expre  goto 241
+	termino  goto 44
+	factor  goto 45
 
 
 state 216
-	condicion : '(' '(' list_expre comparador '(' . list_expre ')' ')'  (115)
+	condicion : '(' '(' list_expre ')' comparador . '(' list_expre ')' ')'  (106)
+	condicion : '(' '(' list_expre ')' comparador . '(' list_expre ')'  (108)
+	condicion : '(' '(' list_expre ')' comparador . list_expre ')' ')'  (117)
 
-	error  shift 33
-	CTE  shift 34
+	error  shift 34
+	CTE  shift 35
 	ID  shift 2
-	ERROR  shift 35
-	'-'  shift 37
+	ERROR  shift 36
+	'('  shift 242
+	'-'  shift 38
 	.  error
 
-	ID_simple  goto 38
-	CTE_con_sig  goto 39
-	expresion_arit  goto 130
-	variable_simple  goto 41
-	invocacion  goto 42
-	list_expre  goto 246
-	termino  goto 43
-	factor  goto 44
+	ID_simple  goto 39
+	CTE_con_sig  goto 40
+	expresion_arit  goto 136
+	variable_simple  goto 42
+	invocacion  goto 43
+	list_expre  goto 243
+	termino  goto 44
+	factor  goto 45
 
 
 state 217
-	condicion : '(' expresion_arit comparador expresion_arit ')' .  (109)
+	condicion : '(' '(' list_expre comparador '(' . list_expre ')' ')'  (116)
 
-	.  reduce 109
+	error  shift 34
+	CTE  shift 35
+	ID  shift 2
+	ERROR  shift 36
+	'-'  shift 38
+	.  error
+
+	ID_simple  goto 39
+	CTE_con_sig  goto 40
+	expresion_arit  goto 136
+	variable_simple  goto 42
+	invocacion  goto 43
+	list_expre  goto 244
+	termino  goto 44
+	factor  goto 45
 
 
 state 218
-	condicion : '(' list_expre ')' comparador '(' . list_expre ')' ')'  (106)
-	condicion : '(' list_expre ')' comparador '(' . list_expre ')'  (108)
+	condicion : '(' expresion_arit comparador expresion_arit ')' .  (110)
 
-	error  shift 33
-	CTE  shift 34
-	ID  shift 2
-	ERROR  shift 35
-	'-'  shift 37
-	.  error
-
-	ID_simple  goto 38
-	CTE_con_sig  goto 39
-	expresion_arit  goto 130
-	variable_simple  goto 41
-	invocacion  goto 42
-	list_expre  goto 247
-	termino  goto 43
-	factor  goto 44
+	.  reduce 110
 
 
 state 219
-	invocacion : ID_simple '(' tipo_primitivo '(' expresion_arit . ')' ')'  (61)
-	expresion_arit : expresion_arit . '+' termino  (66)
-	expresion_arit : expresion_arit . '-' termino  (67)
-	expresion_arit : expresion_arit . '+' error  (71)
-	expresion_arit : expresion_arit . '-' error  (72)
+	condicion : '(' list_expre ')' comparador '(' . list_expre ')' ')'  (107)
+	condicion : '(' list_expre ')' comparador '(' . list_expre ')'  (109)
 
-	')'  shift 248
-	'+'  shift 86
-	'-'  shift 87
+	error  shift 34
+	CTE  shift 35
+	ID  shift 2
+	ERROR  shift 36
+	'-'  shift 38
 	.  error
+
+	ID_simple  goto 39
+	CTE_con_sig  goto 40
+	expresion_arit  goto 136
+	variable_simple  goto 42
+	invocacion  goto 43
+	list_expre  goto 245
+	termino  goto 44
+	factor  goto 45
 
 
 state 220
-	bloque_else_multiple : ELSE BEGIN bloque_sent_ejecutables . ';' END  (125)
-	bloque_else_multiple : ELSE BEGIN bloque_sent_ejecutables . END  (126)
-	bloque_sent_ejecutables : bloque_sent_ejecutables . ';' bloque_sentencia_simple  (134)
-	bloque_sent_ejecutables : bloque_sent_ejecutables . bloque_sentencia_simple  (136)
+	invocacion : ID_simple '(' tipo_primitivo '(' expresion_arit . ')' ')'  (62)
+	expresion_arit : expresion_arit . '+' termino  (67)
+	expresion_arit : expresion_arit . '-' termino  (68)
+	expresion_arit : expresion_arit . '+' error  (72)
+	expresion_arit : expresion_arit . '-' error  (73)
 
-	IF  shift 5
-	END  shift 249
-	OUTF  shift 6
-	RET  shift 8
-	ID  shift 2
-	WHILE  shift 9
-	GOTO  shift 10
-	ETIQUETA  shift 11
-	';'  shift 250
+	')'  shift 246
+	'+'  shift 89
+	'-'  shift 90
 	.  error
-
-	ID_simple  goto 61
-	sentencia_ejecutable  goto 110
-	retorno  goto 24
-	asignacion  goto 25
-	sentencia_IF  goto 26
-	sentencia_WHILE  goto 27
-	sentencia_goto  goto 28
-	outf_rule  goto 29
-	variable_simple  goto 30
-	bloque_sentencia_simple  goto 205
 
 
 state 221
-	sentencia_IF : IF condicion THEN bloque_unidad ';' error .  (103)
+	bloque_else_multiple : ELSE BEGIN bloque_sent_ejecutables . ';' END  (126)
+	bloque_else_multiple : ELSE BEGIN bloque_sent_ejecutables . END  (127)
+	bloque_sent_ejecutables : bloque_sent_ejecutables . ';' bloque_sentencia_simple  (135)
+	bloque_sent_ejecutables : bloque_sent_ejecutables . bloque_sentencia_simple  (137)
 
-	.  reduce 103
+	IF  shift 5
+	END  shift 247
+	OUTF  shift 6
+	RET  shift 8
+	ID  shift 2
+	WHILE  shift 9
+	GOTO  shift 10
+	ETIQUETA  shift 11
+	';'  shift 248
+	.  error
+
+	ID_simple  goto 62
+	sentencia_ejecutable  goto 113
+	retorno  goto 25
+	asignacion  goto 26
+	sentencia_IF  goto 27
+	sentencia_WHILE  goto 28
+	sentencia_goto  goto 29
+	outf_rule  goto 30
+	variable_simple  goto 31
+	bloque_sentencia_simple  goto 211
 
 
 state 222
-	sentencia_IF : IF condicion THEN bloque_unidad ';' ELSE . END_IF  (98)
-	bloque_else_multiple : ELSE . BEGIN bloque_sent_ejecutables ';' END  (125)
-	bloque_else_multiple : ELSE . BEGIN bloque_sent_ejecutables END  (126)
-	bloque_else_simple : ELSE . bloque_sentencia_simple  (127)
+	sentencia_IF : IF condicion THEN bloque_unidad ';' error .  (104)
+
+	.  reduce 104
+
+
+state 223
+	sentencia_IF : IF condicion THEN bloque_unidad ';' ELSE . END_IF  (99)
+	bloque_else_multiple : ELSE . BEGIN bloque_sent_ejecutables ';' END  (126)
+	bloque_else_multiple : ELSE . BEGIN bloque_sent_ejecutables END  (127)
+	bloque_else_simple : ELSE . bloque_sentencia_simple  (128)
 
 	IF  shift 5
-	BEGIN  shift 188
-	END_IF  shift 251
+	BEGIN  shift 194
+	END_IF  shift 249
 	OUTF  shift 6
 	RET  shift 8
 	ID  shift 2
@@ -3217,274 +3202,255 @@ state 222
 	ETIQUETA  shift 11
 	.  error
 
-	ID_simple  goto 61
-	sentencia_ejecutable  goto 110
-	retorno  goto 24
-	asignacion  goto 25
-	sentencia_IF  goto 26
-	sentencia_WHILE  goto 27
-	sentencia_goto  goto 28
-	outf_rule  goto 29
-	variable_simple  goto 30
-	bloque_sentencia_simple  goto 189
-
-
-state 223
-	sentencia_IF : IF condicion THEN bloque_unidad ';' END_IF .  (95)
-
-	.  reduce 95
+	ID_simple  goto 62
+	sentencia_ejecutable  goto 113
+	retorno  goto 25
+	asignacion  goto 26
+	sentencia_IF  goto 27
+	sentencia_WHILE  goto 28
+	sentencia_goto  goto 29
+	outf_rule  goto 30
+	variable_simple  goto 31
+	bloque_sentencia_simple  goto 195
 
 
 state 224
-	sentencia_IF : IF condicion THEN bloque_unidad ';' bloque_else . ';' END_IF  (94)
-	sentencia_IF : IF condicion THEN bloque_unidad ';' bloque_else . END_IF  (101)
-	sentencia_IF : IF condicion THEN bloque_unidad ';' bloque_else . ';' error  (104)
-
-	END_IF  shift 252
-	';'  shift 253
-	.  error
-
-
-state 225
-	sentencia_IF : IF condicion THEN bloque_unidad bloque_else END_IF .  (102)
-
-	.  reduce 102
-
-
-state 226
-	sentencia_IF : IF condicion THEN bloque_unidad bloque_else ';' . END_IF  (99)
-
-	END_IF  shift 254
-	.  error
-
-
-state 227
-	sentencia_IF : IF condicion THEN bloque_else ';' END_IF .  (96)
+	sentencia_IF : IF condicion THEN bloque_unidad ';' END_IF .  (96)
 
 	.  reduce 96
 
 
-state 228
-	asignacion : variable_simple '{' CTE '}' . ASIGNACION expresion_arit  (59)
-	factor : variable_simple '{' CTE '}' .  (84)
+state 225
+	sentencia_IF : IF condicion THEN bloque_unidad ';' bloque_else . ';' END_IF  (95)
+	sentencia_IF : IF condicion THEN bloque_unidad ';' bloque_else . END_IF  (102)
+	sentencia_IF : IF condicion THEN bloque_unidad ';' bloque_else . ';' error  (105)
 
-	ASIGNACION  shift 213
-	')'  reduce 84
-	'+'  reduce 84
-	'-'  reduce 84
-	'*'  reduce 84
-	'/'  reduce 84
+	END_IF  shift 250
+	';'  shift 251
+	.  error
+
+
+state 226
+	sentencia_IF : IF condicion THEN bloque_unidad bloque_else END_IF .  (103)
+
+	.  reduce 103
+
+
+state 227
+	sentencia_IF : IF condicion THEN bloque_unidad bloque_else ';' . END_IF  (100)
+
+	END_IF  shift 252
+	.  error
+
+
+state 228
+	sentencia_IF : IF condicion THEN bloque_else ';' END_IF .  (97)
+
+	.  reduce 97
 
 
 state 229
+	asignacion : variable_simple '{' CTE '}' . ASIGNACION expresion_arit  (60)
+	factor : variable_simple '{' CTE '}' .  (85)
+
+	ASIGNACION  shift 214
+	')'  reduce 85
+	'+'  reduce 85
+	'-'  reduce 85
+	'*'  reduce 85
+	'/'  reduce 85
+
+
+state 230
 	declaracion_subtipo : TYPEDEF TRIPLE '<' tipo '>' error .  (37)
 
 	.  reduce 37
 
 
-state 230
+state 231
 	declaracion_subtipo : TYPEDEF TRIPLE '<' tipo '>' ID_simple .  (26)
 
 	.  reduce 26
 
 
-state 231
+state 232
 	declaracion_subtipo : TYPEDEF ASIGNACION tipo '{' CTE_con_sig ',' . CTE_con_sig '}'  (31)
 
-	CTE  shift 34
-	ERROR  shift 35
-	'-'  shift 37
+	CTE  shift 35
+	ERROR  shift 36
+	'-'  shift 38
+	.  error
+
+	CTE_con_sig  goto 253
+
+
+state 233
+	declaracion_subtipo : TYPEDEF ID_simple ASIGNACION '{' CTE_con_sig ',' . CTE_con_sig '}'  (32)
+
+	CTE  shift 35
+	ERROR  shift 36
+	'-'  shift 38
+	.  error
+
+	CTE_con_sig  goto 254
+
+
+state 234
+	declaracion_subtipo : TYPEDEF ID_simple ASIGNACION tipo '{' ',' . CTE_con_sig '}'  (27)
+
+	CTE  shift 35
+	ERROR  shift 36
+	'-'  shift 38
 	.  error
 
 	CTE_con_sig  goto 255
 
 
-state 232
-	declaracion_subtipo : TYPEDEF ID_simple ASIGNACION '{' CTE_con_sig ',' . CTE_con_sig '}'  (32)
-
-	CTE  shift 34
-	ERROR  shift 35
-	'-'  shift 37
-	.  error
-
-	CTE_con_sig  goto 256
-
-
-state 233
-	declaracion_subtipo : TYPEDEF ID_simple ASIGNACION tipo '{' ',' . CTE_con_sig '}'  (27)
-
-	CTE  shift 34
-	ERROR  shift 35
-	'-'  shift 37
-	.  error
-
-	CTE_con_sig  goto 257
-
-
-state 234
+state 235
 	declaracion_subtipo : TYPEDEF ID_simple ASIGNACION tipo '{' '}' .  (30)
 
 	.  reduce 30
 
 
-state 235
+state 236
 	declaracion_subtipo : TYPEDEF ID_simple ASIGNACION tipo '{' CTE_con_sig . ',' CTE_con_sig '}'  (22)
 	declaracion_subtipo : TYPEDEF ID_simple ASIGNACION tipo '{' CTE_con_sig . ',' CTE_con_sig  (24)
 	declaracion_subtipo : TYPEDEF ID_simple ASIGNACION tipo '{' CTE_con_sig . '}'  (28)
 	declaracion_subtipo : TYPEDEF ID_simple ASIGNACION tipo '{' CTE_con_sig . ',' '}'  (29)
 
-	','  shift 258
-	'}'  shift 259
+	','  shift 256
+	'}'  shift 257
 	.  error
-
-
-state 236
-	declaracion_subtipo : TYPEDEF ID_simple ASIGNACION tipo CTE_con_sig ',' . CTE_con_sig '}'  (23)
-	declaracion_subtipo : TYPEDEF ID_simple ASIGNACION tipo CTE_con_sig ',' . CTE_con_sig  (25)
-
-	CTE  shift 34
-	ERROR  shift 35
-	'-'  shift 37
-	.  error
-
-	CTE_con_sig  goto 260
 
 
 state 237
-	bloque_unidad_multiple : BEGIN bloque_sent_ejecutables ';' END .  (130)
+	declaracion_subtipo : TYPEDEF ID_simple ASIGNACION tipo CTE_con_sig ',' . CTE_con_sig '}'  (23)
+	declaracion_subtipo : TYPEDEF ID_simple ASIGNACION tipo CTE_con_sig ',' . CTE_con_sig  (25)
 
-	.  reduce 130
+	CTE  shift 35
+	ERROR  shift 36
+	'-'  shift 38
+	.  error
+
+	CTE_con_sig  goto 258
 
 
 state 238
-	bloque_sent_ejecutables : bloque_sent_ejecutables ';' bloque_sentencia_simple .  (134)
+	bloque_unidad_multiple : BEGIN bloque_sent_ejecutables ';' END .  (131)
 
-	.  reduce 134
+	.  reduce 131
 
 
 state 239
-	declaracion_funciones : tipo FUN ID parametros_parentesis BEGIN cuerpo_funcion . END  (38)
+	bloque_sent_ejecutables : bloque_sent_ejecutables ';' bloque_sentencia_simple .  (135)
 
-	END  shift 261
-	.  error
+	.  reduce 135
 
 
 state 240
-	parametros_parentesis : '(' tipo_primitivo ID_simple ')' .  (40)
+	asignacion : variable_simple '{' CTE '}' ASIGNACION expresion_arit .  (60)
+	expresion_arit : expresion_arit . '+' termino  (67)
+	expresion_arit : expresion_arit . '-' termino  (68)
+	expresion_arit : expresion_arit . '+' error  (72)
+	expresion_arit : expresion_arit . '-' error  (73)
 
-	.  reduce 40
+	'+'  shift 89
+	'-'  shift 90
+	$end  reduce 60
+	IF  reduce 60
+	ELSE  reduce 60
+	END  reduce 60
+	END_IF  reduce 60
+	OUTF  reduce 60
+	TYPEDEF  reduce 60
+	RET  reduce 60
+	ID  reduce 60
+	WHILE  reduce 60
+	GOTO  reduce 60
+	ETIQUETA  reduce 60
+	INTEGER  reduce 60
+	DOUBLE  reduce 60
+	';'  reduce 60
+	')'  reduce 60
 
 
 state 241
-	declaracion_funciones : tipo FUN parametros_parentesis BEGIN cuerpo_funcion END .  (39)
+	list_expre : list_expre . ',' expresion_arit  (65)
+	condicion : '(' '(' list_expre ')' '(' list_expre . ')' ')'  (114)
 
-	.  reduce 39
+	','  shift 139
+	')'  shift 259
+	.  error
 
 
 state 242
-	asignacion : variable_simple '{' CTE '}' ASIGNACION expresion_arit .  (59)
-	expresion_arit : expresion_arit . '+' termino  (66)
-	expresion_arit : expresion_arit . '-' termino  (67)
-	expresion_arit : expresion_arit . '+' error  (71)
-	expresion_arit : expresion_arit . '-' error  (72)
+	condicion : '(' '(' list_expre ')' comparador '(' . list_expre ')' ')'  (106)
+	condicion : '(' '(' list_expre ')' comparador '(' . list_expre ')'  (108)
 
-	'+'  shift 86
-	'-'  shift 87
-	$end  reduce 59
-	IF  reduce 59
-	ELSE  reduce 59
-	END  reduce 59
-	END_IF  reduce 59
-	OUTF  reduce 59
-	TYPEDEF  reduce 59
-	RET  reduce 59
-	ID  reduce 59
-	WHILE  reduce 59
-	GOTO  reduce 59
-	ETIQUETA  reduce 59
-	INTEGER  reduce 59
-	DOUBLE  reduce 59
-	';'  reduce 59
-	')'  reduce 59
+	error  shift 34
+	CTE  shift 35
+	ID  shift 2
+	ERROR  shift 36
+	'-'  shift 38
+	.  error
+
+	ID_simple  goto 39
+	CTE_con_sig  goto 40
+	expresion_arit  goto 136
+	variable_simple  goto 42
+	invocacion  goto 43
+	list_expre  goto 260
+	termino  goto 44
+	factor  goto 45
 
 
 state 243
-	list_expre : list_expre . ',' expresion_arit  (64)
-	condicion : '(' '(' list_expre ')' '(' list_expre . ')' ')'  (113)
+	list_expre : list_expre . ',' expresion_arit  (65)
+	condicion : '(' '(' list_expre ')' comparador list_expre . ')' ')'  (117)
 
-	','  shift 133
-	')'  shift 262
+	','  shift 139
+	')'  shift 261
 	.  error
 
 
 state 244
-	condicion : '(' '(' list_expre ')' comparador '(' . list_expre ')' ')'  (105)
-	condicion : '(' '(' list_expre ')' comparador '(' . list_expre ')'  (107)
+	list_expre : list_expre . ',' expresion_arit  (65)
+	condicion : '(' '(' list_expre comparador '(' list_expre . ')' ')'  (116)
 
-	error  shift 33
-	CTE  shift 34
-	ID  shift 2
-	ERROR  shift 35
-	'-'  shift 37
+	','  shift 139
+	')'  shift 262
 	.  error
-
-	ID_simple  goto 38
-	CTE_con_sig  goto 39
-	expresion_arit  goto 130
-	variable_simple  goto 41
-	invocacion  goto 42
-	list_expre  goto 263
-	termino  goto 43
-	factor  goto 44
 
 
 state 245
-	list_expre : list_expre . ',' expresion_arit  (64)
-	condicion : '(' '(' list_expre ')' comparador list_expre . ')' ')'  (116)
+	list_expre : list_expre . ',' expresion_arit  (65)
+	condicion : '(' list_expre ')' comparador '(' list_expre . ')' ')'  (107)
+	condicion : '(' list_expre ')' comparador '(' list_expre . ')'  (109)
 
-	','  shift 133
-	')'  shift 264
+	','  shift 139
+	')'  shift 263
 	.  error
 
 
 state 246
-	list_expre : list_expre . ',' expresion_arit  (64)
-	condicion : '(' '(' list_expre comparador '(' list_expre . ')' ')'  (115)
+	invocacion : ID_simple '(' tipo_primitivo '(' expresion_arit ')' . ')'  (62)
 
-	','  shift 133
-	')'  shift 265
+	')'  shift 264
 	.  error
 
 
 state 247
-	list_expre : list_expre . ',' expresion_arit  (64)
-	condicion : '(' list_expre ')' comparador '(' list_expre . ')' ')'  (106)
-	condicion : '(' list_expre ')' comparador '(' list_expre . ')'  (108)
+	bloque_else_multiple : ELSE BEGIN bloque_sent_ejecutables END .  (127)
 
-	','  shift 133
-	')'  shift 266
-	.  error
+	.  reduce 127
 
 
 state 248
-	invocacion : ID_simple '(' tipo_primitivo '(' expresion_arit ')' . ')'  (61)
-
-	')'  shift 267
-	.  error
-
-
-state 249
-	bloque_else_multiple : ELSE BEGIN bloque_sent_ejecutables END .  (126)
-
-	.  reduce 126
-
-
-state 250
-	bloque_else_multiple : ELSE BEGIN bloque_sent_ejecutables ';' . END  (125)
-	bloque_sent_ejecutables : bloque_sent_ejecutables ';' . bloque_sentencia_simple  (134)
+	bloque_else_multiple : ELSE BEGIN bloque_sent_ejecutables ';' . END  (126)
+	bloque_sent_ejecutables : bloque_sent_ejecutables ';' . bloque_sentencia_simple  (135)
 
 	IF  shift 5
-	END  shift 268
+	END  shift 265
 	OUTF  shift 6
 	RET  shift 8
 	ID  shift 2
@@ -3493,91 +3459,91 @@ state 250
 	ETIQUETA  shift 11
 	.  error
 
-	ID_simple  goto 61
-	sentencia_ejecutable  goto 110
-	retorno  goto 24
-	asignacion  goto 25
-	sentencia_IF  goto 26
-	sentencia_WHILE  goto 27
-	sentencia_goto  goto 28
-	outf_rule  goto 29
-	variable_simple  goto 30
-	bloque_sentencia_simple  goto 238
+	ID_simple  goto 62
+	sentencia_ejecutable  goto 113
+	retorno  goto 25
+	asignacion  goto 26
+	sentencia_IF  goto 27
+	sentencia_WHILE  goto 28
+	sentencia_goto  goto 29
+	outf_rule  goto 30
+	variable_simple  goto 31
+	bloque_sentencia_simple  goto 239
 
 
-state 251
-	sentencia_IF : IF condicion THEN bloque_unidad ';' ELSE END_IF .  (98)
-
-	.  reduce 98
-
-
-state 252
-	sentencia_IF : IF condicion THEN bloque_unidad ';' bloque_else END_IF .  (101)
-
-	.  reduce 101
-
-
-state 253
-	sentencia_IF : IF condicion THEN bloque_unidad ';' bloque_else ';' . END_IF  (94)
-	sentencia_IF : IF condicion THEN bloque_unidad ';' bloque_else ';' . error  (104)
-
-	error  shift 269
-	END_IF  shift 270
-	.  error
-
-
-state 254
-	sentencia_IF : IF condicion THEN bloque_unidad bloque_else ';' END_IF .  (99)
+state 249
+	sentencia_IF : IF condicion THEN bloque_unidad ';' ELSE END_IF .  (99)
 
 	.  reduce 99
 
 
-state 255
+state 250
+	sentencia_IF : IF condicion THEN bloque_unidad ';' bloque_else END_IF .  (102)
+
+	.  reduce 102
+
+
+state 251
+	sentencia_IF : IF condicion THEN bloque_unidad ';' bloque_else ';' . END_IF  (95)
+	sentencia_IF : IF condicion THEN bloque_unidad ';' bloque_else ';' . error  (105)
+
+	error  shift 266
+	END_IF  shift 267
+	.  error
+
+
+state 252
+	sentencia_IF : IF condicion THEN bloque_unidad bloque_else ';' END_IF .  (100)
+
+	.  reduce 100
+
+
+state 253
 	declaracion_subtipo : TYPEDEF ASIGNACION tipo '{' CTE_con_sig ',' CTE_con_sig . '}'  (31)
 
-	'}'  shift 271
+	'}'  shift 268
+	.  error
+
+
+state 254
+	declaracion_subtipo : TYPEDEF ID_simple ASIGNACION '{' CTE_con_sig ',' CTE_con_sig . '}'  (32)
+
+	'}'  shift 269
+	.  error
+
+
+state 255
+	declaracion_subtipo : TYPEDEF ID_simple ASIGNACION tipo '{' ',' CTE_con_sig . '}'  (27)
+
+	'}'  shift 270
 	.  error
 
 
 state 256
-	declaracion_subtipo : TYPEDEF ID_simple ASIGNACION '{' CTE_con_sig ',' CTE_con_sig . '}'  (32)
-
-	'}'  shift 272
-	.  error
-
-
-state 257
-	declaracion_subtipo : TYPEDEF ID_simple ASIGNACION tipo '{' ',' CTE_con_sig . '}'  (27)
-
-	'}'  shift 273
-	.  error
-
-
-state 258
 	declaracion_subtipo : TYPEDEF ID_simple ASIGNACION tipo '{' CTE_con_sig ',' . CTE_con_sig '}'  (22)
 	declaracion_subtipo : TYPEDEF ID_simple ASIGNACION tipo '{' CTE_con_sig ',' . CTE_con_sig  (24)
 	declaracion_subtipo : TYPEDEF ID_simple ASIGNACION tipo '{' CTE_con_sig ',' . '}'  (29)
 
-	CTE  shift 34
-	ERROR  shift 35
-	'}'  shift 274
-	'-'  shift 37
+	CTE  shift 35
+	ERROR  shift 36
+	'}'  shift 271
+	'-'  shift 38
 	.  error
 
-	CTE_con_sig  goto 275
+	CTE_con_sig  goto 272
 
 
-state 259
+state 257
 	declaracion_subtipo : TYPEDEF ID_simple ASIGNACION tipo '{' CTE_con_sig '}' .  (28)
 
 	.  reduce 28
 
 
-state 260
+state 258
 	declaracion_subtipo : TYPEDEF ID_simple ASIGNACION tipo CTE_con_sig ',' CTE_con_sig . '}'  (23)
 	declaracion_subtipo : TYPEDEF ID_simple ASIGNACION tipo CTE_con_sig ',' CTE_con_sig .  (25)
 
-	'}'  shift 276
+	'}'  shift 273
 	$end  reduce 25
 	IF  reduce 25
 	END  reduce 25
@@ -3594,113 +3560,107 @@ state 260
 	')'  reduce 25
 
 
-state 261
-	declaracion_funciones : tipo FUN ID parametros_parentesis BEGIN cuerpo_funcion END .  (38)
+state 259
+	condicion : '(' '(' list_expre ')' '(' list_expre ')' . ')'  (114)
 
-	.  reduce 38
+	')'  shift 274
+	.  error
+
+
+state 260
+	list_expre : list_expre . ',' expresion_arit  (65)
+	condicion : '(' '(' list_expre ')' comparador '(' list_expre . ')' ')'  (106)
+	condicion : '(' '(' list_expre ')' comparador '(' list_expre . ')'  (108)
+
+	','  shift 139
+	')'  shift 275
+	.  error
+
+
+state 261
+	condicion : '(' '(' list_expre ')' comparador list_expre ')' . ')'  (117)
+
+	')'  shift 276
+	.  error
 
 
 state 262
-	condicion : '(' '(' list_expre ')' '(' list_expre ')' . ')'  (113)
+	condicion : '(' '(' list_expre comparador '(' list_expre ')' . ')'  (116)
 
 	')'  shift 277
 	.  error
 
 
 state 263
-	list_expre : list_expre . ',' expresion_arit  (64)
-	condicion : '(' '(' list_expre ')' comparador '(' list_expre . ')' ')'  (105)
-	condicion : '(' '(' list_expre ')' comparador '(' list_expre . ')'  (107)
+	condicion : '(' list_expre ')' comparador '(' list_expre ')' . ')'  (107)
+	condicion : '(' list_expre ')' comparador '(' list_expre ')' .  (109)
 
-	','  shift 133
 	')'  shift 278
-	.  error
+	error  reduce 109
+	IF  reduce 109
+	THEN  reduce 109
+	BEGIN  reduce 109
+	OUTF  reduce 109
+	RET  reduce 109
+	ID  reduce 109
+	WHILE  reduce 109
+	GOTO  reduce 109
+	ETIQUETA  reduce 109
 
 
 state 264
-	condicion : '(' '(' list_expre ')' comparador list_expre ')' . ')'  (116)
+	invocacion : ID_simple '(' tipo_primitivo '(' expresion_arit ')' ')' .  (62)
 
-	')'  shift 279
-	.  error
+	.  reduce 62
 
 
 state 265
-	condicion : '(' '(' list_expre comparador '(' list_expre ')' . ')'  (115)
+	bloque_else_multiple : ELSE BEGIN bloque_sent_ejecutables ';' END .  (126)
 
-	')'  shift 280
-	.  error
+	.  reduce 126
 
 
 state 266
-	condicion : '(' list_expre ')' comparador '(' list_expre ')' . ')'  (106)
-	condicion : '(' list_expre ')' comparador '(' list_expre ')' .  (108)
+	sentencia_IF : IF condicion THEN bloque_unidad ';' bloque_else ';' error .  (105)
 
-	')'  shift 281
-	error  reduce 108
-	IF  reduce 108
-	THEN  reduce 108
-	BEGIN  reduce 108
-	OUTF  reduce 108
-	RET  reduce 108
-	ID  reduce 108
-	WHILE  reduce 108
-	GOTO  reduce 108
-	ETIQUETA  reduce 108
+	.  reduce 105
 
 
 state 267
-	invocacion : ID_simple '(' tipo_primitivo '(' expresion_arit ')' ')' .  (61)
+	sentencia_IF : IF condicion THEN bloque_unidad ';' bloque_else ';' END_IF .  (95)
 
-	.  reduce 61
+	.  reduce 95
 
 
 state 268
-	bloque_else_multiple : ELSE BEGIN bloque_sent_ejecutables ';' END .  (125)
-
-	.  reduce 125
-
-
-state 269
-	sentencia_IF : IF condicion THEN bloque_unidad ';' bloque_else ';' error .  (104)
-
-	.  reduce 104
-
-
-state 270
-	sentencia_IF : IF condicion THEN bloque_unidad ';' bloque_else ';' END_IF .  (94)
-
-	.  reduce 94
-
-
-state 271
 	declaracion_subtipo : TYPEDEF ASIGNACION tipo '{' CTE_con_sig ',' CTE_con_sig '}' .  (31)
 
 	.  reduce 31
 
 
-state 272
+state 269
 	declaracion_subtipo : TYPEDEF ID_simple ASIGNACION '{' CTE_con_sig ',' CTE_con_sig '}' .  (32)
 
 	.  reduce 32
 
 
-state 273
+state 270
 	declaracion_subtipo : TYPEDEF ID_simple ASIGNACION tipo '{' ',' CTE_con_sig '}' .  (27)
 
 	.  reduce 27
 
 
-state 274
+state 271
 	declaracion_subtipo : TYPEDEF ID_simple ASIGNACION tipo '{' CTE_con_sig ',' '}' .  (29)
 
 	.  reduce 29
 
 
-state 275
+state 272
 	declaracion_subtipo : TYPEDEF ID_simple ASIGNACION tipo '{' CTE_con_sig ',' CTE_con_sig . '}'  (22)
 	declaracion_subtipo : TYPEDEF ID_simple ASIGNACION tipo '{' CTE_con_sig ',' CTE_con_sig .  (24)
 
-	'}'  shift 282
+	'}'  shift 279
 	$end  reduce 24
 	IF  reduce 24
 	END  reduce 24
@@ -3717,64 +3677,64 @@ state 275
 	')'  reduce 24
 
 
-state 276
+state 273
 	declaracion_subtipo : TYPEDEF ID_simple ASIGNACION tipo CTE_con_sig ',' CTE_con_sig '}' .  (23)
 
 	.  reduce 23
 
 
+state 274
+	condicion : '(' '(' list_expre ')' '(' list_expre ')' ')' .  (114)
+
+	.  reduce 114
+
+
+state 275
+	condicion : '(' '(' list_expre ')' comparador '(' list_expre ')' . ')'  (106)
+	condicion : '(' '(' list_expre ')' comparador '(' list_expre ')' .  (108)
+
+	')'  shift 280
+	error  reduce 108
+	IF  reduce 108
+	THEN  reduce 108
+	BEGIN  reduce 108
+	OUTF  reduce 108
+	RET  reduce 108
+	ID  reduce 108
+	WHILE  reduce 108
+	GOTO  reduce 108
+	ETIQUETA  reduce 108
+
+
+state 276
+	condicion : '(' '(' list_expre ')' comparador list_expre ')' ')' .  (117)
+
+	.  reduce 117
+
+
 state 277
-	condicion : '(' '(' list_expre ')' '(' list_expre ')' ')' .  (113)
-
-	.  reduce 113
-
-
-state 278
-	condicion : '(' '(' list_expre ')' comparador '(' list_expre ')' . ')'  (105)
-	condicion : '(' '(' list_expre ')' comparador '(' list_expre ')' .  (107)
-
-	')'  shift 283
-	error  reduce 107
-	IF  reduce 107
-	THEN  reduce 107
-	BEGIN  reduce 107
-	OUTF  reduce 107
-	RET  reduce 107
-	ID  reduce 107
-	WHILE  reduce 107
-	GOTO  reduce 107
-	ETIQUETA  reduce 107
-
-
-state 279
-	condicion : '(' '(' list_expre ')' comparador list_expre ')' ')' .  (116)
+	condicion : '(' '(' list_expre comparador '(' list_expre ')' ')' .  (116)
 
 	.  reduce 116
 
 
-state 280
-	condicion : '(' '(' list_expre comparador '(' list_expre ')' ')' .  (115)
+state 278
+	condicion : '(' list_expre ')' comparador '(' list_expre ')' ')' .  (107)
 
-	.  reduce 115
-
-
-state 281
-	condicion : '(' list_expre ')' comparador '(' list_expre ')' ')' .  (106)
-
-	.  reduce 106
+	.  reduce 107
 
 
-state 282
+state 279
 	declaracion_subtipo : TYPEDEF ID_simple ASIGNACION tipo '{' CTE_con_sig ',' CTE_con_sig '}' .  (22)
 
 	.  reduce 22
 
 
-state 283
-	condicion : '(' '(' list_expre ')' comparador '(' list_expre ')' ')' .  (105)
+state 280
+	condicion : '(' '(' list_expre ')' comparador '(' list_expre ')' ')' .  (106)
 
-	.  reduce 105
+	.  reduce 106
 
 
-39 terminals, 39 nonterminals
-143 grammar rules, 284 states
+39 terminals, 40 nonterminals
+144 grammar rules, 281 states

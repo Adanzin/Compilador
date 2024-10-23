@@ -27,6 +27,7 @@ BEG¿IN
 	varx := 0.0;
 	tipo_abc vary;
 	integer FUN juancito ( double a ) BEGIN 
+		integer a;
 		while (2768 > -5.8)OUTF(1);
 	    WHI¬LE ((a,3+4)=(b,35))BEGIN OUTF(1); OUTF([Hola Mundo]); goto afuera@; END;
 	    a:=funcion(b);

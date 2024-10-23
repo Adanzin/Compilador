@@ -34,10 +34,10 @@ public class Main {
         } catch (IOException e) {
             System.out.println("Ocurrió un error al leer el archivo: " + e.getMessage());
         }
-        //System.out.println("       ");
-        //System.out.println("       ");
-        //System.out.println("       >>>>>  TABLA DE SIMBOLOS <<<<<");
-        //getSimbolos();
+        System.out.println("       ");
+        System.out.println("       ");
+        System.out.println("       >>>>>  TABLA DE SIMBOLOS <<<<<");
+        getSimbolos();
         
     }
 	

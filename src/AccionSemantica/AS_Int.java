@@ -7,6 +7,7 @@ import java.util.Map;
 import Compilador.AnalizadorLexico;
 import Compilador.Simbolo;
 import Compilador.TablaPalabrasReservadas;
+import Compilador.Tipo;
 
 public class AS_Int extends AccionSemantica {
     @Override
@@ -17,7 +18,9 @@ public class AS_Int extends AccionSemantica {
         		Simbolo simb = new Simbolo();
         		int tokenaux = (int)tokenlong;
         		simb.setEntero(tokenaux);
-        		TablaDeSimbolos.put(token.toString(),simb);        		
+        		simb.setTipoVar(new Tipo("integer"));
+        		TablaDeSimbolos.put(token.toString(),simb);      
+        		
         	}else {TablaDeSimbolos.get(token.toString()).incrementarContDeRef();}
         	AnalizadorLexico.Lexema = token.toString();  //LE PASO EL ID A LA TABLA DE SIMBOLOS AL PARSER.
         }else {

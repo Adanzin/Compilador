@@ -1,4 +1,6 @@
 %{
+import java.util.ArrayList;
+import java.util.List;
 %}
 %token IF THEN ELSE BEGIN END END_IF OUTF TYPEDEF FUN RET CTE ID CADENAMULTILINEA WHILE TRIPLE GOTO ETIQUETA MAYORIGUAL MENORIGUAL DISTINTO INTEGER DOUBLE ASIGNACION ERROR
 %start programa
@@ -31,16 +33,16 @@ sentencia_declarativa 	: declaracion_variable
 						| declaracion_subtipo {System.out.println("\u001B[31m"+"Linea " + AnalizadorLexico.saltoDeLinea + " Error: Falta ';' al final de la sentencia "+"\u001B[0m");}
 ;
 
-declaracion_variable	: tipo variables ';'  {System.out.println("Linea " + AnalizadorLexico.saltoDeLinea + " declaracion de variables ");}
+declaracion_variable	: tipo variables ';' {cargarVariables($2.sval,$1.obj); System.out.println("Linea " + AnalizadorLexico.saltoDeLinea + " declaracion de variables ");}
 						| tipo variables error {System.out.println("\u001B[31m"+"Linea " + AnalizadorLexico.saltoDeLinea + " Error: Falta ';' al final de la sentencia "+"\u001B[0m");}
 ;
 
-tipo : ID_simple 
-		|tipo_primitivo
+tipo : ID_simple { $$.obj = new Tipo($1.sval); idEsUnTipo($1.sval);}
+	 |tipo_primitivo { $$.obj = $1.obj;  }
 ;	
 
-tipo_primitivo: INTEGER
-				|DOUBLE
+tipo_primitivo: INTEGER { $$.obj = new Tipo("integer"); }
+              | DOUBLE  { $$.obj = new Tipo("double"); }
 ;
 
 declaracion_subtipo : TYPEDEF ID_simple ASIGNACION tipo '{' CTE_con_sig ',' CTE_con_sig '}' {System.out.println("Linea " + AnalizadorLexico.saltoDeLinea +  " declaracion de Subtipo ");}
@@ -61,8 +63,15 @@ declaracion_subtipo : TYPEDEF ID_simple ASIGNACION tipo '{' CTE_con_sig ',' CTE_
 					| TYPEDEF TRIPLE '<' tipo '>' error {System.out.println("\u001B[31m"+"Linea " + AnalizadorLexico.saltoDeLinea + " Error: Falta identificador al final de la declaracion"+"\u001B[0m");}			
 ;
 
-declaracion_funciones     : tipo FUN ID parametros_parentesis BEGIN cuerpo_funcion END {if(RETORNO==false){System.out.println("\u001B[31m"+"Linea " + AnalizadorLexico.saltoDeLinea + " Error: Faltan el RETORNO de al funcion "+"\u001B[0m");RETORNO=false;} System.out.println(" Linea " + AnalizadorLexico.saltoDeLinea + " declaracion de Funcion"); }
-                        | tipo FUN parametros_parentesis BEGIN cuerpo_funcion END {if(RETORNO==false){System.out.println("\u001B[31m"+"Linea " + AnalizadorLexico.saltoDeLinea + " Error: Faltan el RETORNO de al funcion "+"\u001B[0m");RETORNO=false;} System.out.println("\u001B[31m"+"Linea " + AnalizadorLexico.saltoDeLinea + ": Error: Faltan el nombre en la funcion "+"\u001B[0m");}
+declaracion_funciones     : encabezado_funcion parametros_parentesis BEGIN cuerpo_funcion END 
+								{	if(RETORNO==false)
+										{System.out.println("\u001B[31m"+"Linea " + AnalizadorLexico.saltoDeLinea + " Error: Faltan el RETORNO de al funcion "+"\u001B[0m");RETORNO=false;} System.out.println(" Linea " + AnalizadorLexico.saltoDeLinea + " declaracion de Funcion"); 
+									sacarAmbito();
+								}                  
+;
+
+encabezado_funcion 	: tipo FUN ID {addTipo($3.sval,$1.obj);addAmbitoID($3.sval);agregarAmbito($3.sval);System.out.println(" Encabezado de la funcion ");}
+					| tipo FUN {System.out.println("\u001B[31m"+"Linea " + AnalizadorLexico.saltoDeLinea + ": Error: Faltan el nombre en la funcion "+"\u001B[0m");}
 ;
 
 parametros_parentesis: '(' tipo_primitivo ID_simple ')'
@@ -132,10 +141,9 @@ factor 	: variable_simple
 		| invocacion
 		| variable_simple '{' CTE '}' 		 
 ;
-
-variables 	: variables ',' variable_simple 
+variables 	: variables ',' variable_simple { $$.sval = $1.sval + "/"+$3.sval;} 
 			| variables variable_simple {System.out.println("\u001B[31m"+"Linea " + AnalizadorLexico.saltoDeLinea + " Error: Falta ',' entre variables "+"\u001B[0m");}
-			| variable_simple
+			| variable_simple {$$.sval = $1.sval;}
 ;
 
 variable_simple : ID_simple
@@ -239,8 +247,48 @@ sentencia_goto	: GOTO ETIQUETA {System.out.println("Linea " + AnalizadorLexico.s
 //Lo tenemos en cuenta en la regla Condicion
 //.................HACIA ARRIBA NO HAY ERRORES..........................
 
-%%																	 
+%%	
+private static StringBuilder AMBITO = new StringBuilder(":MAIN");																 
 private static boolean RETORNO = false;
+
+private static void  idEsUnTipo(String id){
+	AnalizadorLexico.TablaDeSimbolos.get(id).setEsTipo(true);
+}
+
+private static void cargarVariables(String variables, Object tipo){
+	String[] var = getVariables(variables);
+	for (String v : var) {
+		addAmbitoID(v);
+		addTipo(v+AMBITO.toString(),tipo);
+    }
+
+}
+
+private static String[] getVariables(String var) {
+        // Usa split() para dividir el String por el carácter '/'
+        String[] variables = var.split("/");
+        return variables;
+}
+
+private static void addTipo(String id, Object tipo) {
+	AnalizadorLexico.TablaDeSimbolos.get(id).setTipoVar(tipo);
+};
+
+private static void agregarAmbito(String amb) {
+	AMBITO.append(":").append(amb);
+}
+
+private static void sacarAmbito() {
+	// agarro el index del ultimo ':'
+	int pos = AMBITO.lastIndexOf(":");
+	// borro hasta esa posicion
+	AMBITO.delete(pos, AMBITO.length());
+}
+
+private static void addAmbitoID(String id) {
+	AnalizadorLexico.TablaDeSimbolos.get(id).agregarAmbito(AMBITO.toString());
+}
+
 int yylex() {
 	int tokenSalida = AnalizadorLexico.getToken();
 	yylval = new ParserVal(AnalizadorLexico.Lexema);
