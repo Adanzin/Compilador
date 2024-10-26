@@ -1,6 +1,8 @@
 %{
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.HashMap;
 %}
 %token IF THEN ELSE BEGIN END END_IF OUTF TYPEDEF FUN RET CTE ID CADENAMULTILINEA WHILE TRIPLE GOTO ETIQUETA MAYORIGUAL MENORIGUAL DISTINTO INTEGER DOUBLE ASIGNACION ERROR
 %start programa
@@ -33,23 +35,26 @@ sentencia_declarativa 	: declaracion_variable
 						| declaracion_subtipo {System.out.println("\u001B[31m"+"Linea " + AnalizadorLexico.saltoDeLinea + " Error: Falta ';' al final de la sentencia "+"\u001B[0m");}
 ;
 
-declaracion_variable	: tipo variables ';' {cargarVariables($2.sval,$1.obj); System.out.println("Linea " + AnalizadorLexico.saltoDeLinea + " declaracion de variables ");}
+declaracion_variable	: tipo variables ';' {cargarVariables($2.sval,(Tipo)$1.obj," nombre de variable "); System.out.println("Linea " + AnalizadorLexico.saltoDeLinea + " declaracion de variables ");}
 						| tipo variables error {System.out.println("\u001B[31m"+"Linea " + AnalizadorLexico.saltoDeLinea + " Error: Falta ';' al final de la sentencia "+"\u001B[0m");}
 ;
 
-tipo : ID_simple { $$.obj = new Tipo($1.sval); idEsUnTipo($1.sval);}
+tipo : ID_simple { if(tipos.containsKey($1.sval)){$$.obj = tipos.get($1.sval);
+					}else{System.out.println("\u001B[31m"+"Linea " + AnalizadorLexico.saltoDeLinea +" Se utilizo un tipo desconocido "+"\u001B[0m");};}
 	 |tipo_primitivo { $$.obj = $1.obj;  }
 ;	
 
-tipo_primitivo: INTEGER { $$.obj = new Tipo("integer"); }
-              | DOUBLE  { $$.obj = new Tipo("double"); }
+tipo_primitivo: INTEGER { if(!tipos.containsKey("INTEGER")){tipos.put("INTEGER",new Tipo("INTEGER"));}
+							$$.obj = tipos.get("INTEGER");}
+              | DOUBLE  { if(!tipos.containsKey("DOUBLE")){tipos.put("DOUBLE",new Tipo("DOUBLE"));}
+							$$.obj = tipos.get("DOUBLE");}
 ;
 
-declaracion_subtipo : TYPEDEF ID_simple ASIGNACION tipo '{' CTE_con_sig ',' CTE_con_sig '}' {System.out.println("Linea " + AnalizadorLexico.saltoDeLinea +  " declaracion de Subtipo ");}
+declaracion_subtipo : TYPEDEF ID_simple ASIGNACION tipo '{' CTE_con_sig ',' CTE_con_sig '}' {if($4.obj != null){cargarVariables($2.sval,cargarSubtipo($2.sval,(Tipo)$4.obj,$6.sval,$8.sval)," nombre de SubTipo ");System.out.println("Linea " + AnalizadorLexico.saltoDeLinea +  " declaracion de Subtipo ");}else{System.out.println("\u001B[31m"+"Linea " + AnalizadorLexico.saltoDeLinea + " Error: No se puede crear una tripla de un tipo no declarado. "+"\u001B[0m");}}
                     | TYPEDEF ID_simple ASIGNACION tipo CTE_con_sig ',' CTE_con_sig '}' {System.out.println("\u001B[31m"+"Linea " + AnalizadorLexico.saltoDeLinea + " Error: Faltan el '{' en el rango "+"\u001B[0m");}
                     | TYPEDEF ID_simple ASIGNACION tipo '{' CTE_con_sig ',' CTE_con_sig {System.out.println("\u001B[31m"+"Linea " + AnalizadorLexico.saltoDeLinea + " Error: Faltan el '}' en el rango "+"\u001B[0m");}
                     | TYPEDEF ID_simple ASIGNACION tipo CTE_con_sig ',' CTE_con_sig {System.out.println("\u001B[31m"+"Linea " + AnalizadorLexico.saltoDeLinea + " Error: Faltan ambos '{' '}' en el rango "+"\u001B[0m");}
-                    | TYPEDEF TRIPLE '<' tipo '>' ID_simple  {System.out.println("Linea " + AnalizadorLexico.saltoDeLinea +  " declaracion de Triple ");}
+                    | TYPEDEF TRIPLE '<' tipo '>' ID_simple  {if($4.obj != null){cargarVariables($6.sval,cargarTripla($6.sval,(Tipo)$4.obj,true)," nombre de Triple ");System.out.println("Linea " + AnalizadorLexico.saltoDeLinea +  " declaracion de Triple ");}else{System.out.println("\u001B[31m"+"Linea " + AnalizadorLexico.saltoDeLinea + " Error: No se puede crear una tripla de un tipo no declarado. "+"\u001B[0m");}}
 					| TYPEDEF ID_simple ASIGNACION tipo '{' ',' CTE_con_sig '}' {System.out.println("\u001B[31m"+"Linea " + AnalizadorLexico.saltoDeLinea + " Error: Falta rango inferior "+"\u001B[0m");}
 					| TYPEDEF ID_simple ASIGNACION tipo '{' CTE_con_sig '}' {System.out.println("\u001B[31m"+"Linea " + AnalizadorLexico.saltoDeLinea + " Error: Falta alguno de los rangos "+"\u001B[0m");}
 					| TYPEDEF ID_simple ASIGNACION tipo '{' CTE_con_sig ',' '}' {System.out.println("\u001B[31m"+"Linea " + AnalizadorLexico.saltoDeLinea + " Error: Falta rango superior "+"\u001B[0m");}
@@ -70,11 +75,11 @@ declaracion_funciones     : encabezado_funcion parametros_parentesis BEGIN cuerp
 								}                  
 ;
 
-encabezado_funcion 	: tipo FUN ID {addTipo($3.sval,$1.obj);addAmbitoID($3.sval);agregarAmbito($3.sval);System.out.println(" Encabezado de la funcion ");}
+encabezado_funcion 	: tipo FUN ID {cargarVariables($3.sval,(Tipo)$1.obj," nombre de funcion ");agregarAmbito($3.sval);System.out.println(" Encabezado de la funcion ");}
 					| tipo FUN {System.out.println("\u001B[31m"+"Linea " + AnalizadorLexico.saltoDeLinea + ": Error: Faltan el nombre en la funcion "+"\u001B[0m");}
 ;
 
-parametros_parentesis: '(' tipo_primitivo ID_simple ')'
+parametros_parentesis: '(' tipo_primitivo ID_simple ')' {cargarVariables($3.sval,(Tipo)$2.obj," nombre de parametro real ");}
 					| '(' tipo_primitivo ')' {System.out.println("\u001B[31m"+"Linea " + AnalizadorLexico.saltoDeLinea +" Error: Falta el nombre del parametro en la funcion "+"\u001B[0m");} 
 					| '(' ID_simple ')' {System.out.println("\u001B[31m"+"Linea " + AnalizadorLexico.saltoDeLinea +" Error: Falta el tipo del parametro en la funcion "+"\u001B[0m");}
                     | '(' ')' {System.out.println("\u001B[31m"+"Linea " + AnalizadorLexico.saltoDeLinea +" Error: Falta el parametro en la funcion "+"\u001B[0m");}
@@ -92,7 +97,7 @@ sentencia_ejecutable	: asignacion
 						| sentencia_IF 
 						| sentencia_WHILE
 						| sentencia_goto
-						| ETIQUETA {System.out.println("Linea :" + AnalizadorLexico.saltoDeLinea + " Se identifico una etiqueta " );}
+						| ETIQUETA {addUso($1.sval, " Es una ETIQUETA ");System.out.println("Linea :" + AnalizadorLexico.saltoDeLinea + " Se identifico una etiqueta " );}
 						| outf_rule
 						| retorno {RETORNO = true;}
 ;
@@ -103,11 +108,15 @@ outf_rule    : OUTF '(' expresion_arit ')' {System.out.println("Linea :" + Anali
             | OUTF '(' sentencias ')'  {System.out.println("\u001B[31m"+"Linea :" + AnalizadorLexico.saltoDeLinea +  " Error : Parametro incorrecto en sentencia OUTF. "+"\u001B[0m");}
 ;
 
-asignacion	: variable_simple ASIGNACION expresion_arit {System.out.println("Linea :" + AnalizadorLexico.saltoDeLinea + " Asignacion ");}
+asignacion	: variable_simple ASIGNACION expresion_arit {if(fueDeclarado($1.sval)){
+															$$.sval = $1.sval;}else{
+																System.out.println("\u001B[31m"+"Linea :" + AnalizadorLexico.saltoDeLinea +  " Error:  se invocó una variable no declarada "+"\u001B[0m");}
+															System.out.println("Linea :" + AnalizadorLexico.saltoDeLinea + " Asignacion ");}
 			| variable_simple '{' CTE '}' ASIGNACION expresion_arit  {System.out.println("Linea :" + AnalizadorLexico.saltoDeLinea +  " Asignacion a arreglo");}
 ;
 
-invocacion	: ID_simple '(' expresion_arit ')' {System.out.println("Linea :" + AnalizadorLexico.saltoDeLinea + " Invocacion a funcion ");}
+invocacion	: ID_simple '(' expresion_arit ')' {if(!fueDeclarado($1.sval)){System.out.println("\u001B[31m"+"Linea :" + AnalizadorLexico.saltoDeLinea +  " Error:  se invocó una funcion no declarada "+"\u001B[0m");}else{
+												System.out.println("Linea :" + AnalizadorLexico.saltoDeLinea + " Invocacion a funcion ");}}
 			| ID_simple '(' tipo_primitivo '(' expresion_arit ')' ')' {System.out.println("Linea :" + AnalizadorLexico.saltoDeLinea +  " Invocacion con conversion ");}
 			| ID_simple '(' ')' {System.out.println("\u001B[31m"+"Linea :" + AnalizadorLexico.saltoDeLinea +  " Error:  faltan los parametros reales en la invocacion"+"\u001B[0m");}
 			| ID_simple '(' error ')' {System.out.println("\u001B[31m"+"Linea :" + AnalizadorLexico.saltoDeLinea +  " Error:  Se excedio el numero de parametros en la invocacion (1)"+"\u001B[0m");}
@@ -136,17 +145,17 @@ termino : termino '*' factor
 		| termino '/' error {System.out.println("\u001B[31m"+"Linea :" + AnalizadorLexico.saltoDeLinea +  " Error:  La expresion esta mal escrita"+"\u001B[0m");}
 ;
 
-factor 	: variable_simple
-		| CTE_con_sig
-		| invocacion
-		| variable_simple '{' CTE '}' 		 
+factor 	: variable_simple {if(fueDeclarado($1.sval)){AnalizadorLexico.TablaDeSimbolos.get($1.sval).incrementarContDeRef(); $$.sval = $1.sval;}else{System.out.println("\u001B[31m"+"Linea :" + AnalizadorLexico.saltoDeLinea +  " Error:  se invocó una variable no declarada "+"\u001B[0m");};}
+		| CTE_con_sig 
+		| invocacion 
+		| variable_simple '{' CTE '}' {if(fueDeclarado($1.sval)){ $$.sval = $1.sval;}else{System.out.println("\u001B[31m"+"Linea :" + AnalizadorLexico.saltoDeLinea +  " Error:  se invocó una variable no declarada "+"\u001B[0m");};}
 ;
 variables 	: variables ',' variable_simple { $$.sval = $1.sval + "/"+$3.sval;} 
 			| variables variable_simple {System.out.println("\u001B[31m"+"Linea " + AnalizadorLexico.saltoDeLinea + " Error: Falta ',' entre variables "+"\u001B[0m");}
 			| variable_simple {$$.sval = $1.sval;}
 ;
 
-variable_simple : ID_simple
+variable_simple : ID_simple 
 ;
 
 ID_simple : ID
@@ -229,7 +238,7 @@ bloque_sent_ejecutables	: bloque_sent_ejecutables ';' bloque_sentencia_simple
 bloque_sentencia_simple: sentencia_ejecutable
 ;
 
-cadena	: CADENAMULTILINEA {System.out.println("Linea " + AnalizadorLexico.saltoDeLinea + ": cadena multilinea ");}
+cadena	: CADENAMULTILINEA {addUso($1.sval, " Es una Cadena MultiLinea ");System.out.println("Linea " + AnalizadorLexico.saltoDeLinea + ": cadena multilinea ");}
 ;
 
 									/* TEMAS PARTICULARES */
@@ -248,29 +257,106 @@ sentencia_goto	: GOTO ETIQUETA {System.out.println("Linea " + AnalizadorLexico.s
 //.................HACIA ARRIBA NO HAY ERRORES..........................
 
 %%	
-private static StringBuilder AMBITO = new StringBuilder(":MAIN");																 
-private static boolean RETORNO = false;
+public static StringBuilder AMBITO = new StringBuilder(":MAIN");																 
+public static boolean RETORNO = false;
+public static Map<String,Tipo> tipos = new HashMap<>();
 
 private static void  idEsUnTipo(String id){
 	AnalizadorLexico.TablaDeSimbolos.get(id).setEsTipo(true);
 }
 
-private static void cargarVariables(String variables, Object tipo){
-	String[] var = getVariables(variables);
+private static Tipo getTipoDef(String id){
+	return AnalizadorLexico.TablaDeSimbolos.get(id).getTipoVar();
+}
+
+private static Tipo cargarSubtipo(String name, Tipo t,  String min, String max){
+	System.out.println(" el tipo es " + t.toString());
+	if(t.esSubTipo()){
+		System.out.println(" No se puede declarar un subTipo de un tipo definido por el usuario ");
+	}else if(t.esTripla()){
+		System.out.println(" No se puede declarar un subTipo de un tipo definido por el usuario ");
+	}else{
+		double mini = Double.valueOf(min);
+		double maxi = Double.valueOf(max);
+		tipos.put(name,new Tipo(t.getType(),mini,maxi));
+	}
+	return tipos.get(name);
+}
+
+private static Tipo cargarTripla(String name, Tipo t, boolean tripla){
+	System.out.println(" el tipo es " + t.toString());
+	if(t.esSubTipo()){
+		System.out.println(" No se puede declarar un subTipo de un tipo definido por el usuario ");
+	}else if(t.esTripla()){
+		System.out.println(" No se puede declarar un subTipo de un tipo definido por el usuario ");
+	}else{
+		tipos.put(name,new Tipo(t.getType(),tripla));
+	}
+	return tipos.get(name);
+}
+
+private static boolean fueDeclarado(String id){
+	//System.out.println("  > Buscando la declaracion < ");
+    String ambitoActual = AMBITO.toString(); // Convertimos AMBITO (StringBuilder) a String
+
+    while (true) {
+        // Construimos la clave: id + ámbito actual
+        String key = id + ambitoActual;
+		//System.out.println("  > Key buscada "+ key + "En el ambito "+ ambitoActual);
+
+        // Buscamos en el mapa
+        if (AnalizadorLexico.TablaDeSimbolos.containsKey(key)) {
+            return AnalizadorLexico.TablaDeSimbolos.get(key).estaDeclarada(); // Si la clave existe, devolvemos el valor
+        }
+
+        // Reducimos el ámbito: eliminamos el último ':NIVEL'
+        int pos = ambitoActual.lastIndexOf(":");
+        if (pos == -1) {
+            break; // Si ya no hay más ámbitos, salimos del ciclo
+        }
+
+        // Reducimos el ámbito actual
+        ambitoActual = ambitoActual.substring(0, pos);
+    }
+
+    // Si no se encuentra en ningún ámbito, lanzamos un error o devolvemos null
+    throw new RuntimeException("\u001B[31m"+ "Linea :" + AnalizadorLexico.saltoDeLinea +"Error: ID '" + id + "' no encontrado en ningún ámbito."+"\u001B[0m");
+}
+
+
+private static void cargarVariables(String variables, Tipo tipo, String uso){
+	String[] var = getVariables(variables,"/");
 	for (String v : var) {
-		addAmbitoID(v);
-		addTipo(v+AMBITO.toString(),tipo);
+		if(!fueDeclarado(v)){
+			addAmbitoID(v);
+			addTipo(v+AMBITO.toString(),tipo);
+			addUso(v+AMBITO.toString(),uso);
+			declarar(v+AMBITO.toString());
+		}else{
+			System.out.println("\u001B[31m"+"Linea :" + AnalizadorLexico.saltoDeLinea +"  La variable  " + v + " ya fue declarada."+"\u001B[0m");
+		}
     }
 
 }
+private static void declarar(String id){
+	AnalizadorLexico.TablaDeSimbolos.get(id).fueDeclarada();
+};
+private static void addUso(String id,String uso){
+	AnalizadorLexico.TablaDeSimbolos.get(id).setUso(uso);
+};
 
-private static String[] getVariables(String var) {
-        // Usa split() para dividir el String por el carácter '/'
-        String[] variables = var.split("/");
-        return variables;
+private static String[] getVariables(String var, String separador) {
+    // Verifica si el string contiene '/'
+    if (!var.contains(separador)) {
+        // Retorna un arreglo vacío o el string completo como único elemento
+        return new String[] { var };
+    }
+    // Usa split() para dividir el String por el carácter '/'
+    String[] variables = var.split(separador);
+    return variables;
 }
 
-private static void addTipo(String id, Object tipo) {
+private static void addTipo(String id, Tipo tipo) {
 	AnalizadorLexico.TablaDeSimbolos.get(id).setTipoVar(tipo);
 };
 
@@ -286,6 +372,7 @@ private static void sacarAmbito() {
 }
 
 private static void addAmbitoID(String id) {
+	System.out.println(" add ambito ID :"+ id +" "+ AnalizadorLexico.TablaDeSimbolos.get(id).toString());
 	AnalizadorLexico.TablaDeSimbolos.get(id).agregarAmbito(AMBITO.toString());
 }
 

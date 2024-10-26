@@ -1,0 +1,45 @@
+
+ Identificador prog 
+ Identificador BEGIN 
+ Identificador integer 
+ Identificador a 
+ ; 
+ Identificador integer 
+ Identificador a 
+ ; 
+ Identificador TYPEDEF 
+ Identificador flotadito 
+ := 
+ Identificador integer 
+ { 
+ - 
+ Constante entera 6 
+ , 
+ - 
+ Constante entera 8 
+ } 
+ ; 
+ Identificador TYPEDEF 
+ Identificador flotadito 
+ := 
+ Identificador integer 
+ { 
+ - 
+ Constante entera 6 
+ , 
+ - 
+ Constante entera 8 
+ } 
+ ; 
+ Identificador flotadito 
+ Identificador b 
+ ; 
+ Identificador a 
+ := 
+ Identificador b 
+ ; 
+ Identificador flotadito 
+ := 
+ Identificador b 
+ ; 
+ Identificador END 

@@ -21,8 +21,8 @@ public class AS_Identificador extends AccionSemantica {
         		Simbolo simb = new Simbolo();
         		simb.setId(tokenString);
         		TablaDeSimbolos.put(tokenString,simb);
-        		AnalizadorLexico.Lexema = tokenString;  //LE PASO EL ID A LA TABLA DE SIMBOLOS AL PARSER.
         	}        	
+   			AnalizadorLexico.Lexema = tokenString;  //LE PASO EL ID A LA TABLA DE SIMBOLOS AL PARSER.
         	//si ya existe solo la devuelve
         	salida=PalabrasReservadas.obtenerIdentificador("ID");
         }else {

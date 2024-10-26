@@ -38,6 +38,8 @@ public class Main {
         System.out.println("       ");
         System.out.println("       >>>>>  TABLA DE SIMBOLOS <<<<<");
         getSimbolos();
+        System.out.println("       ");
+        getTipos();
         
     }
 	
@@ -57,6 +59,27 @@ public class Main {
 
         // Eliminar la última coma y espacio si el mapa no está vacío
         if (!AnalizadorLexico.TablaDeSimbolos.isEmpty()) {
+            sb.setLength(sb.length() - 2);  // Elimina la última ", "
+        }
+
+        System.out.println(sb);
+	}
+	public static void getTipos() {
+        StringBuilder sb = new StringBuilder();
+
+        // Recorrer el mapa e ir construyendo el string
+        for (Entry<String, Tipo> entry : Parser.tipos.entrySet()) {
+            sb.append("[")
+              .append(entry.getKey())  // Clave
+              .append(", ")
+              .append(entry.getValue())  // Valor
+              .append("] ")
+              .append(AnalizadorLexico.SALTO_DE_LINEA);
+            
+        }
+
+        // Eliminar la última coma y espacio si el mapa no está vacío
+        if (!Parser.tipos.isEmpty()) {
             sb.setLength(sb.length() - 2);  // Elimina la última ", "
         }
 

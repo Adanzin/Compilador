@@ -1,12 +1,12 @@
 prog
 BEGIN
-	integer varx, vary, varz;
-	double var2, var3, var4;
-	tipoMIO var5, var6, var7;
-	varx := 518;
-	varx := 518;
-	varx := 518;
-	varx := 0514;
-	var2 := 25.25;
-	tipoMIO := 2.15d4;
+	
+	integer a;
+	integer a;
+	TYPEDEF flotadito := integer {-6, -8};
+	TYPEDEF flotadito := integer {-6, -8};
+	flotadito b;
+	a:= b;
+	flotadito := b;
+
 END
