@@ -1,12 +1,8 @@
-prog
-BEGIN
-	
-	integer a;
-	integer a;
-	TYPEDEF flotadito := integer {-6, -8};
-	TYPEDEF flotadito := integer {-6, -8};
-	flotadito b;
-	a:= b;
-	flotadito := b;
+lala
+begin
 
-END
+integer varx, vary, varx
+          	varx := 327
+              varx := 2.3d+34;
+          	tipo_abc vary;
+end

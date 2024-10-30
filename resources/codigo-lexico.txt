@@ -1,45 +1,20 @@
 
- Identificador prog 
- Identificador BEGIN 
+ Identificador lala 
+ Identificador begin 
  Identificador integer 
- Identificador a 
- ; 
- Identificador integer 
- Identificador a 
- ; 
- Identificador TYPEDEF 
- Identificador flotadito 
- := 
- Identificador integer 
- { 
- - 
- Constante entera 6 
+ Identificador varx 
  , 
- - 
- Constante entera 8 
- } 
- ; 
- Identificador TYPEDEF 
- Identificador flotadito 
- := 
- Identificador integer 
- { 
- - 
- Constante entera 6 
+ Identificador vary 
  , 
- - 
- Constante entera 8 
- } 
- ; 
- Identificador flotadito 
- Identificador b 
- ; 
- Identificador a 
+ Identificador varx 
+ Identificador varx 
  := 
- Identificador b 
- ; 
- Identificador flotadito 
+ Constante entera 327 
+ Identificador varx 
  := 
- Identificador b 
+ Constante double 2.3E34 
  ; 
- Identificador END 
+ Identificador tipo_abc 
+ Identificador vary 
+ ; 
+ Identificador end 
