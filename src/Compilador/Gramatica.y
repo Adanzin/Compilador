@@ -23,6 +23,7 @@ sentencias 	: sentencias sentencia
 ;
 
 sentencia 	: sentencia_declarativa 
+			| error ';' {System.out.println("\u001B[31m"+"Linea " + AnalizadorLexico.saltoDeLinea + " Error: faltan las sentencias antes del ';'  "+"\u001B[0m");}
             | sentencia_ejecutable ';'
 			| sentencia_ejecutable {System.out.println("\u001B[31m"+"Linea " + AnalizadorLexico.saltoDeLinea + " Error: Falta ';' al final de la sentencia "+"\u001B[0m");}
 ;			
@@ -73,10 +74,11 @@ declaracion_funciones     : encabezado_funcion parametros_parentesis BEGIN cuerp
 								{	if(RETORNO==false)
 										{System.out.println("\u001B[31m"+"Linea " + AnalizadorLexico.saltoDeLinea + " Error: Faltan el RETORNO de al funcion "+"\u001B[0m");RETORNO=false;} System.out.println(" Linea " + AnalizadorLexico.saltoDeLinea + " declaracion de Funcion"); 
 									sacarAmbito();
+									DENTRODELAMBITO=false;
 								}                  
 ;
 
-encabezado_funcion 	: tipo FUN ID {cargarVariables($3.sval,(Tipo)$1.obj," nombre de funcion ");agregarAmbito($3.sval);System.out.println(" Encabezado de la funcion ");}
+encabezado_funcion 	: tipo FUN ID {cargarVariables($3.sval,(Tipo)$1.obj," nombre de funcion ");agregarAmbito($3.sval);DENTRODELAMBITO=true;System.out.println(" Encabezado de la funcion ");}
 					| tipo FUN {System.out.println("\u001B[31m"+"Linea " + AnalizadorLexico.saltoDeLinea + ": Error: Faltan el nombre en la funcion "+"\u001B[0m");}
 ;
 
@@ -90,7 +92,11 @@ parametros_parentesis: '(' tipo_primitivo ID_simple ')' {cargarVariables($3.sval
 cuerpo_funcion	: sentencias 
 ;
 
-retorno	: RET '(' expresion_arit ')'
+retorno	: RET '(' expresion_arit ')' {if(DENTRODELAMBITO==false){System.out.println("\u001B[31m"+"Linea :" + AnalizadorLexico.saltoDeLinea +  " Error : RETORNO declarado fuera del ambito de una funcion  "+"\u001B[0m");}}
+		| RET '('  ')' {System.out.println("\u001B[31m"+"Linea :" + AnalizadorLexico.saltoDeLinea +  " Error : Falta el parametro del RETORNO  "+"\u001B[0m");
+						if(DENTRODELAMBITO==false)
+										{System.out.println("\u001B[31m"+"Linea :" + AnalizadorLexico.saltoDeLinea +  " Error : RETORNO declarado fuera del ambito de una funcion  "+"\u001B[0m");
+						}}
 ;
 									/* SENTENCIAS EJECUTABLES */
 
@@ -114,6 +120,7 @@ asignacion	: variable_simple ASIGNACION expresion_arit {if(fueDeclarado($1.sval)
 																System.out.println("\u001B[31m"+"Linea :" + AnalizadorLexico.saltoDeLinea +  " Error:  se invocó una variable no declarada "+"\u001B[0m");}
 															System.out.println("Linea :" + AnalizadorLexico.saltoDeLinea + " Asignacion ");}
 			| variable_simple '{' CTE '}' ASIGNACION expresion_arit  {System.out.println("Linea :" + AnalizadorLexico.saltoDeLinea +  " Asignacion a arreglo");}
+			| variable_simple '{' '-' CTE '}' ASIGNACION expresion_arit {System.out.println("\u001B[31m"+"Linea " + AnalizadorLexico.saltoDeLinea + " Error: no se puede acceder a una posicion negativa de un arreglo "+"\u001B[0m");}
 ;
 
 invocacion	: ID_simple '(' expresion_arit ')' {if(!fueDeclarado($1.sval)){System.out.println("\u001B[31m"+"Linea :" + AnalizadorLexico.saltoDeLinea +  " Error:  se invocó una funcion no declarada "+"\u001B[0m");}else{
@@ -124,6 +131,8 @@ invocacion	: ID_simple '(' expresion_arit ')' {if(!fueDeclarado($1.sval)){System
 ;
 
 list_expre	: list_expre ',' expresion_arit
+			| ',' expresion_arit {System.out.println("\u001B[31m"+"Linea " + AnalizadorLexico.saltoDeLinea + " Error: Falta de expresion en lista de expresiones.  "+"\u001B[0m");}
+			| list_expre ','  {System.out.println("\u001B[31m"+"Linea " + AnalizadorLexico.saltoDeLinea + " Error: Falta de expresion en lista de expresiones.  "+"\u001B[0m");}
 			| expresion_arit 
 ;
 
@@ -150,6 +159,7 @@ factor 	: variable_simple {if(fueDeclarado($1.sval)){AnalizadorLexico.TablaDeSim
 		| CTE_con_sig 
 		| invocacion 
 		| variable_simple '{' CTE '}' {if(fueDeclarado($1.sval)){ $$.sval = $1.sval;}else{System.out.println("\u001B[31m"+"Linea :" + AnalizadorLexico.saltoDeLinea +  " Error:  se invocó una variable no declarada "+"\u001B[0m");};}
+		| variable_simple '{' '-' CTE '}' {System.out.println("\u001B[31m"+"Linea " + AnalizadorLexico.saltoDeLinea + " Error: no se puede acceder a una posicion negativa de un arreglo "+"\u001B[0m");}
 ;
 variables 	: variables ',' variable_simple { $$.sval = $1.sval + "/"+$3.sval;} 
 			| variables variable_simple {System.out.println("\u001B[31m"+"Linea " + AnalizadorLexico.saltoDeLinea + " Error: Falta ',' entre variables "+"\u001B[0m");}
@@ -165,8 +175,6 @@ ID_simple : ID
 
 CTE_con_sig : CTE {if(estaRango($1.sval)) { $$.sval = $1.sval; } }
 			| '-' CTE { cambioCTENegativa($2.sval); $$.sval = "-" + $2.sval;}
-			| ERROR 
-			| '-' ERROR 		
 ;				
 
 sentencia_IF: IF condicion THEN bloque_unidad ';' bloque_else ';' END_IF {System.out.println("Linea " + AnalizadorLexico.saltoDeLinea +  ": Sentencia IF ");}
@@ -175,9 +183,9 @@ sentencia_IF: IF condicion THEN bloque_unidad ';' bloque_else ';' END_IF {System
 			| IF condicion THEN END_IF {System.out.println("\u001B[31m"+"Linea :" + AnalizadorLexico.saltoDeLinea + " Error: Falta de contenido en bloque THEN."+"\u001B[0m");}
 			| IF condicion THEN bloque_unidad ';' ELSE END_IF {{System.out.println("\u001B[31m"+"Linea " + AnalizadorLexico.saltoDeLinea + " Error : falta cuerpo en el ELSE "+"\u001B[0m");};}
 
-			| IF condicion THEN bloque_unidad bloque_else ';' END_IF {System.out.println("\u001B[31m"+"Linea " + AnalizadorLexico.saltoDeLinea + " Error: Falta ';' al final de la sentencia "+"\u001B[0m");}
-			| IF condicion THEN bloque_unidad END_IF {System.out.println("\u001B[31m"+"Linea " + AnalizadorLexico.saltoDeLinea + " Error: Falta ';' al final de la sentencia "+"\u001B[0m");}
-			| IF condicion THEN bloque_unidad ';' bloque_else END_IF {System.out.println("\u001B[31m"+"Linea " + AnalizadorLexico.saltoDeLinea + " Error: Falta ';' al final de la sentencia "+"\u001B[0m");}
+			| IF condicion THEN bloque_unidad bloque_else ';' END_IF {System.out.println("\u001B[31m"+"Linea " + AnalizadorLexico.saltoDeLinea + " Error: Falta ';' al final de la sentencia del bloque del THEN "+"\u001B[0m");}
+			| IF condicion THEN bloque_unidad END_IF {System.out.println("\u001B[31m"+"Linea " + AnalizadorLexico.saltoDeLinea + " Error: Falta ';' al final de la sentencia del bloque del THEN  "+"\u001B[0m");}
+			| IF condicion THEN bloque_unidad ';' bloque_else END_IF {System.out.println("\u001B[31m"+"Linea " + AnalizadorLexico.saltoDeLinea + " Error: Falta ';' al final de la sentencia del bloque del ELSE  "+"\u001B[0m");}
 			| IF condicion THEN bloque_unidad bloque_else END_IF {System.out.println("\u001B[31m"+"Linea " + AnalizadorLexico.saltoDeLinea + " Error: Falta ';' al final de los bloques del IF "+"\u001B[0m");}
 			
 			| IF condicion THEN bloque_unidad ';' error{System.out.println("\u001B[31m"+"Linea " + AnalizadorLexico.saltoDeLinea + ": Error : Falta el END_IF en IF  "+"\u001B[0m");}
@@ -193,9 +201,9 @@ condicion	: '(' '(' list_expre ')' comparador '(' list_expre ')' ')' {System.out
 			| '(' expresion_arit comparador expresion_arit  {System.out.println("\u001B[31m"+"Linea " + AnalizadorLexico.saltoDeLinea + "Error : Falta el ')' en la condicion "+"\u001B[0m");}
 			| expresion_arit comparador expresion_arit  {System.out.println("\u001B[31m"+"Linea " + AnalizadorLexico.saltoDeLinea + "Error : Faltan los parentesis en la condicion "+"\u001B[0m");}
 			
+			| '(' list_expre ')' {System.out.println("\u001B[31m"+"Linea " + AnalizadorLexico.saltoDeLinea + "Error : Falta el comparador en la condicion "+"\u001B[0m");}
 			
 			|'(' '(' list_expre ')'  '(' list_expre ')' ')' {System.out.println("\u001B[31m"+"Linea " + AnalizadorLexico.saltoDeLinea + " Error : Falta el comparador "+"\u001B[0m");}
-			| '(' error ')' {System.out.println("\u001B[31m"+"Linea " + AnalizadorLexico.saltoDeLinea + " Error : Falta el comparador "+"\u001B[0m");}
 			|'(' '(' list_expre comparador '(' list_expre ')' ')' {System.out.println("\u001B[31m"+"Linea " + AnalizadorLexico.saltoDeLinea + " Error : Falta el ')' en la condicion luego de la lista de expresiones "+"\u001B[0m");}
 			|'(' '(' list_expre ')' comparador list_expre ')' ')' {System.out.println("\u001B[31m"+"Linea " + AnalizadorLexico.saltoDeLinea + " Error : Falta el '(' en la condicion luego del comparador"+"\u001B[0m");}
 ;
@@ -259,6 +267,7 @@ sentencia_goto	: GOTO ETIQUETA {System.out.println("Linea " + AnalizadorLexico.s
 
 %%	
 public static StringBuilder AMBITO = new StringBuilder(":MAIN");																 
+public static boolean DENTRODELAMBITO = false;
 public static boolean RETORNO = false;
 public static Map<String,Tipo> tipos = new HashMap<>();
 

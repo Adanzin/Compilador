@@ -2,19 +2,21 @@
  Identificador lala 
  Identificador begin 
  Identificador integer 
- Identificador varx 
- , 
- Identificador vary 
- , 
- Identificador varx 
- Identificador varx 
- := 
- Constante entera 327 
- Identificador varx 
- := 
- Constante double 2.3E34 
+ Identificador a 
  ; 
- Identificador tipo_abc 
- Identificador vary 
+ Identificador integer 
+ Identificador FUN 
+ Identificador juancito 
+ ( 
+ Identificador double 
+ Identificador a 
+ ) 
+ Identificador BEGIN 
+ Identificador RET 
+ ( 
+ Identificador a 
+ ) 
+ ; 
+ Identificador END 
  ; 
  Identificador end 

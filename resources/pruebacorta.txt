@@ -1,8 +1,9 @@
 lala
 begin
-
-integer varx, vary, varx
-          	varx := 327
-              varx := 2.3d+34;
-          	tipo_abc vary;
+ 	integer a;
+	integer FUN juancito ( double a ) BEGIN 
+	    RET (a);
+	 END;
+             
+ 
 end
