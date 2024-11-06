@@ -40,7 +40,8 @@ public class Main {
         getSimbolos();
         System.out.println("       ");
         getTipos();
-        
+        System.out.println("       >>>>>  POLACA   <<<<<");
+        GeneradorCodigoIntermedio.imprimirPolaca();        
     }
 	
 	public static void getSimbolos() {

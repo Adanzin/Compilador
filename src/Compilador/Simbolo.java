@@ -6,6 +6,8 @@ public class Simbolo {
     private String id;
     private Tipo tipoVar;
     private String uso;
+    private String tipoParFormal=" ";
+    private String tipoRetorno=" ";
     private int base;  // Base del n�mero (8 = octal, 10 = decimal, 16 = hexadecimal)
     private int contadorDeReferencias;
     private boolean defPorUser;
@@ -123,6 +125,7 @@ public class Simbolo {
 		this.contadorDeReferencias = contadorDeReferencias;
 		this.defPorUser = esSubTipo;
 		this.seDeclaro = seDeclaro;
+
 	}
 	@Override
     public String toString() {
@@ -160,8 +163,16 @@ public class Simbolo {
         }
         if(this.seDeclaro!=false) {
             sb.append(" se declaro: "+seDeclaro);
+            sb.append(" - ");
         }
-
+        if(this.tipoParFormal!=" ") {
+            sb.append(" El parametro formal es: "+tipoParFormal);
+            sb.append(" - ");
+        }
+        if(this.tipoRetorno!=" ") {
+            sb.append(" El Retorno es : "+tipoParFormal);
+            sb.append(" - ");
+        }
 
         // Si ningun valor fue inicializado
         if (sb.length() == 0) {
@@ -221,6 +232,18 @@ public class Simbolo {
 	}
 	public void setId(String id) {
 		this.id = id;
+	}
+	public String getTipoParFormal() {
+		return tipoParFormal;
+	}
+	public void setTipoParFormal(String tipoParFormal) {
+		this.tipoParFormal = tipoParFormal;
+	}
+	public String getTipoRetorno() {
+		return tipoRetorno;
+	}
+	public void setTipoRetorno(String tipoRetorno) {
+		this.tipoRetorno = tipoRetorno;
 	}
 	
 }

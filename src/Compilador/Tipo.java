@@ -51,7 +51,7 @@ public class Tipo {
 	public void setType(String type) {
 		this.type = type;
 	}
-
+	
 
     
  

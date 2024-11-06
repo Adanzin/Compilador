@@ -3,20 +3,36 @@
  Identificador begin 
  Identificador integer 
  Identificador a 
+ , 
+ Identificador b 
+ , 
+ Identificador c 
+ , 
+ Identificador d 
  ; 
- Identificador integer 
- Identificador FUN 
- Identificador juancito 
+ Identificador WHILE 
  ( 
- Identificador double 
  Identificador a 
+ + 
+ Identificador b 
+ <= 
+ Identificador c 
+ - 
+ Identificador d 
  ) 
  Identificador BEGIN 
- Identificador RET 
- ( 
  Identificador a 
- ) 
+ := 
+ Identificador b 
+ + 
+ Identificador c 
+ ; 
+ Identificador c 
+ := 
+ Identificador d 
+ - 
+ Constante entera 3 
  ; 
  Identificador END 
  ; 
- Identificador end 
+ Identificador End 

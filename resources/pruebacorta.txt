@@ -1,9 +1,5 @@
 lala
-begin
- 	integer a;
-	integer FUN juancito ( double a ) BEGIN 
-	    RET (a);
-	 END;
-             
- 
-end
+begin    
+	integer a,b,c,d;
+	WHILE ( a + b <= c - d )BEGIN a := b + c; c := d - 3; END;
+End
