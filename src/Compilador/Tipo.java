@@ -41,7 +41,7 @@ public class Tipo {
 			if(subTipo==true) {
 				return  type + "[ " + rangInferior +", "+rangSuperior + " ]";
 			}else {
-				return type ;
+				return type+"[3]";
 			}
 		}
 	}
@@ -51,8 +51,5 @@ public class Tipo {
 	public void setType(String type) {
 		this.type = type;
 	}
-	
 
-    
- 
 }

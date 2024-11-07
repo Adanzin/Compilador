@@ -1,5 +1,12 @@
 lala
 begin    
-	integer a,b,c,d;
-	WHILE ( a + b <= c - d )BEGIN a := b + c; c := d - 3; END;
+	TYPEDEF TRIPLE < integer > tint;
+	tint b;
+	integer a,c,d,e;
+	goto afuera@;
+	IF(a-b>c+1)THEN a:=b+c; ELSE a:= b-c; END_IF;
+	WHILE (a+b<=c-d)BEGIN a:=b+c; c:=d-3; END;
+	 b{2} := 8;
+	afuera@;
+	b{2} := 8;
 End

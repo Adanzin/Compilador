@@ -1,14 +1,53 @@
 
  Identificador lala 
  Identificador begin 
+ Identificador TYPEDEF 
+ Identificador TRIPLE 
+  < 
+ Identificador integer 
+ > 
+ Identificador tint 
+ ; 
+ Identificador tint 
+ Identificador b 
+ ; 
  Identificador integer 
  Identificador a 
- , 
- Identificador b 
  , 
  Identificador c 
  , 
  Identificador d 
+ , 
+ Identificador e 
+ ; 
+ Identificador goto 
+ Etiqueta afuera 
+ ; 
+ Identificador IF 
+ ( 
+ Identificador a 
+ - 
+ Identificador b 
+ > 
+ Identificador c 
+ + 
+ Constante entera 1 
+ ) 
+ Identificador THEN 
+ Identificador a 
+ := 
+ Identificador b 
+ + 
+ Identificador c 
+ ; 
+ Identificador ELSE 
+ Identificador a 
+ := 
+ Identificador b 
+ - 
+ Identificador c 
+ ; 
+ Identificador END_IF 
  ; 
  Identificador WHILE 
  ( 
@@ -34,5 +73,21 @@
  Constante entera 3 
  ; 
  Identificador END 
+ ; 
+ Identificador b 
+ { 
+ Constante entera 2 
+ } 
+ := 
+ Constante entera 8 
+ ; 
+ Etiqueta afuera 
+ ; 
+ Identificador b 
+ { 
+ Constante entera 2 
+ } 
+ := 
+ Constante entera 8 
  ; 
  Identificador End 

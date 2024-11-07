@@ -77,10 +77,11 @@ declaracion_funciones     : encabezado_funcion parametros_parentesis BEGIN cuerp
 									sacarAmbito();
 									DENTRODELAMBITO.pop();
 									cargarParametroFormal($1.sval,(Tipo)$2.obj);
+									
 								}                  
 ;
 
-encabezado_funcion 	: tipo FUN ID {$$.sval=$3.sval;cargarVariables($3.sval,(Tipo)$1.obj," nombre de funcion ");agregarAmbito($3.sval);DENTRODELAMBITO.push($3.sval);System.out.println(" Encabezado de la funcion ");}
+encabezado_funcion 	: tipo FUN ID {$$.sval=$3.sval;cargarFuncion($3.sval,(Tipo)$1.obj," nombre de funcion ");agregarAmbito($3.sval);DENTRODELAMBITO.push($3.sval);System.out.println(" Encabezado de la funcion ");}
 					| tipo FUN {System.out.println("\u001B[31m"+"Linea " + AnalizadorLexico.saltoDeLinea + ": Error: Faltan el nombre en la funcion "+"\u001B[0m");}
 ;
 
@@ -106,7 +107,7 @@ sentencia_ejecutable	: asignacion
 						| sentencia_IF 
 						| sentencia_WHILE
 						| sentencia_goto
-						| ETIQUETA {addUso($1.sval, " Es una ETIQUETA ");System.out.println("Linea :" + AnalizadorLexico.saltoDeLinea + " Se identifico una etiqueta " );}
+						| ETIQUETA {if(existeEnEsteAmbito($1.sval)){completarBifurcacionAGoto($1.sval+AMBITO.toString());System.out.println("Linea :" + AnalizadorLexico.saltoDeLinea + " Se identifico una etiqueta " );}else{System.out.println("\u001B[31m"+"Linea :" + AnalizadorLexico.saltoDeLinea +  " Error : La ETIQUETA que se pretende bifurcar no existe.  "+"\u001B[0m");}}
 						| outf_rule
 						| retorno {RETORNO = true;}
 ;
@@ -124,20 +125,28 @@ asignacion	: variable_simple ASIGNACION expresion_arit {if(fueDeclarado($1.sval)
 															}else{
 																System.out.println("\u001B[31m"+"Linea :" + AnalizadorLexico.saltoDeLinea +  " Error:  se invocó una variable no declarada "+"\u001B[0m");}
 															System.out.println("Linea :" + AnalizadorLexico.saltoDeLinea + " Asignacion ");}
-			| variable_simple '{' CTE '}' ASIGNACION expresion_arit  {System.out.println("Linea :" + AnalizadorLexico.saltoDeLinea +  " Asignacion a arreglo");}
+			| variable_simple '{' CTE '}' ASIGNACION expresion_arit  {if(fueDeclarado($1.sval)){
+															$$.sval = $1.sval;
+															GeneradorCodigoIntermedio.addElemento($1.sval);
+															GeneradorCodigoIntermedio.addElemento(":="); 
+															}else{
+																System.out.println("\u001B[31m"+"Linea :" + AnalizadorLexico.saltoDeLinea +  " Error:  se invocó una variable no declarada "+"\u001B[0m");}
+																System.out.println("Linea :" + AnalizadorLexico.saltoDeLinea +  " Asignacion a arreglo");}
 			| variable_simple '{' '-' CTE '}' ASIGNACION expresion_arit {System.out.println("\u001B[31m"+"Linea " + AnalizadorLexico.saltoDeLinea + " Error: no se puede acceder a una posicion negativa de un arreglo "+"\u001B[0m");}
 ;
 
 invocacion	: ID_simple '(' expresion_arit ')' {if(!fueDeclarado($1.sval)){
 													System.out.println("\u001B[31m"+"Linea :" + AnalizadorLexico.saltoDeLinea +  " Error:  se invocó una funcion no declarada "+"\u001B[0m");}
 													else{														
-														System.out.println("Linea :" + AnalizadorLexico.saltoDeLinea + " Invocacion a funcion ");}																										
+														System.out.println("Linea :" + AnalizadorLexico.saltoDeLinea + " Invocacion a funcion ");
+														GeneradorCodigoIntermedio.bifurcarIporFuncion($1.sval + AMBITO.toString());}																										
 												}
 			| ID_simple '(' tipo_primitivo '(' expresion_arit ')' ')' 
 												{if(!fueDeclarado($1.sval)){
 													System.out.println("\u001B[31m"+"Linea :" + AnalizadorLexico.saltoDeLinea +  " Error:  se invocó una funcion no declarada "+"\u001B[0m");}
 													else{
-														System.out.println("Linea :" + AnalizadorLexico.saltoDeLinea +  " Invocacion con conversion ");}
+														System.out.println("Linea :" + AnalizadorLexico.saltoDeLinea +  " Invocacion con conversion ");
+														GeneradorCodigoIntermedio.bifurcarIporFuncion($1.sval + AMBITO.toString());}
 												}
 			| ID_simple '(' ')' {System.out.println("\u001B[31m"+"Linea :" + AnalizadorLexico.saltoDeLinea +  " Error:  faltan los parametros reales en la invocacion"+"\u001B[0m");}
 			| ID_simple '(' error ')' {System.out.println("\u001B[31m"+"Linea :" + AnalizadorLexico.saltoDeLinea +  " Error:  Se excedio el numero de parametros en la invocacion (1)"+"\u001B[0m");}
@@ -171,7 +180,7 @@ termino : termino '*' factor {GeneradorCodigoIntermedio.addElemento("*");}
 factor 	: variable_simple {if(fueDeclarado($1.sval)){GeneradorCodigoIntermedio.addElemento($1.sval);AnalizadorLexico.TablaDeSimbolos.get($1.sval).incrementarContDeRef(); $$.sval = $1.sval;}else{System.out.println("\u001B[31m"+"Linea :" + AnalizadorLexico.saltoDeLinea +  " Error:  se invocó una variable no declarada "+"\u001B[0m");};}
 		| CTE_con_sig {GeneradorCodigoIntermedio.addElemento($1.sval);}
 		| invocacion 
-		| variable_simple '{' CTE '}' {if(fueDeclarado($1.sval)){ $$.sval = $1.sval;}else{System.out.println("\u001B[31m"+"Linea :" + AnalizadorLexico.saltoDeLinea +  " Error:  se invocó una variable no declarada "+"\u001B[0m");};}
+		| variable_simple '{' CTE '}' {if(fueDeclarado($1.sval)){ GeneradorCodigoIntermedio.addElemento($1.sval+"["+$3.sval+"]");AnalizadorLexico.TablaDeSimbolos.get($1.sval).incrementarContDeRef(); $$.sval = $1.sval;}else{System.out.println("\u001B[31m"+"Linea :" + AnalizadorLexico.saltoDeLinea +  " Error:  se invocó una variable no declarada "+"\u001B[0m");};}
 		| variable_simple '{' '-' CTE '}' {System.out.println("\u001B[31m"+"Linea " + AnalizadorLexico.saltoDeLinea + " Error: no se puede acceder a una posicion negativa de un arreglo "+"\u001B[0m");}
 ;
 variables 	: variables ',' variable_simple { $$.sval = $1.sval + "/"+$3.sval;} 
@@ -206,11 +215,11 @@ sentencia_IF: IF condicion THEN bloque_unidad ';' bloque_else ';' END_IF {comple
 			| IF condicion THEN bloque_unidad ';' bloque_else ';' error{System.out.println("\u001B[31m"+"Linea " + AnalizadorLexico.saltoDeLinea + ": Error : Falta el END_IF en IF "+"\u001B[0m");}
 ;
 
-condicion	: '(' '(' list_expre ')' comparador '(' list_expre ')' ')' {GeneradorCodigoIntermedio.addElemento($5.sval);GeneradorCodigoIntermedio.bifurcarF();System.out.println("Linea " + AnalizadorLexico.saltoDeLinea + ": Condicion con lista de expresiones ");}
+condicion	: '(' '(' list_expre ')' comparador '(' list_expre ')' ')' {opCondicion($5.sval);System.out.println("Linea " + AnalizadorLexico.saltoDeLinea + ": Condicion con lista de expresiones ");}
 			| '(' list_expre ')' comparador '(' list_expre ')' ')' {System.out.println("\u001B[31m"+"Linea " + AnalizadorLexico.saltoDeLinea + "Error : Falta el '(' en la condicion "+"\u001B[0m");}
 			| '(' '(' list_expre ')' comparador '(' list_expre ')' {System.out.println("\u001B[31m"+"Linea " + AnalizadorLexico.saltoDeLinea + "Error : Falta el ')' en la condicion "+"\u001B[0m");}
 			|'(' list_expre ')' comparador '(' list_expre ')' {System.out.println("\u001B[31m"+"Linea " + AnalizadorLexico.saltoDeLinea + "Error : Faltan los parentesis en la condicion "+"\u001B[0m");}
-			| '(' expresion_arit comparador expresion_arit ')' {GeneradorCodigoIntermedio.addElemento($3.sval);GeneradorCodigoIntermedio.bifurcarF(); System.out.println("Linea " + AnalizadorLexico.saltoDeLinea + ": Condicion");}
+			| '(' expresion_arit comparador expresion_arit ')' {opCondicion($3.sval); System.out.println("Linea " + AnalizadorLexico.saltoDeLinea + ": Condicion");}
 			|  expresion_arit comparador expresion_arit ')' {System.out.println("\u001B[31m"+"Linea " + AnalizadorLexico.saltoDeLinea + "Error : Falta el '(' en la condicion "+"\u001B[0m");}
 			| '(' expresion_arit comparador expresion_arit  {System.out.println("\u001B[31m"+"Linea " + AnalizadorLexico.saltoDeLinea + "Error : Falta el ')' en la condicion "+"\u001B[0m");}
 			| expresion_arit comparador expresion_arit  {System.out.println("\u001B[31m"+"Linea " + AnalizadorLexico.saltoDeLinea + "Error : Faltan los parentesis en la condicion "+"\u001B[0m");}
@@ -241,8 +250,8 @@ bloque_else_multiple:	ELSE BEGIN bloque_sent_ejecutables ';' END
 bloque_else_simple:	ELSE bloque_sentencia_simple 
 ;
 
-bloque_unidad	: bloque_unidad_simple {if(esWHILE==false){completarBifurcacionF();GeneradorCodigoIntermedio.bifurcarI();}else{completarBifurcacionF();GeneradorCodigoIntermedio.bifurcarAlInicio();}}
-				| bloque_unidad_multiple {if(esWHILE==false){completarBifurcacionF();GeneradorCodigoIntermedio.bifurcarI();}else{completarBifurcacionF();GeneradorCodigoIntermedio.bifurcarAlInicio();}}
+bloque_unidad	: bloque_unidad_simple {if(esWHILE==false){operacionesIF();}}
+				| bloque_unidad_multiple {if(esWHILE==false){operacionesIF();}}
 ;		
 
 bloque_unidad_multiple  : BEGIN bloque_sent_ejecutables ';' END
@@ -266,7 +275,7 @@ cadena	: CADENAMULTILINEA {addUso($1.sval, " Es una Cadena MultiLinea ");System.
 
 									/* TEMAS PARTICULARES */
 /* Temas 13:  Sentencias de Control */
-sentencia_WHILE	: encabezado_WHILE condicion bloque_unidad {System.out.println("Linea " + AnalizadorLexico.saltoDeLinea + ": Se identifico un WHILE ");}
+sentencia_WHILE	: encabezado_WHILE condicion bloque_unidad {operacionesWhile();System.out.println("Linea " + AnalizadorLexico.saltoDeLinea + ": Se identifico un WHILE ");}
 				| encabezado_WHILE condicion error {System.out.println("\u001B[31m"+"Linea " + AnalizadorLexico.saltoDeLinea +  " Error: falta el cuerpo del WHILE "+"\u001B[0m");}
 ;	
 
@@ -274,7 +283,7 @@ encabezado_WHILE : WHILE {esWHILE=true;GeneradorCodigoIntermedio.apilar(Generado
 ;
 
 /* Tema 23: goto */
-sentencia_goto	: GOTO ETIQUETA {System.out.println("Linea " + AnalizadorLexico.saltoDeLinea + ": Sentencia GOTO ");}
+sentencia_goto	: GOTO ETIQUETA {cargarVariables($2.sval,(Tipo)$1.obj," Etiqueta ");GeneradorCodigoIntermedio.BifurcarAGoto($2.sval+AMBITO.toString());System.out.println("Linea " + AnalizadorLexico.saltoDeLinea + ": Sentencia GOTO ");}
 				| GOTO error  {System.out.println("\u001B[31m"+"Linea :" + AnalizadorLexico.saltoDeLinea + " Error: Falta la etiqueta en GOTO "+"\u001B[0m");}
 ;
 /* Tema 19: Pattern Matching*/
@@ -288,14 +297,52 @@ public static boolean RETORNO = false;
 public static Map<String,Tipo> tipos = new HashMap<>();
 public static boolean esWHILE = false;
 
+private static void completarBifurcacionAGoto(String id){
+	System.out.println("BIFURCACION a GOTO "+id+" pos "+GeneradorCodigoIntermedio.getPos());
+	int pos = GeneradorCodigoIntermedio.getGoto(id);
+	System.out.println("BIFURCACION a GOTO "+id+" pos "+ pos);
+	String elm = String.valueOf(GeneradorCodigoIntermedio.getPos());
+	System.out.println("BIFURCACION a GOTO "+id+" pos "+ pos + " elm "+elm);
+	GeneradorCodigoIntermedio.addElemento(elm,pos);
+} 
+
+private static void cargarFuncion(String variable, Tipo tipo, String uso){
+	cargarVariables(variable,tipo,uso);
+	AnalizadorLexico.TablaDeSimbolos.get(variable+AMBITO.toString()).setDirMEM(GeneradorCodigoIntermedio.getPos());
+}
+
+private static void opCondicion(String val){
+	GeneradorCodigoIntermedio.addElemento(val);
+	GeneradorCodigoIntermedio.bifurcarF();
+}
+
+private static void operacionesWhile(){
+	completarBifurcacionF();
+	GeneradorCodigoIntermedio.bifurcarAlInicio();
+}
+
+private static void operacionesIF(){
+	//desapilar
+	//Completar el paso imcompleto con el destino de la BF
+	completarBifurcacionF();
+	// generar los pasos de la BI incompleta
+	GeneradorCodigoIntermedio.bifurcarI();
+	//Apilar el numero del paso imcompleto	
+
+}
+
 private static void completarBifurcacionF(){
+	System.out.println("BIFURCACION POR F");
 	int pos = GeneradorCodigoIntermedio.getPila();
-	String elm = String.valueOf(GeneradorCodigoIntermedio.getPos()+3);
+	System.out.println(pos);
+	String elm = String.valueOf(GeneradorCodigoIntermedio.getPos()+2);
+	System.out.println(elm);
 	GeneradorCodigoIntermedio.addElemento(elm,pos);
 }
 private static void completarBifurcacionI(){
+	System.out.println("BIFURCACION POR I ");
 	int pos = GeneradorCodigoIntermedio.getPila();
-	String elm = String.valueOf(GeneradorCodigoIntermedio.getPos()+1);
+	String elm = String.valueOf(GeneradorCodigoIntermedio.getPos());
 	GeneradorCodigoIntermedio.addElemento(elm,pos);
 }
 
@@ -374,6 +421,7 @@ private static boolean existeEnEsteAmbito(String id){
 
     // Construimos la clave: id + ámbito actual
     String key = id + ambitoActual;
+		System.out.println(" Se busca la existencia de "+ key);
 	//System.out.println("  > Key buscada "+ key + "En el ambito "+ ambitoActual);
 
     // Buscamos en el mapa
@@ -384,6 +432,7 @@ private static boolean existeEnEsteAmbito(String id){
 }
 
 private static void cargarVariables(String variables, Tipo tipo, String uso){
+	System.out.println(variables);
 	String[] var = getVariables(variables,"/");
 	for (String v : var) {
 		if(!existeEnEsteAmbito(v)){

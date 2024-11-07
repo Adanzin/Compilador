@@ -37,6 +37,9 @@ BEG¿IN
 	    IF(-32768 > 5.8)THEN A:=1;ELSE B:=0;END_IF;
 	    RET (a);
 	 END;
+	 	IF(a-b>c+1)THEN a:=b+c; ELSE a:= b-c; END_IF;
+	WHILE (a+b<=c-d)BEGIN a:=b+c; c:=d-3; END;
+	 IF(a-b>c+1)THEN a:=b+c; ELSE a:= b-c; END_IF;
 	 TYPEDEF TRIPLE < integer > tint;
 	 TYPEDEF flotadito := integer {-6, -8};
 	 flotadito a;

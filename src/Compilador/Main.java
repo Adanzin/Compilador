@@ -41,7 +41,7 @@ public class Main {
         System.out.println("       ");
         getTipos();
         System.out.println("       >>>>>  POLACA   <<<<<");
-        GeneradorCodigoIntermedio.imprimirPolaca();        
+        GeneradorCodigoIntermedio.imprimirPolaca();
     }
 	
 	public static void getSimbolos() {

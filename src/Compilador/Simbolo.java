@@ -8,6 +8,7 @@ public class Simbolo {
     private String uso;
     private String tipoParFormal=" ";
     private String tipoRetorno=" ";
+    private int dirMEM=-1;
     private int base;  // Base del n�mero (8 = octal, 10 = decimal, 16 = hexadecimal)
     private int contadorDeReferencias;
     private boolean defPorUser;
@@ -173,6 +174,10 @@ public class Simbolo {
             sb.append(" El Retorno es : "+tipoParFormal);
             sb.append(" - ");
         }
+        if(this.dirMEM!=-1) {
+            sb.append(" Esta ubicado Polaca["+dirMEM+"]");
+            sb.append(" - ");
+        }
 
         // Si ningun valor fue inicializado
         if (sb.length() == 0) {
@@ -214,6 +219,14 @@ public class Simbolo {
 
 	    return null;
 	}
+	
+	public boolean esSubTipo() {
+		return this.tipoVar.esSubTipo();
+	}
+	public boolean esTripla() {
+		return this.tipoVar.esTripla();
+	}
+	
 	public String getUso() {
 		return uso;
 	}
@@ -244,6 +257,12 @@ public class Simbolo {
 	}
 	public void setTipoRetorno(String tipoRetorno) {
 		this.tipoRetorno = tipoRetorno;
+	}
+	public int getDirMEM() {
+		return dirMEM;
+	}
+	public void setDirMEM(int dirMEM) {
+		this.dirMEM = dirMEM;
 	}
 	
 }
