@@ -1,11 +1,9 @@
-package AccionSemantica;
+package main.java.AccionSemantica;
 import java.io.IOException;
 import java.io.Reader;
 import java.util.Map;
 
-import Compilador.AnalizadorLexico;
-import Compilador.Simbolo;
-import Compilador.TablaPalabrasReservadas;
+import main.java.Compilador.*;
 
 
 public abstract class AccionSemantica {
@@ -21,8 +19,8 @@ public abstract class AccionSemantica {
     public abstract Short ejecutar(char car, Reader lector, StringBuilder token, TablaPalabrasReservadas PalabrasReservadas, Map<String, Simbolo> TablaDeSimbolos); 
     public void cargarSalida(String in) {
 		try {
-			AnalizadorLexico.salida.newLine();  // Agregar un salto de línea
-			AnalizadorLexico.salida.write(" "+in+" ");
+			AnalizadorLexico.lexico.newLine();  // Agregar un salto de línea
+			AnalizadorLexico.lexico.write(" "+in+" ");
 
 		} catch (IOException e) {
 			// TODO Auto-generated catch block

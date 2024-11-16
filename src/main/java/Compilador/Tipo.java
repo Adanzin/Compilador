@@ -1,4 +1,4 @@
-package Compilador;
+package main.java.Compilador;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -50,6 +50,10 @@ public class Tipo {
 	}
 	public void setType(String type) {
 		this.type = type;
+	}
+
+	public boolean sonCompatibles(Tipo t) {
+		return this.getType()==t.getType();
 	}
 
 }

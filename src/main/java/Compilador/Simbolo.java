@@ -1,4 +1,4 @@
-package Compilador;
+package main.java.Compilador;
 
 public class Simbolo {
     private int entero;       // Tipo de variable
@@ -200,24 +200,44 @@ public class Simbolo {
 		this.defPorUser = es;
 	}
 
-	public String getTipo() {
+	public Tipo getTipo() {
 	    if (entero != -1) {
 	        if (base == 8) {
-	            return "Octal";
+	            return Parser.tipos.get("OCTAL");
 	        } else {
-	            return "Entero";
+	            return Parser.tipos.get("INTEGER");
 	        }
 	    }
 	    
 	    if (doub != -1.0) {
-	        return "Double";
+	        return Parser.tipos.get("DOUBLE");
 	    }
 	    
 	    if (tipoVar != null) {
-	        return tipoVar.toString();
+	        return tipoVar;
 	    }
 
 	    return null;
+	}
+	public boolean esLiteral() {
+	    if (entero != -1) {
+	        return true;
+	    }
+	    
+	    if (doub != -1.0) {
+	        return true;
+	    }
+
+	    return false;
+	}
+
+	public boolean sonCompatibles(Simbolo simb2) {
+		System.out.println("Se estan comparando "+ this + " con un "+ simb2);
+		if(this.getTipo().equals(simb2.getTipo())) {
+			return true;
+		}
+		System.out.println("Tipos incompatibles, se intento operar un "+ this.getTipo() + " con un "+ simb2.getTipo());
+		return false;
 	}
 	
 	public boolean esSubTipo() {
@@ -263,6 +283,12 @@ public class Simbolo {
 	}
 	public void setDirMEM(int dirMEM) {
 		this.dirMEM = dirMEM;
+	}
+	public boolean esDouble() {
+    	if (this.doub == -1.0) {
+    		return false;
+    	}
+    	return true;
 	}
 	
 }

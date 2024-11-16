@@ -1,7 +1,8 @@
-package Compilador;
-import AccionSemantica.*;
+package main.java.Compilador;
+import main.java.AccionSemantica.*;
 
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
@@ -9,10 +10,10 @@ import java.util.Scanner;
 public class CargadorDeMatriz {
     public static AccionSemantica[][] CargarMatrizAS(String path, int filas, int columnas){
         AccionSemantica[][] matriz = new AccionSemantica[filas][columnas];
-        try (BufferedReader br = new BufferedReader(new FileReader(path))) {
+        InputStream inputStream = Main.class.getResourceAsStream(path);
+        try (BufferedReader br = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8))) {
             String nombreAccion;
             int fila = 0, columna = 0;
-
             while ((nombreAccion = br.readLine()) != null) {
                 AccionSemantica accion = crearAcSem(nombreAccion);
                 matriz[fila][columna] = accion;  // Asigna la acción a la matriz
@@ -28,7 +29,6 @@ public class CargadorDeMatriz {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
         return matriz;
     }
 
@@ -63,12 +63,12 @@ public class CargadorDeMatriz {
         default:
         	System.out.println("'" + accion_semantica + "'" + " da null ");
             return null;
-    }
-	}
+    }}
 
     public static int[][] CargarMatrizEstados(String nombreArchivo, int filas, int columnas) {
         int[][] matriz = new int[filas][columnas];
-        try (BufferedReader br = new BufferedReader(new FileReader(nombreArchivo))) {
+        InputStream inputStream = Main.class.getResourceAsStream(nombreArchivo);
+        try (BufferedReader br = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8))) {
             String linea;
             int fila = 0, columna = 0;
 
@@ -94,7 +94,8 @@ public class CargadorDeMatriz {
 
     public static Map<String, Short> CrearMapDeArch(String path) {
     	Map<String, Short> map = new HashMap<>();
-        try (BufferedReader br = new BufferedReader(new FileReader(path))) {
+        InputStream inputStream = Main.class.getResourceAsStream(path);
+        try (BufferedReader br = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8))) {
             String linea;
 
             while ((linea = br.readLine()) != null) {

@@ -1,13 +1,10 @@
-package AccionSemantica;
+package main.java.AccionSemantica;
 
 import java.io.IOException;
 import java.io.Reader;
 import java.util.Map;
 
-import Compilador.AnalizadorLexico;
-import Compilador.Simbolo;
-import Compilador.TablaPalabrasReservadas;
-import Compilador.Tipo;
+import main.java.Compilador.*;
 
 public class AS_Double extends AccionSemantica {
     @Override

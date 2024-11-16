@@ -1,11 +1,10 @@
-package AccionSemantica;
+package main.java.AccionSemantica;
 
 import java.io.IOException;
 import java.io.Reader;
 import java.util.Map;
 
-import Compilador.Simbolo;
-import Compilador.TablaPalabrasReservadas;
+import main.java.Compilador.*;
 
 public class AS_Concatenas extends AccionSemantica {
 	public AS_Concatenas() {

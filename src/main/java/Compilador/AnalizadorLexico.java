@@ -1,8 +1,8 @@
-package Compilador;
+package main.java.Compilador;
 import java.util.Map;
 import java.util.HashMap;
 
-import AccionSemantica.*;
+import main.java.AccionSemantica.*;
 import java.io.*;
 
 
@@ -15,8 +15,8 @@ public class AnalizadorLexico {
     public static final char TABULACION = '\t';
     public static final char BLANCO = ' ';
     public static final char RETORNO_DE_CARRO = '\r';
-	private static final String ARCH_MATRIZ_ESTADOS = "resources\\matrizDeEstados.txt";
-    private static final String ARCH_MATRIZ_ACCIONES = "resources\\matrizDeAcciones.txt";
+	private static final String ARCH_MATRIZ_ESTADOS = "/matrizDeEstados.txt";
+    private static final String ARCH_MATRIZ_ACCIONES = "/matrizDeAcciones.txt";
 	private static final int CANTIDAD_ESTADOS = 14;
 	private static final int CANTIDAD_CARACTERES = 21;
 	private static final int CERO = '0';
@@ -28,10 +28,11 @@ public class AnalizadorLexico {
 	public static String Lexema;
     public static int estado_actual = 0;
     public static final StringBuilder token_actual = new StringBuilder();
-    public static BufferedWriter salida; 
+    public static BufferedWriter lexico; 
+    public static BufferedWriter sintactico;
     public static Reader archivo_original;
     public static Map<String, Simbolo> TablaDeSimbolos = new HashMap<>();  
-	private static final TablaPalabrasReservadas PalabrasReservadas = new TablaPalabrasReservadas("resources\\PalabrasReservadas.txt");
+	private static final TablaPalabrasReservadas PalabrasReservadas = new TablaPalabrasReservadas("/PalabrasReservadas.txt");
     private static final AccionSemantica[][] accionesSemanticas = CargadorDeMatriz.CargarMatrizAS(ARCH_MATRIZ_ACCIONES, CANTIDAD_ESTADOS, CANTIDAD_CARACTERES);
     private static final int[][] transicion_estados = CargadorDeMatriz.CargarMatrizEstados(ARCH_MATRIZ_ESTADOS, CANTIDAD_ESTADOS, CANTIDAD_CARACTERES);
 
@@ -203,6 +204,8 @@ public class AnalizadorLexico {
 		return 0; //fin de archivo.
 	}*/
 	
+
+
 	public static int getToken(){
 		int caracter;
 		int token;

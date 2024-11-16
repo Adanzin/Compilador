@@ -1,4 +1,4 @@
-package Compilador;
+package main.java.Compilador;
 
 import java.util.Map;
 

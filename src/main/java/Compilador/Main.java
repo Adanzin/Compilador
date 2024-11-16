@@ -1,11 +1,15 @@
-package Compilador;
+package main.java.Compilador;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Map;
+import java.io.File;
 import java.util.Map.Entry;
 
 public class Main {
@@ -16,21 +20,22 @@ public class Main {
 
 	public static void main(String[] args) {
         // Verificar si se pasó la ruta del archivo por parámetro
-		
         if (args.length == 0) {
             System.out.println("Debe especificar la ruta del archivo como parámetro.");
             return;
         }
         String archivoRuta = args[0];  // Obtener la ruta del archivo desde el argumento
+        
         try {
-            AnalizadorLexico.salida = new BufferedWriter(new FileWriter("resources\\codigo-lexico.txt"));
             // Leer el contenido del archivo
             AnalizadorLexico.archivo_original = new BufferedReader(new FileReader(archivoRuta));
+            CreacionDeSalidas.creacionSalidas(archivoRuta);
             //System.out.println("Se esta compilando");
             Parser par = new Parser();
             par.run();
             //System.out.println("Se compilo");
-            AnalizadorLexico.salida.flush();
+            AnalizadorLexico.lexico.flush();
+            AnalizadorLexico.sintactico.flush();
         } catch (IOException e) {
             System.out.println("Ocurrió un error al leer el archivo: " + e.getMessage());
         }
@@ -39,9 +44,15 @@ public class Main {
         System.out.println("       >>>>>  TABLA DE SIMBOLOS <<<<<");
         getSimbolos();
         System.out.println("       ");
+        System.out.println("       >>>>>  TIPOS   <<<<<");
+        System.out.println("       ");
         getTipos();
+        System.out.println("       ");
         System.out.println("       >>>>>  POLACA   <<<<<");
         GeneradorCodigoIntermedio.imprimirPolaca();
+        System.out.println("       ");
+        System.out.println("		>>>>>  ASSEMBLER   <<<<<");
+        GeneradorSalida.recorrerPolaca(":MAIN");   
     }
 	
 	public static void getSimbolos() {
@@ -54,8 +65,7 @@ public class Main {
               .append(", ")
               .append(entry.getValue())  // Valor
               .append("] ")
-              .append(AnalizadorLexico.SALTO_DE_LINEA);
-            
+              .append(AnalizadorLexico.SALTO_DE_LINEA);            
         }
 
         // Eliminar la última coma y espacio si el mapa no está vacío
@@ -63,7 +73,7 @@ public class Main {
             sb.setLength(sb.length() - 2);  // Elimina la última ", "
         }
 
-        System.out.println(sb);
+        System.out.println(sb);        
 	}
 	public static void getTipos() {
         StringBuilder sb = new StringBuilder();
