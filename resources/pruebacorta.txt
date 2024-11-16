@@ -1,12 +1,7 @@
 lala
 begin    
+	integer a,b,c,d,e;
 	TYPEDEF TRIPLE < integer > tint;
-	tint b;
-	integer a,c,d,e;
-	goto afuera@;
-	IF(a-b>c+1)THEN a:=b+c; ELSE a:= b-c; END_IF;
-	WHILE (a+b<=c-d)BEGIN a:=b+c; c:=d-3; END;
-	 b{2} := 8;
-	afuera@;
-	b{2} := 8;
+	TYPEDEF flotadito := integer {-6, -8};
+	WHILE ((a,b,c)>=(d,2.3,e))BEGIN OUTF(1); OUTF([Hola Mundo]); a:=b; END;
 End

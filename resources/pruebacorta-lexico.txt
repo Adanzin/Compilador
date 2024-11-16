@@ -1,0 +1,69 @@
+
+ Identificador lala 
+ Identificador begin 
+ Identificador integer 
+ Identificador a 
+ , 
+ Identificador b 
+ , 
+ Identificador c 
+ , 
+ Identificador d 
+ , 
+ Identificador e 
+ ; 
+ Identificador TYPEDEF 
+ Identificador TRIPLE 
+  < 
+ Identificador integer 
+ > 
+ Identificador tint 
+ ; 
+ Identificador TYPEDEF 
+ Identificador flotadito 
+ := 
+ Identificador integer 
+ { 
+ - 
+ Constante entera 6 
+ , 
+ - 
+ Constante entera 8 
+ } 
+ ; 
+ Identificador WHILE 
+ ( 
+ ( 
+ Identificador a 
+ , 
+ Identificador b 
+ , 
+ Identificador c 
+ ) 
+ >= 
+ ( 
+ Identificador d 
+ , 
+ Constante double 2.3 
+ , 
+ Identificador e 
+ ) 
+ ) 
+ Identificador BEGIN 
+ Identificador OUTF 
+ ( 
+ Constante entera 1 
+ ) 
+ ; 
+ Identificador OUTF 
+ ( 
+ Cadena multilinea Hola Mundo 
+ ) 
+ ; 
+ Identificador a 
+ := 
+ Identificador b 
+ ; 
+ Identificador END 
+ ; 
+ Identificador End 

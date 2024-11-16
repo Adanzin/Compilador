@@ -48,7 +48,7 @@
 								<manifest>
 									<addClasspath>true</addClasspath>
                         			<classpathPrefix>lib/</classpathPrefix>
-                        			<mainClass>Compilador.Main</mainClass>
+                        			<mainClass>main.java.Compilador.Main</mainClass>
 								</manifest>
 							</archive>
 							<descriptorRefs>

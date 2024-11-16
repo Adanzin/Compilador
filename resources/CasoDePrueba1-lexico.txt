@@ -1,0 +1,279 @@
+
+ Error lexico en la linea1: Se leyo el siguiente caracter invalido pr 
+ Identificador pro34g 
+ Error lexico en la linea2: Se leyo el siguiente caracter invalido BEG 
+ Identificador BEGIN 
+ Identificador varx 
+ := 
+ Error lexico en la linea4: Se leyo el siguiente caracter invalido 0 
+ Constante octal 0 
+ ; 
+ Identificador tipo_abc 
+ Identificador vary 
+ ; 
+ Identificador integer 
+ Identificador FUN 
+ Identificador juancito 
+ ( 
+ Identificador double 
+ Identificador a 
+ ) 
+ Identificador BEGIN 
+ Identificador integer 
+ Identificador a 
+ ; 
+ Identificador while 
+ ( 
+ Constante entera 2768 
+ > 
+ - 
+ Constante double 5.8 
+ ) 
+ Identificador OUTF 
+ ( 
+ Constante entera 1 
+ ) 
+ ; 
+ Error lexico en la linea9: Se leyo el siguiente caracter invalido WHI 
+ Identificador WHILE 
+ ( 
+ ( 
+ Identificador a 
+ , 
+ Constante entera 3 
+ + 
+ Constante entera 4 
+ ) 
+ = 
+ ( 
+ Identificador b 
+ , 
+ Constante entera 35 
+ ) 
+ ) 
+ Identificador BEGIN 
+ Identificador OUTF 
+ ( 
+ Constante entera 1 
+ ) 
+ ; 
+ Identificador OUTF 
+ ( 
+ Cadena multilinea Hola Mundo 
+ ) 
+ ; 
+ Identificador goto 
+ Etiqueta afuera 
+ ; 
+ Identificador END 
+ ; 
+ Identificador a 
+ := 
+ Identificador funcion 
+ ( 
+ Identificador b 
+ ) 
+ ; 
+ Identificador a 
+ := 
+ Identificador funcion 
+ ( 
+ Identificador integer 
+ ( 
+ Identificador a 
+ + 
+ Identificador b 
+ ) 
+ ) 
+ ; 
+ Identificador a 
+ := 
+ Constante entera 4 
+ + 
+ Constante entera 5 
+ ; 
+ Identificador IF 
+ ( 
+ ( 
+ Identificador a 
+ , 
+ Constante entera 3 
+ + 
+ Constante entera 4 
+ ) 
+ = 
+ ( 
+ Identificador b 
+ , 
+ Constante entera 35 
+ ) 
+ ) 
+ Identificador THEN 
+ Identificador A 
+ := 
+ Constante entera 1 
+ ; 
+ Identificador END_IF 
+ ; 
+ Identificador IF 
+ ( 
+ - 
+ Constante entera 32768 
+ > 
+ Constante double 5.8 
+ ) 
+ Identificador THEN 
+ Identificador A 
+ := 
+ Constante entera 1 
+ ; 
+ Identificador ELSE 
+ Identificador B 
+ := 
+ Constante octal 0 
+ ; 
+ Identificador END_IF 
+ ; 
+ Identificador RET 
+ ( 
+ Identificador a 
+ ) 
+ ; 
+ Identificador END 
+ ; 
+ Identificador IF 
+ ( 
+ Identificador a 
+ - 
+ Identificador b 
+ > 
+ Identificador c 
+ + 
+ Constante entera 1 
+ ) 
+ Identificador THEN 
+ Identificador a 
+ := 
+ Identificador b 
+ + 
+ Identificador c 
+ ; 
+ Identificador ELSE 
+ Identificador a 
+ := 
+ Identificador b 
+ - 
+ Identificador c 
+ ; 
+ Identificador END_IF 
+ ; 
+ Identificador WHILE 
+ ( 
+ Identificador a 
+ + 
+ Identificador b 
+ <= 
+ Identificador c 
+ - 
+ Identificador d 
+ ) 
+ Identificador BEGIN 
+ Identificador a 
+ := 
+ Identificador b 
+ + 
+ Identificador c 
+ ; 
+ Identificador c 
+ := 
+ Identificador d 
+ - 
+ Constante entera 3 
+ ; 
+ Identificador END 
+ ; 
+ Identificador IF 
+ ( 
+ Identificador a 
+ - 
+ Identificador b 
+ > 
+ Identificador c 
+ + 
+ Constante entera 1 
+ ) 
+ Identificador THEN 
+ Identificador a 
+ := 
+ Identificador b 
+ + 
+ Identificador c 
+ ; 
+ Identificador ELSE 
+ Identificador a 
+ := 
+ Identificador b 
+ - 
+ Identificador c 
+ ; 
+ Identificador END_IF 
+ ; 
+ Identificador TYPEDEF 
+ Identificador TRIPLE 
+  < 
+ Identificador integer 
+ > 
+ Identificador tint 
+ ; 
+ Identificador TYPEDEF 
+ Identificador flotadito 
+ := 
+ Identificador integer 
+ { 
+ - 
+ Constante entera 6 
+ , 
+ - 
+ Constante entera 8 
+ } 
+ ; 
+ Identificador flotadito 
+ Identificador a 
+ ; 
+ Identificador tint 
+ Identificador b 
+ ; 
+ Identificador b 
+ { 
+ Constante entera 1 
+ } 
+ := 
+ Constante entera 8 
+ ; 
+ Identificador a 
+ := 
+ Identificador b 
+ { 
+ Constante entera 1 
+ } 
+ ; 
+ Identificador RET 
+ ( 
+ Constante octal 0 
+ ) 
+ ; 
+ Etiqueta afuera 
+ ; 
+ Identificador a 
+ := 
+ Constante entera 1 
+ + 
+ Constante entera 2 
+ ; 
+ Comentario  
+ Identificador outf 
+ ( 
+ Cadena multilinea saeasje  saj 4kd 	 sa easfa	  asfasf 
+ ) 
+ ; 
+ Identificador END 

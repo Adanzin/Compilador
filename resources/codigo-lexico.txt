@@ -1,93 +1,119 @@
 
- Identificador lala 
- Identificador begin 
+ Identificador prog 
+ Identificador BEGIN 
+ Identificador integer 
+ Identificador adan 
+ , 
+ Identificador boro 
+ , 
+ Identificador andrea 
+ ; 
+ Identificador boro 
+ := 
+ - 
+ Constante entera 32768 
+ ; 
+ Identificador adan 
+ := 
+ Constante entera 32768 
+ ; 
+ Identificador adan 
+ Identificador boro 
+ ; 
+ Identificador integer 
+ Identificador FUN 
+ Identificador juancito 
+ ( 
+ Identificador double 
+ Identificador a 
+ ) 
+ Identificador BEGIN 
+ Identificador WHILE 
+ ( 
+ ( 
+ - 
+ Constante entera 32768 
+ ) 
+ > 
+ ( 
+ - 
+ Constante double 5.8 
+ ) 
+ ) 
+ Identificador BEGIN 
+ Identificador OUTF 
+ ( 
+ Constante entera 1 
+ ) 
+ ; 
+ Identificador OUTF 
+ ( 
+ Constante octal 0 
+ ) 
+ Identificador END 
+ ; 
+ Identificador a 
+ := 
+ Identificador funcion 
+ ( 
+ Identificador b 
+ ) 
+ ; 
+ Identificador IF 
+ ( 
+ ( 
+ Identificador a 
+ , 
+ Constante entera 3 
+ + 
+ Constante entera 4 
+ ) 
+ = 
+ ( 
+ Identificador b 
+ , 
+ Constante entera 35 
+ ) 
+ ) 
+ Identificador THEN 
+ Identificador A 
+ := 
+ Constante entera 1 
+ ; 
+ Identificador ELSE 
+ Identificador B 
+ := 
+ Constante octal 0 
+ ; 
+ Identificador END_IF 
+ ; 
+ Identificador RET 
+ ( 
+ Identificador a 
+ ) 
+ ; 
+ Identificador a 
+ := 
+ Identificador funcion 
+ ( 
+ Identificador integer 
+ Identificador b 
+ + 
+ Identificador b 
+ ) 
+ ; 
+ Identificador END 
+ ; 
  Identificador TYPEDEF 
  Identificador TRIPLE 
   < 
  Identificador integer 
  > 
- Identificador tint 
- ; 
- Identificador tint 
- Identificador b 
- ; 
- Identificador integer 
  Identificador a 
- , 
- Identificador c 
- , 
- Identificador d 
- , 
- Identificador e 
  ; 
- Identificador goto 
- Etiqueta afuera 
- ; 
- Identificador IF 
+ Identificador RET 
  ( 
- Identificador a 
- - 
- Identificador b 
- > 
- Identificador c 
- + 
- Constante entera 1 
+ Constante octal 0 
  ) 
- Identificador THEN 
- Identificador a 
- := 
- Identificador b 
- + 
- Identificador c 
- ; 
- Identificador ELSE 
- Identificador a 
- := 
- Identificador b 
- - 
- Identificador c 
- ; 
- Identificador END_IF 
- ; 
- Identificador WHILE 
- ( 
- Identificador a 
- + 
- Identificador b 
- <= 
- Identificador c 
- - 
- Identificador d 
- ) 
- Identificador BEGIN 
- Identificador a 
- := 
- Identificador b 
- + 
- Identificador c 
- ; 
- Identificador c 
- := 
- Identificador d 
- - 
- Constante entera 3 
  ; 
  Identificador END 
- ; 
- Identificador b 
- { 
- Constante entera 2 
- } 
- := 
- Constante entera 8 
- ; 
- Etiqueta afuera 
- ; 
- Identificador b 
- { 
- Constante entera 2 
- } 
- := 
- Constante entera 8 
- ; 
- Identificador End 
