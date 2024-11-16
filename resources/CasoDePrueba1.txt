@@ -1,6 +1,6 @@
 pr$o34g
 BEG¿IN
-
+WHILE ((a,b,c)>=(d,2.3,e))BEGIN OUTF(1); OUTF([Hola Mundo]); a:=b; END;
 	varx := 0.0;
 	tipo_abc vary;
 	integer FUN juancito ( double a ) BEGIN 

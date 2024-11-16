@@ -1,7 +1,10 @@
 lala
 begin    
-	integer a,b,c,d,e;
-	TYPEDEF TRIPLE < integer > tint;
-	TYPEDEF flotadito := integer {-6, -8};
-	WHILE ((a,b,c)>=(d,2.3,e))BEGIN OUTF(1); OUTF([Hola Mundo]); a:=b; END;
+	 TYPEDEF TRIPLE < integer > tint;
+	 TYPEDEF flotadito := integer {-6, -8};
+	 tint a,b,c;
+	 a{3}:=b{1};
+	 a{3}:=b{1}+4;
+	 flotadito f,g,h;
+	 f:=4;
 End

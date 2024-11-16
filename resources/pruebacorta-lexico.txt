@@ -1,17 +1,6 @@
 
  Identificador lala 
  Identificador begin 
- Identificador integer 
- Identificador a 
- , 
- Identificador b 
- , 
- Identificador c 
- , 
- Identificador d 
- , 
- Identificador e 
- ; 
  Identificador TYPEDEF 
  Identificador TRIPLE 
   < 
@@ -31,39 +20,44 @@
  Constante entera 8 
  } 
  ; 
- Identificador WHILE 
- ( 
- ( 
+ Identificador tint 
  Identificador a 
  , 
  Identificador b 
  , 
  Identificador c 
- ) 
- >= 
- ( 
- Identificador d 
- , 
- Constante double 2.3 
- , 
- Identificador e 
- ) 
- ) 
- Identificador BEGIN 
- Identificador OUTF 
- ( 
- Constante entera 1 
- ) 
- ; 
- Identificador OUTF 
- ( 
- Cadena multilinea Hola Mundo 
- ) 
  ; 
  Identificador a 
+ { 
+ Constante entera 3 
+ } 
  := 
  Identificador b 
+ { 
+ Constante entera 1 
+ } 
  ; 
- Identificador END 
+ Identificador a 
+ { 
+ Constante entera 3 
+ } 
+ := 
+ Identificador b 
+ { 
+ Constante entera 1 
+ } 
+ + 
+ Constante entera 4 
+ ; 
+ Identificador flotadito 
+ Identificador f 
+ , 
+ Identificador g 
+ , 
+ Identificador h 
+ ; 
+ Identificador f 
+ := 
+ Constante entera 4 
  ; 
  Identificador End 

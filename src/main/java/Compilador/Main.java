@@ -52,7 +52,7 @@ public class Main {
         GeneradorCodigoIntermedio.imprimirPolaca();
         System.out.println("       ");
         System.out.println("		>>>>>  ASSEMBLER   <<<<<");
-        GeneradorSalida.recorrerPolaca(":MAIN");   
+        GeneradorCodigoAssembler.generarPrograma();   
     }
 	
 	public static void getSimbolos() {

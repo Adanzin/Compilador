@@ -1,11 +1,9 @@
 
- Linea 3 declaracion de variables  
- Linea 4 declaracion de Triple  
- Linea 5 declaracion de Subtipo  
- Linea 6: Condicion con lista de expresiones  
- Linea :6 Se reconocio OUTF de Expresion Aritmetica  
- Linea 6: cadena multilinea  
- Linea :6 Se reconocio OUTF de cadena de caracteres  
- Linea :6 Asignacion  
- Linea 6: Se identifico un WHILE  
+ Linea 3 declaracion de Triple  
+ Linea 4 declaracion de Subtipo  
+ Linea 5 declaracion de variables  
+ Linea :6 Asignacion a arreglo 
+ Linea :7 Asignacion a arreglo 
+ Linea 8 declaracion de variables  
+ Linea :9 Asignacion  
  [0mSe identifico el programa lala 

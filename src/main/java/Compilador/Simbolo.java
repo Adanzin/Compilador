@@ -8,6 +8,7 @@ public class Simbolo {
     private String uso;
     private String tipoParFormal=" ";
     private String tipoRetorno=" ";
+    private String ambitoVar="";
     private int dirMEM=-1;
     private int base;  // Base del n�mero (8 = octal, 10 = decimal, 16 = hexadecimal)
     private int contadorDeReferencias;
@@ -111,6 +112,10 @@ public class Simbolo {
         Simbolo simb = new Simbolo(this.id,this.entero, this.doub,this.tipoVar,this.uso,this.base,this.contadorDeReferencias,
         		this.defPorUser,this.seDeclaro);
         AnalizadorLexico.TablaDeSimbolos.put(this.id+amb, simb);
+        this.ambitoVar=amb;
+    }
+    public String getAmbito() {
+        return this.ambitoVar;
     }
     
     
@@ -232,7 +237,7 @@ public class Simbolo {
 	}
 
 	public boolean sonCompatibles(Simbolo simb2) {
-		System.out.println("Se estan comparando "+ this + " con un "+ simb2);
+		//System.out.println("Se estan comparando "+ this + " con un "+ simb2);
 		if(this.getTipo().equals(simb2.getTipo())) {
 			return true;
 		}
