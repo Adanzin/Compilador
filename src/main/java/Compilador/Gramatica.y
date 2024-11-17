@@ -6,7 +6,7 @@ import java.util.HashMap;
 import java.util.Stack;
 import java.io.IOException;
 %}
-%token IF THEN ELSE BEGIN END END_IF OUTF TYPEDEF FUN RET CTE ID CADENAMULTILINEA WHILE TRIPLE GOTO ETIQUETA MAYORIGUAL MENORIGUAL DISTINTO INTEGER DOUBLE ASIGNACION ERROR
+%token IF THEN ELSE BEGIN END END_IF OUTF TYPEDEF FUN RET CTE ID CADENAMULTILINEA WHILE TRIPLE GOTO ETIQUETA MAYORIGUAL MENORIGUAL DISTINTO INTEGER DOUBLE ASIGNACION ERROR OCTAL
 %start programa
 
 %% /* Gramatica */
@@ -52,6 +52,8 @@ tipo_primitivo: INTEGER { if(!tipos.containsKey("INTEGER")){tipos.put("INTEGER",
 							$$.obj = tipos.get("INTEGER");}
               | DOUBLE  { if(!tipos.containsKey("DOUBLE")){tipos.put("DOUBLE",new Tipo("DOUBLE"));}
 							$$.obj = tipos.get("DOUBLE");}
+              | OCTAL  { if(!tipos.containsKey("OCTAL")){tipos.put("OCTAL",new Tipo("OCTAL"));}
+							$$.obj = tipos.get("OCTAL");}			
 ;
 
 declaracion_subtipo : TYPEDEF ID_simple ASIGNACION tipo '{' CTE_con_sig ',' CTE_con_sig '}' {if($4.obj != null){cargarVariables($2.sval,cargarSubtipo($2.sval,(Tipo)$4.obj,$6.sval,$8.sval)," nombre de SubTipo ");cargarErrorEImprimirlo("Linea " + AnalizadorLexico.saltoDeLinea +  " declaracion de Subtipo ");}else{cargarErrorEImprimirlo("Linea " + AnalizadorLexico.saltoDeLinea + " Error: No se puede crear una tripla de un tipo no declarado. ");}}
@@ -125,14 +127,15 @@ asignacion	: variable_simple ASIGNACION expresion_arit {if(fueDeclarado($1.sval)
 																cargarErrorEImprimirlo("Linea :" + AnalizadorLexico.saltoDeLinea +  " Error:  se invocó una variable no declarada ");}
 															cargarErrorEImprimirlo("Linea :" + AnalizadorLexico.saltoDeLinea + " Asignacion ");}
 			| variable_simple '{' CTE '}' ASIGNACION expresion_arit  {if(fueDeclarado($1.sval)){
-															$$.sval = $1.sval;
-															GeneradorCodigoIntermedio.addElemento($1.sval+Parser.AMBITO.toString());
-															GeneradorCodigoIntermedio.addElemento($3.sval);
-															GeneradorCodigoIntermedio.addElemento("INDEX");
-															GeneradorCodigoIntermedio.addElemento(":="); 
-															}else{
-																cargarErrorEImprimirlo("Linea :" + AnalizadorLexico.saltoDeLinea +  " Error:  se invocó una variable no declarada ");}
-																cargarErrorEImprimirlo("Linea :" + AnalizadorLexico.saltoDeLinea +  " Asignacion a arreglo");}
+																		if(Integer.valueOf($3.sval) <= 3){
+																			$$.sval = $1.sval;
+																			GeneradorCodigoIntermedio.addElemento($1.sval+Parser.AMBITO.toString());
+																			GeneradorCodigoIntermedio.addElemento($3.sval);
+																			GeneradorCodigoIntermedio.addElemento("INDEX");
+																			GeneradorCodigoIntermedio.addElemento(":="); 
+																			}else{cargarErrorEImprimirlo("Linea :" + AnalizadorLexico.saltoDeLinea +  " Error:  Tripla fuera de rango ");}														
+																	}else{
+																		cargarErrorEImprimirlo("Linea :" + AnalizadorLexico.saltoDeLinea +  " Error:  se invocó una variable no declarada ");}}
 			| variable_simple '{' '-' CTE '}' ASIGNACION expresion_arit {cargarErrorEImprimirlo("Linea " + AnalizadorLexico.saltoDeLinea + " Error: no se puede acceder a una posicion negativa de un arreglo ");}
 ;
 
@@ -186,10 +189,15 @@ factor 	: variable_simple {if(fueDeclarado($1.sval)){System.out.println(" VARSIM
 		| CTE_con_sig {GeneradorCodigoIntermedio.addElemento($1.sval);}
 		| invocacion 
 		| variable_simple '{' CTE '}' {if(fueDeclarado($1.sval)){ 
-										GeneradorCodigoIntermedio.addElemento($1.sval+Parser.AMBITO.toString());
-										GeneradorCodigoIntermedio.addElemento($3.sval);
-										GeneradorCodigoIntermedio.addElemento("INDEX");
-										AnalizadorLexico.TablaDeSimbolos.get($1.sval).incrementarContDeRef(); $$.sval = $1.sval;}else{cargarErrorEImprimirlo("Linea :" + AnalizadorLexico.saltoDeLinea +  " Error:  se invocó una variable no declarada ");};}
+											if(Integer.valueOf($3.sval) <= 3){
+												GeneradorCodigoIntermedio.addElemento($1.sval+Parser.AMBITO.toString());
+												GeneradorCodigoIntermedio.addElemento($3.sval);
+												GeneradorCodigoIntermedio.addElemento("INDEX");
+												AnalizadorLexico.TablaDeSimbolos.get($1.sval).incrementarContDeRef(); $$.sval = $1.sval;
+											}else{
+												cargarErrorEImprimirlo("Linea :" + AnalizadorLexico.saltoDeLinea +  " Error:  Tripla fuera de rango ");
+											}
+										}else{cargarErrorEImprimirlo("Linea :" + AnalizadorLexico.saltoDeLinea +  " Error:  se invocó una variable no declarada ");};}
 		| variable_simple '{' '-' CTE '}' {cargarErrorEImprimirlo("Linea " + AnalizadorLexico.saltoDeLinea + " Error: no se puede acceder a una posicion negativa de un arreglo ");}
 ;
 variables 	: variables ',' variable_simple { $$.sval = $1.sval + "/"+$3.sval;} 
@@ -209,7 +217,7 @@ CTE_con_sig : CTE {if(estaRango($1.sval)) { $$.sval = $1.sval; } }
 ;				
 
 sentencia_IF: IF condicion THEN bloque_unidad ';' bloque_else ';' END_IF {if($4.sval=="RET" && $6.sval=="RET"){$$.sval="RET";};completarBifurcacionI();cargarErrorEImprimirlo("Linea " + AnalizadorLexico.saltoDeLinea +  ": Sentencia IF ");}
-            | IF condicion THEN bloque_unidad ';' END_IF {$$.sval=$4.sval;completarBifurcacionI();cargarErrorEImprimirlo("Linea " + AnalizadorLexico.saltoDeLinea + ": Sentencia IF ");}
+            | IF condicion THEN bloque_unidad ';' END_IF {$$.sval=$4.sval;completarBifurcacionISinElse();cargarErrorEImprimirlo("Linea " + AnalizadorLexico.saltoDeLinea + ": Sentencia IF ");}
 			| IF condicion THEN bloque_else ';' END_IF {cargarErrorEImprimirlo("Linea " + AnalizadorLexico.saltoDeLinea +  " Error : Falta de contenido en bloque THEN");}
 			| IF condicion THEN END_IF {cargarErrorEImprimirlo("Linea :" + AnalizadorLexico.saltoDeLinea + " Error: Falta de contenido en bloque THEN.");}
 			| IF condicion THEN bloque_unidad ';' ELSE END_IF {{cargarErrorEImprimirlo("Linea " + AnalizadorLexico.saltoDeLinea + " Error : falta cuerpo en el ELSE ");};}
@@ -259,8 +267,8 @@ bloque_else_multiple:	ELSE BEGIN bloque_sent_ejecutables ';' END {if($3.sval=="R
 bloque_else_simple:	ELSE bloque_sentencia_simple {if($2.sval=="RET"){$$.sval="RET";};}
 ;
 
-bloque_unidad	: bloque_unidad_simple {if($1.sval=="RET"){$$.sval="RET";};if(esWHILE==false){operacionesIF();}}
-				| bloque_unidad_multiple {if($1.sval=="RET"){$$.sval="RET";};if(esWHILE==false){operacionesIF();}}
+bloque_unidad	: bloque_unidad_simple {if($1.sval=="RET"){$$.sval="RET";};if(esWHILE==false){operacionesIF();}else{esWHILE=false;}}
+				| bloque_unidad_multiple {if($1.sval=="RET"){$$.sval="RET";};if(esWHILE==false){operacionesIF();}else{esWHILE=false;}}
 ;		
 
 bloque_unidad_multiple  : BEGIN bloque_sent_ejecutables ';' END {if($2.sval=="RET"){$$.sval="RET";};}
@@ -271,7 +279,7 @@ bloque_unidad_multiple  : BEGIN bloque_sent_ejecutables ';' END {if($2.sval=="RE
 bloque_unidad_simple:  bloque_sentencia_simple {if($1.sval=="RET"){$$.sval="RET";}}
 ;
 
-bloque_sent_ejecutables	: bloque_sent_ejecutables ';' bloque_sentencia_simple {if($1.sval=="RET" && $3.sval=="RET"){$$.sval="RET";};}
+bloque_sent_ejecutables	: bloque_sent_ejecutables ';' bloque_sentencia_simple {if($1.sval=="RET" || $3.sval=="RET"){$$.sval="RET";};}
 						| bloque_sentencia_simple {if($1.sval=="RET"){$$.sval="RET";};}
 						| bloque_sent_ejecutables bloque_sentencia_simple {cargarErrorEImprimirlo("Linea " + AnalizadorLexico.saltoDeLinea + " Error: Falta ';' al final de la sentencia ");}
 ;
@@ -323,7 +331,6 @@ public static boolean esWHILE = false;
 private static void cargarCadenaMultilinea(String cadena){
 	Tipo t = new Tipo("CADENAMULTILINEA");
 	tipos.put("CADENAMULTILINEA",t);
-	tipos.put("DOUBLE",new Tipo("DOUBLE"));
 	cargarVariables(cadena,t," Cadena multilinea ");
 }
 
@@ -353,6 +360,17 @@ private static void completarBifurcacionAGoto(String id){
 private static void operacionesWhile(int cantDeOperandos){
 	completarBifurcacionF();
 	GeneradorCodigoIntermedio.bifurcarAlInicio();
+}
+
+private static void completarBifurcacionISinElse(){
+	System.out.println("BIFURCACION POR F");
+	int pos = GeneradorCodigoIntermedio.getPila();
+	System.out.println(pos);
+	String elm = String.valueOf(GeneradorCodigoIntermedio.getPos()+2);
+	System.out.println(elm);
+	GeneradorCodigoIntermedio.reemplazarElm(elm,pos);
+	GeneradorCodigoIntermedio.addElemento("LABEL"+elm);
+
 }
 
 private static void operacionesIF(){

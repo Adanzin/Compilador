@@ -18,11 +18,12 @@ public class AS_Double extends AccionSemantica {
 	            if(!TablaDeSimbolos.containsKey(aux)){            	
 		        	Simbolo simb = new Simbolo();
 		        	simb.setDoub(tokenDouble);
-		        	simb.setTipoVar(new Tipo("double"));
+		        	Parser.tipos.put("DOUBLE",new Tipo("DOUBLE"));
+		        	simb.setTipoVar(Parser.tipos.get("DOUBLE"));
 		        	TablaDeSimbolos.put(aux,simb);
-		        	AnalizadorLexico.Lexema = aux;  //LE PASO EL ID A LA TABLA DE SIMBOLOS AL PARSER.
 		        }else {TablaDeSimbolos.get(aux).incrementarContDeRef();}
 	        }
+        	AnalizadorLexico.Lexema = aux;  //LE PASO EL ID A LA TABLA DE SIMBOLOS AL PARSER.
 	        System.out.println("	╔═ Constante double "+tokenDouble);
 	        cargarSalida("Constante double "+tokenDouble);
     	} catch (NumberFormatException e) {

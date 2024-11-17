@@ -16,9 +16,9 @@ public class AS_Int extends AccionSemantica {
 	        		Simbolo simb = new Simbolo();
 	        		int tokenaux = (int)tokenlong;
 	        		simb.setEntero(tokenaux);
-	        		simb.setTipoVar(new Tipo("integer"));
+	        		Parser.tipos.put("INTEGER", new Tipo("INTEGER"));
+	        		simb.setTipoVar(Parser.tipos.get("INTEGER"));	     
 	        		TablaDeSimbolos.put(token.toString(),simb);      
-	        		
 	        	}else {TablaDeSimbolos.get(token.toString()).incrementarContDeRef();}
 	        	AnalizadorLexico.Lexema = token.toString();  //LE PASO EL ID A LA TABLA DE SIMBOLOS AL PARSER.
 	        }else {

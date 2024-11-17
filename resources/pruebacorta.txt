@@ -1,10 +1,5 @@
 lala
 begin    
-	 TYPEDEF TRIPLE < integer > tint;
-	 TYPEDEF flotadito := integer {-6, -8};
-	 tint a,b,c;
-	 a{3}:=b{1};
-	 a{3}:=b{1}+4;
-	 flotadito f,g,h;
-	 f:=4;
+	integer a,b,c,e;
+	 	IF(a=2.0)THEN OUTF([HOLAAA]); END_IF;
 End

@@ -1,9 +1,7 @@
 
- Linea 3 declaracion de Triple  
- Linea 4 declaracion de Subtipo  
- Linea 5 declaracion de variables  
- Linea :6 Asignacion a arreglo 
- Linea :7 Asignacion a arreglo 
- Linea 8 declaracion de variables  
- Linea :9 Asignacion  
+ Linea 3 declaracion de variables  
+ Linea 4: Condicion 
+ Linea 4: cadena multilinea  
+ Linea :4 Se reconocio OUTF de cadena de caracteres  
+ Linea 4: Sentencia IF  
  [0mSe identifico el programa lala 

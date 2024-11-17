@@ -16,10 +16,11 @@ public class AS_Octal extends AccionSemantica {
 	        	if(!TablaDeSimbolos.containsKey(token.toString())){
 	        		Simbolo simb = new Simbolo(8);
 	        		simb.setEntero(tokenOct);
-	        		simb.setTipoVar(new Tipo("integer"));
+	        		Parser.tipos.put("OCTAL", new Tipo("OCTAL"));
+	        		simb.setTipoVar(Parser.tipos.get("OCTAL"));	        		
 	        		TablaDeSimbolos.put(token.toString(),simb);
-	        		AnalizadorLexico.Lexema = token.toString();//LE PASO EL ID A LA TABLA DE SIMBOLOS AL PARSER.
 	        	}else {TablaDeSimbolos.get(token.toString()).incrementarContDeRef();}
+        		AnalizadorLexico.Lexema = token.toString();//LE PASO EL ID A LA TABLA DE SIMBOLOS AL PARSER.
 	        }else {
 	        	System.out.println("\u001B[31m"+"Error lexico en la linea " + AnalizadorLexico.saltoDeLinea+" : Constante octal fuera de rango o mal escrita "+"\u001B[0m");
 	    		cargarSalida("Error lexico en la linea " + AnalizadorLexico.saltoDeLinea+" : Constante octal fuera de rango o mal escrita ");

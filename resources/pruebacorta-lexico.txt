@@ -1,63 +1,27 @@
 
  Identificador lala 
  Identificador begin 
- Identificador TYPEDEF 
- Identificador TRIPLE 
-  < 
  Identificador integer 
- > 
- Identificador tint 
- ; 
- Identificador TYPEDEF 
- Identificador flotadito 
- := 
- Identificador integer 
- { 
- - 
- Constante entera 6 
- , 
- - 
- Constante entera 8 
- } 
- ; 
- Identificador tint 
  Identificador a 
  , 
  Identificador b 
  , 
  Identificador c 
- ; 
- Identificador a 
- { 
- Constante entera 3 
- } 
- := 
- Identificador b 
- { 
- Constante entera 1 
- } 
- ; 
- Identificador a 
- { 
- Constante entera 3 
- } 
- := 
- Identificador b 
- { 
- Constante entera 1 
- } 
- + 
- Constante entera 4 
- ; 
- Identificador flotadito 
- Identificador f 
  , 
- Identificador g 
- , 
- Identificador h 
+ Identificador e 
  ; 
- Identificador f 
- := 
- Constante entera 4 
+ Identificador IF 
+ ( 
+ Identificador a 
+ = 
+ Constante double 2.0 
+ ) 
+ Identificador THEN 
+ Identificador OUTF 
+ ( 
+ Cadena multilinea HOLAAA 
+ ) 
+ ; 
+ Identificador END_IF 
  ; 
  Identificador End 
