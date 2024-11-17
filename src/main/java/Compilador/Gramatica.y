@@ -300,7 +300,7 @@ sentencia_goto	: GOTO ETIQUETA {cargarVariables($2.sval,(Tipo)$1.obj," Etiqueta 
 //.................HACIA ARRIBA NO HAY ERRORES..........................
 
 %%	
-public static StringBuilder AMBITO = new StringBuilder(":MAIN");																 
+public static StringBuilder AMBITO = new StringBuilder("$MAIN");																 
 public static Stack<String> DENTRODELAMBITO = new Stack<String>(); 
 public static boolean RETORNO = false;
 public static boolean RETORNOTHEN = false;
@@ -440,7 +440,7 @@ private static boolean fueDeclarado(String id){
         }
 
         // Reducimos el ámbito: eliminamos el último ':NIVEL'
-        int pos = ambitoActual.lastIndexOf(":");
+        int pos = ambitoActual.lastIndexOf("$");
         if (pos == -1) {
             break; // Si ya no hay más ámbitos, salimos del ciclo
         }
@@ -512,12 +512,12 @@ private static void addTipo(String id, Tipo tipo) {
 };
 
 private static void agregarAmbito(String amb) {
-	AMBITO.append(":").append(amb);
+	AMBITO.append("$").append(amb);
 }
 
 private static void sacarAmbito() {
 	// agarro el index del ultimo ':'
-	int pos = AMBITO.lastIndexOf(":");
+	int pos = AMBITO.lastIndexOf("$");
 	// borro hasta esa posicion
 	AMBITO.delete(pos, AMBITO.length());
 }

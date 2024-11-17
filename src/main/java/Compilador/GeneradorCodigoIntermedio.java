@@ -11,9 +11,9 @@ public class GeneradorCodigoIntermedio {
 	public static Map<String,Integer> pos = new HashMap<>();
     public static Map<String, Integer> BaulDeGoto = new HashMap<>();  
     static {
-        polacaFuncional.put(":MAIN", new ArrayList<String>());
-        Pilas.put(":MAIN", new Stack<Integer>());
-        pos.put(":MAIN", 0);
+        polacaFuncional.put("$MAIN", new ArrayList<String>());
+        Pilas.put("$MAIN", new Stack<Integer>());
+        pos.put("$MAIN", 0);
     }
 
 	public static ArrayList<String> getPolaca() {
