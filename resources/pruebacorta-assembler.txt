@@ -1,0 +1,62 @@
+.586 
+option casemap :none 
+include \masm32\include\masm32rt.inc 
+includelib \masm32\lib\kernel32.lib 
+includelib \masm32\lib\user32.lib 
+includelib \masm32\lib\masm32.lib 
+
+dll_dllcrt0 PROTO C
+printf PROTO C : VARARG 
+
+.data 
+Error_DivisionCero DB "Error: Division por cero", 10, 0 
+Error_TiposIncompatibles DB "Error: Operacion entre tipos incompatibles", 10, 0 
+Error_Overflow DB "Error: Overflow en producto entre Enteros", 10, 0 
+ESPERAR_ACCION_USUARIO DB "Haga click en ACEPTAR para cerrar el programa y la consola", 10, 0 
+float2@0 DQ 2.0
+PRIMERA_CADENA_MULTILINEA db "PRIMERA CADENA MULTILINEA", 0 
+a$MAIN DQ ?
+SEGUNDA_CADENA_MULTILINEA db "SEGUNDA CADENA MULTILINEA", 0 
+@aux1 DQ ?
+
+.code 
+ 
+start: 
+FLD a$MAIN
+FLD float2@0
+FSTP a$MAIN
+ 
+FLD float2@0
+FLD a$MAIN
+FCOMPP
+FSTSW AX 
+SAHF 
+ 
+JE LABEL12
+ 
+invoke MessageBox, NULL, addr PRIMERA_CADENA_MULTILINEA, addr PRIMERA_CADENA_MULTILINEA, MB_OK 
+ 
+JMP LABEL15
+ 
+LABEL12: 
+invoke MessageBox, NULL, addr SEGUNDA_CADENA_MULTILINEA, addr SEGUNDA_CADENA_MULTILINEA, MB_OK 
+ 
+LABEL15: 
+JMP fin 
+ 
+Divison_Por_Cero:
+invoke MessageBox, NULL, addr Error_DivisionCero, addr Error_DivisionCero, MB_OK 
+JMP fin
+
+Overflow:
+invoke MessageBox, NULL, addr Error_Overflow, addr Error_Overflow, MB_OK 
+JMP fin
+
+Tipos_Incompatibles:
+invoke MessageBox, NULL, addr Error_TiposIncompatibles, addr Error_TiposIncompatibles, MB_OK 
+JMP fin
+
+fin: 
+invoke MessageBox, NULL, addr ESPERAR_ACCION_USUARIO, addr ESPERAR_ACCION_USUARIO, MB_OK 
+invoke ExitProcess, 0 
+end start

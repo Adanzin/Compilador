@@ -2,8 +2,6 @@ package main.java.Compilador;
 
 import java.util.Stack;
 import java.util.HashMap;
-import java.io.BufferedWriter;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Map;
@@ -27,6 +25,7 @@ public class GeneradorCodigoAssembler {
 			elemento = polacaActual.get(i);
 			switch (elemento) {
 				case "+","-","*","/",":=":
+					System.out.println("ENTRO EN ASIGNACION \n");
 					operadorBinario(elemento, codigo);
 					break;
 				case "INTEGER", "DOUBLE", "OCTAL", "RET":
@@ -36,15 +35,15 @@ public class GeneradorCodigoAssembler {
 					operadorFuncion(codigo);
 					break;
 				case "BF","BI":
-					operadorSentenciasControl(elemento, codigo, polacaActual.get(i-1));
+					operadorSentenciasControl(elemento, codigo, polacaActual.get(i-2));
 					break;
 				case "<",">","<=",">=","==", "!=":
 					operadorComparacion(elemento, codigo);
 					break;
 				case "OUTF":
-					imprimirPorPantalla(elemento, codigo);
+					imprimirPorPantalla(codigo);
 					break;
-				default: //Entra si es un operando o si es un LABEL+NÂ° que no puedo chequear en el case
+				default: //Entra si es un operando o si es un LABEL+N° que no puedo chequear en el CASE
 					if(elemento.startsWith("LABEL")) { //Es una etiqueta
 						codigo.append(elemento + ": \n");
 					}
@@ -56,18 +55,46 @@ public class GeneradorCodigoAssembler {
 		}
 		return codigo;
 	}
+
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	//---------------------------------------------------------------------------------------------------------------------------
+	//-----------------------------------------------------OPERACIONES-----------------------------------------------------------
+	//---------------------------------------------------------------------------------------------------------------------------
 	
 	public static void operadorBinario(String operacion, StringBuilder codigo) {
 		String operando2 = pila.pop();
-		//System.out.println("operando2: " + operando2 + "\n");
+		System.out.println("operando2: " + operando2 + "\n");
 		String operando1 = pila.pop();
-		//System.out.println("operando1: " + operando1 + "\n");
+		System.out.println("operando1: " + operando1 + "\n");
 		if(	AnalizadorLexico.TablaDeSimbolos.get(operando1).sonCompatibles(AnalizadorLexico.TablaDeSimbolos.get(operando2))) {
-			if (AnalizadorLexico.TablaDeSimbolos.get(operando1).getTipo()==Parser.tipos.get("INTEGER") || AnalizadorLexico.TablaDeSimbolos.get(operando1).getTipo()==Parser.tipos.get("OCTAL")) {
-				operacionEnteroOctal(operando1, operando2, operacion, codigo);
+			Tipo tipoOperando = AnalizadorLexico.TablaDeSimbolos.get(operando1).getTipo();
+			if (tipoOperando==Parser.tipos.get("INTEGER") || tipoOperando==Parser.tipos.get("OCTAL")) {
+				operando1 = comprobarOperandoLiteral(operando1);
+				operando2 = comprobarOperandoLiteral(operando2);
+				System.out.println("\n \n ------------------------------------------------------ \n \n");
+				System.out.println("OPERANDO 1: " + operando1 +  "\n");
+				System.out.println("OPERANDO 2: " + operando2 + "\n");
+				operacionEnteroOctal(operando1, operando2, operacion, codigo, tipoOperando);
 			} else {
-				operacionDouble(operando1, operando2, operacion, codigo);
+				System.out.println("\n \n ------------------------------------------------------ \n \n");
+				System.out.println("OPERANDO 1: " + operando1 +  "\n");
+				System.out.println("OPERANDO 2: " + operando2 + "\n");
+				operando1 = comprobarOperandoLiteral(operando1);
+				operando2 = comprobarOperandoLiteral(operando2);
+				operacionDouble(operando1, operando2, operacion, codigo, tipoOperando);
 			}
+		}
+		else {
+			System.out.println("ERROR TIPOS INCOMPATIBLES \n");
+			System.exit(1); //Termino la ejecución del compilador por error en etapa de compilacion
 		}
 	}
 	
@@ -77,40 +104,39 @@ public class GeneradorCodigoAssembler {
 		codigo.append("CALL " + operando + "\n");
 	}
 	
-	public static void operadorSentenciasControl(String elemento, StringBuilder codigo, String elementoAnterior) {
+	public static void operadorSentenciasControl(String elemento, StringBuilder codigo, String comparadorAnterior) {
 		String operador = pila.pop(); //Es la direccion a saltar
 		switch(elemento) {
 			case "BF":
-				switch (elementoAnterior) {
-				//Le paso el operador anterior al salto para saber que comparaciÃ³n era y asÃ­ usar el jump adecuado
+				switch (comparadorAnterior) {
+				//Le paso el operador anterior al salto para saber que comparación era y así usar el jump adecuado
 					case ">":
-						codigo.append("JLE LABEL" + operador + "\n"); //Salto en el caso contrario al de la comparacion
+						codigo.append("JLE LABEL" + operador + "\n \n"); //Salto en el caso contrario al de la comparacion
 						break;
 					case "<":
-						codigo.append("JGE LABEL" + operador + "\n"); //Salto en el caso contrario al de la comparacion
+						codigo.append("JGE LABEL" + operador + "\n \n"); //Salto en el caso contrario al de la comparacion
 						break;
 					case ">=":
-						codigo.append("JL LABEL" + operador + "\n"); //Salto en el caso contrario al de la comparacion
+						codigo.append("JL LABEL" + operador + "\n \n"); //Salto en el caso contrario al de la comparacion
 						break;
 					case "<=":
-						codigo.append("JG LABEL" + operador + "\n"); //Salto en el caso contrario al de la comparacion
+						codigo.append("JG LABEL" + operador + "\n \n"); //Salto en el caso contrario al de la comparacion
 						break;
-					case "==":
-						codigo.append("JNE LABEL" + operador + "\n"); //Salto en el caso contrario al de la comparacion
+					case "=":
+						codigo.append("JNE LABEL" + operador + "\n \n"); //Salto en el caso contrario al de la comparacion
 						break;
 					case "!=":
-						codigo.append("JE LABEL" + operador + "\n"); //Salto en el caso contrario al de la comparacion
+						codigo.append("JE LABEL" + operador + "\n \n"); //Salto en el caso contrario al de la comparacion
 						break;
 				}
 				break;
 			case "BI":
-				codigo.append("JMP LABEL" + operador + "\n"); //Salto sÃ­ o sÃ­ a la etiqueta
+				codigo.append("JMP LABEL" + operador + "\n \n"); //Salto sí o sí a la etiqueta
 				break;
 		}
-			
 	}
 	
-	public static void operacionEnteroOctal(String operando1, String operando2, String operacion, StringBuilder codigo) {
+	public static void operacionEnteroOctal(String operando1, String operando2, String operacion, StringBuilder codigo, Tipo tipoOperando) {
 		//Esta funcion usa el registro AX de 16 bits para enteros y octales.
 		if(operacion!=":=") {
 			codigo.append("MOV AX, " + operando1 + "\n"); 
@@ -127,157 +153,203 @@ public class GeneradorCodigoAssembler {
 				codigo.append("IMUL " + operando2 + "\n"); //Uso IMUL para cubrir el caso en que el operando sea una constante literal
 				break;
 			case "/":
-				if(AnalizadorLexico.TablaDeSimbolos.get(operando1).esLiteral()) { 
-					crearAuxiliar(AnalizadorLexico.TablaDeSimbolos.get(operando1).getTipo());
-					operando1 = pila.pop();
-				}
-				if(AnalizadorLexico.TablaDeSimbolos.get(operando2).esLiteral()) { 
-					crearAuxiliar(AnalizadorLexico.TablaDeSimbolos.get(operando2).getTipo());
-					operando2 = pila.pop();
-				}
 				codigo.append("MOV BX," + operando2 + "\n"); //Uso BX para no pisar AX con el operando1
 				codigo.append("CMP BX" + ",0" + "\n");
-				codigo.append("JE DivisionPorCero"); //JZ salta si la comparacion del operando2 con el cero es TRUE
+				codigo.append("JE Divison_Por_Cero \n"); //JZ salta si la comparacion del operando2 con el cero es TRUE
 				//Continua el flujo normal en caso de no saltar
 				codigo.append("IDIV " + operando2 + "\n");
 				break;
 			case ":=":
+				System.out.println("ENTRO A ASIGNACION \n");
 				String auxOp = operando1;
 				operando1 = operando2;
 				operando2 = auxOp;
-				//No andaba bien asÃ­ que los intercambiÃ© para que se haga correctamente
+				//No andaba bien asi que los intercambie para que se haga correctamente
 				codigo.append("MOV AX, " + operando2 + "\n");
 				codigo.append("MOV " + operando1 + ", AX" + "\n");
 				break;
 			default:
-				//DespuÃ©s verÃ© pero acÃ¡ no deberÃ­a entrar nada
+				//Después veré pero acá no debería entrar nada
 				break;
 		}
 		if(operacion!= ":=") {
 			codigo.append("MOV @aux" + numAuxiliares + ",AX");
-			pila.push(crearAuxiliar(AnalizadorLexico.TablaDeSimbolos.get(operando1).getTipo()));
+			pila.push(crearAuxiliar(tipoOperando));
 		}
-		codigo.append("\n");
+		codigo.append("\n \n");
 	}
 	
-	public static void operacionDouble(String operando1, String operando2,String operacion, StringBuilder codigo) {
+	public static void operacionDouble(String operando1, String operando2, String operacion, StringBuilder codigo, Tipo tipoOperando) {
+		operando1 = convertirLexemaFlotante(operando1);
+		operando2 = convertirLexemaFlotante(operando2);
 		codigo.append("FLD " + operando2 + "\n"); //Apilo el operando2
 		codigo.append("FLD " + operando1 + "\n"); //Apilo el operando1
-		String aux = crearAuxiliar(AnalizadorLexico.TablaDeSimbolos.get(operando1).getTipo());
+		String aux = crearAuxiliar(tipoOperando);
 		switch(operacion) {
 			case "+":
 				codigo.append("FADD" + "\n"); //ST(0) = ST(0) + ST(1)
-				codigo.append("FSTP " + aux + "\n"); //Guardo el resultado en una auxiliar
+				codigo.append("FSTP " + aux + "\n \n"); //Guardo el resultado en una auxiliar
 				pila.push(aux);
 				break;
 			case "-":
 				codigo.append("FSUB" + "\n"); //ST(0) = ST(0) - ST(1)
-				codigo.append("FSTP " + aux + "\n"); //Guardo el resultado en una auxiliar
+				codigo.append("FSTP " + aux + "\n \n"); //Guardo el resultado en una auxiliar
 				pila.push(aux);
 				break;
 			case "*":
 				codigo.append("FMUL" + "\n"); //ST(0) = ST(0) * ST(1)
-				codigo.append("FSTP " + aux + "\n"); //Guardo el resultado en una auxiliar 
+				codigo.append("FSTP " + aux + "\n \n"); //Guardo el resultado en una auxiliar
+				pila.push(aux);
 				break;
 			case "/":
-				codigo.append("FXCH"); //Intercambio operando1 y operando2 asÃ­ queda operando2 en el tope y lo comparo despues
+				codigo.append("FXCH " + "\n"); //Intercambio operando1 y operando2 así queda operando2 en el tope y lo comparo despues
 				codigo.append("FTST" + "\n"); //Comparo ST (operando2) con el cero
-				codigo.append("FSTCW mem2byte" + "\n"); //Almaceno la palabra de estado en la memoria
-				codigo.append("MOV AX mem2byte"); //Copio el contenido en AX del procesador principal
-				codigo.append("SAHF"); //Preguntar que es esto
-				// Preguntar lo anterior
+				codigo.append("FSTSW AX"  + "\n"); 
+				codigo.append("SAHF \n");
+				codigo.append("JZ Divison_Por_Cero \n");
 				//-----------------------------------------------------------------
-				codigo.append("FXCH"); //Vuelvo a intercambiar asÃ­ realizo correctamente la operacion
+				codigo.append("FXCH \n"); //Vuelvo a intercambiar así realizo correctamente la operacion
 				codigo.append("FDIV" + "\n"); //ST(0) = ST(0) / ST(1)
-				codigo.append("FSTP " + aux + "\n"); //Guardo el resultado en una auxiliar 
+				codigo.append("FSTP " + aux + "\n \n"); //Guardo el resultado en una auxiliar
+				pila.push(aux);
 				break;
 			case ":=":
-				codigo.append("FSTP " + operando2 + "\n"); //Guardo el valor de operando2 en operando1 pero por cuestiones de como esta hecha la polaca lo escribo al reves
+				codigo.append("FSTP " + operando2 + "\n \n"); //Guardo el valor de operando2 en operando1 pero por cuestiones de como esta hecha la polaca lo escribo al reves
 				break;
 			default:
-				//AcÃ¡ no deberÃ­a entrar nada
+				//Acá no debería entrar nada
 				break;
 		}
 	}
 	
 	public static void operadorUnario(String elemento, StringBuilder codigo) {
 		String operando = pila.pop();
+		Tipo tipoOperando = AnalizadorLexico.TablaDeSimbolos.get(operando).getTipo();
+		operando = comprobarOperandoLiteral(operando);
 		switch (elemento) {
 			case "INTEGER", "OCTAL", "DOUBLE":
-				operacionConversion(operando, elemento, codigo);
+				operacionConversion(operando, elemento, codigo, tipoOperando);
 				break;
 			case "RET":
 				codigo.append("MOV AX, " + operando + "\n"); //Guardo la variable que quiero retornar en AX
 				codigo.append("MOV @aux " + numAuxiliares + ", AX" + "\n");
-				pila.push(crearAuxiliar(AnalizadorLexico.TablaDeSimbolos.get(operando).getTipo()));
+				pila.push(crearAuxiliar(tipoOperando));
 				codigo.append("POP ESI \n");
 				codigo.append("POP EDI \n");
 				codigo.append("MOV ESP, EBP \n");
 				codigo.append("POP EBP \n");
-				codigo.append("RET" + "\n");
+				codigo.append("RET" + "\n \n");
 				break;
 		}
 	}
 	
-	public static void operacionConversion(String operando, String elemento, StringBuilder codigo) {
+	public static void operacionConversion(String operando, String elemento, StringBuilder codigo, Tipo tipoOperando) {
+		operando = comprobarOperandoLiteral(operando);
 		switch (elemento) {
 			case "DOUBLE":
-				if (AnalizadorLexico.TablaDeSimbolos.get(operando).getTipo() == Parser.tipos.get("INTEGER")) {
+				if (tipoOperando == Parser.tipos.get("INTEGER")) {
 					//Conversion de Entero a Double
 					codigo.append("FILD " + operando + "\n"); //Cargo el entero como double
-					codigo.append("FSTP @aux" + numAuxiliares + "\n"); //Almaceno el resultado en @aux
+					codigo.append("FSTP @aux" + numAuxiliares + "\n \n"); //Almaceno el resultado en @aux
 					pila.push(crearAuxiliar(Parser.tipos.get("DOUBLE")));
 				}
 				break;
 			case "INTEGER":
-				if (AnalizadorLexico.TablaDeSimbolos.get(operando).getTipo() == Parser.tipos.get("DOUBLE")) {
+				if (tipoOperando == Parser.tipos.get("DOUBLE")) {
 					//Conversion de Double a Entero
 					codigo.append("FLD " + operando + "\n"); //Apilo en ST
-					codigo.append("FISTP @aux" + numAuxiliares + "\n");
-					pila.push(crearAuxiliar(AnalizadorLexico.TablaDeSimbolos.get(operando).getTipo()));
+					codigo.append("FISTP @aux" + numAuxiliares + "\n \n");
+					pila.push(crearAuxiliar(Parser.tipos.get("INTEGER")));
 				}
 				break;
 			default:
-				break;
-			
+				break;	
 		}
 	}
 	
 	public static void operadorComparacion(String elemento, StringBuilder codigo) {
 		String operando2 = pila.pop();
+		System.out.println("operando2: " + operando2 + "\n");
 		String operando1 = pila.pop();
-		codigo.append("MOV AX, " + operando1 + "\n");
-		codigo.append("SUB AX, " + operando2 + "\n"); //Comparo los operandos y el resultado va a afectar a los flags para los saltos
+		System.out.println("operando1: " + operando1 + "\n");
+		if(	AnalizadorLexico.TablaDeSimbolos.get(operando1).sonCompatibles(AnalizadorLexico.TablaDeSimbolos.get(operando2))) {
+			Tipo tipoOperando = AnalizadorLexico.TablaDeSimbolos.get(operando1).getTipo();
+			if (tipoOperando==Parser.tipos.get("INTEGER") || tipoOperando==Parser.tipos.get("OCTAL")) {
+				operando1 = comprobarOperandoLiteral(operando1);
+				operando2 = comprobarOperandoLiteral(operando2);
+				operando1 = convertirLexemaFlotante(operando1); //Lo hago en caso que sea flotante, sino no afecta en nada igual
+				operando2 = convertirLexemaFlotante(operando2); //Lo hago en caso que sea flotante, sino no afecta en nada igual
+				codigo.append("MOV AX, " + operando1 + "\n");
+				codigo.append("SUB AX, " + operando2 + "\n \n"); //Comparo los operandos y el resultado va a afectar a los flags para los saltos
+			} else {
+				operando1 = comprobarOperandoLiteral(operando1);
+				operando2 = comprobarOperandoLiteral(operando2);
+				operando1 = convertirLexemaFlotante(operando1); //Lo hago en caso que sea flotante, sino no afecta en nada igual
+				operando2 = convertirLexemaFlotante(operando2); //Lo hago en caso que sea flotante, sino no afecta en nada igual
+				codigo.append("FLD " + operando2 + "\n"); //Apilo el operando2
+				codigo.append("FLD " + operando1 + "\n"); //Apilo el operando1
+				codigo.append("FCOMPP"  + "\n"); 
+				codigo.append("FSTSW AX \n");
+				codigo.append("SAHF \n \n");
+			}
+		}
 	}
+
 	
-	public static void imprimirPorPantalla(String elemento, StringBuilder codigo) {
-		//Guardar operando anterior en una aux
-		//Imprimir en pantalla la aux
+	
+	
+	
+	
+	
+	
+	
+	
+	//----------------------------------------------------------------------------------------------------------------------------
+	//--------------------------------------------METODOS COMPLEMENTARIOS---------------------------------------------------------
+	//----------------------------------------------------------------------------------------------------------------------------
+	
+	public static void imprimirPorPantalla(StringBuilder codigo) {
 		String operando = pila.pop();
 		Simbolo simbOperando = AnalizadorLexico.TablaDeSimbolos.get(operando);
-		if (simbOperando.getTipo() == Parser.tipos.get("INTEGER") ||simbOperando.getTipo() == Parser.tipos.get("OCTAL")) {
-			codigo.append("invoke printf, addr mensajeError_DivisionCero");
+		System.out.println("Simbolo --> " + simbOperando.toString() + "\n");
+		if (simbOperando.getTipo().toString().contains("INTEGER") ||simbOperando.getTipo().toString().contains("OCTAL")) { //Tengo en cuenta primitivos y subtipos
+			codigo.append("invoke printf, cfm$(\"%hi\\n\"), " + operando + "\n \n" ); //Copio el invoke de _inti del archivo de moodle
+		}
+		else if(simbOperando.getTipo().toString().contains("DOUBLE")) { //Tengo en cuenta primitivos y subtipos
+			codigo.append("invoke printf, cfm$(\"%.20Lf\\n\"), " + operando + "\n \n" ); //Copio el invoke de _floati del archivo de moodle
+		}
+		else if(simbOperando.getTipo().toString()==Parser.tipos.get("CADENAMULTILINEA").toString()) {
+			System.out.println("ENTRO AL OUTF CADENAML CON OP: " + operando + "\n");
+			operando = convertirLexemaCadena(operando);
+			codigo.append("");
+			codigo.append("invoke MessageBox, NULL, addr " + operando + ", addr " + operando + ", MB_OK \n \n" );
 		}
 	}
 	
-	
-	public static void crearDivisionPorCero(StringBuilder codigo) {
-		codigo.append("DivisonPorCero:" + "\n");
-		codigo.append("invoke printf, addr mensajeError_DivisionCero"); //Debo cargar en la seccion de .data lo siguiente (mensaje_error_divisionCero DB "Error: Division por cero", 10, 0)
+	public static StringBuilder crearErrorDivisionPorCero() {
+		StringBuilder codigo = new StringBuilder();
+		codigo.append("Divison_Por_Cero:" + "\n");
+		codigo.append("invoke MessageBox, NULL, addr Error_DivisionCero, addr Error_DivisionCero, MB_OK \n");
 		codigo.append("JMP fin" + "\n");
+		return codigo;
 	}
-	/*
-	public static boolean esConstanteLiteral(String operando) {
-		Simbolo s = AnalizadorLexico.TablaDeSimbolos.get(operando);
-		if (s.getTipo()==Parser.tipos.get("Entero") || s.getTipo()==Parser.tipos.get("Octal")) {
-			return s.esEntero();
-		}
-		else if (s.getTipo()==Parser.tipos.get("Double")) {
-			return s.esDouble();
-		}
-		return false;
-	}*/
 	
+	public static StringBuilder crearErrorOverflow() {
+		StringBuilder codigo = new StringBuilder();
+		codigo.append("Overflow:" + "\n");
+		codigo.append("invoke MessageBox, NULL, addr Error_Overflow, addr Error_Overflow, MB_OK \n");
+		codigo.append("JMP fin" + "\n");
+		return codigo;
+	}
+	
+	public static StringBuilder crearErrorTiposIncompatibles() {
+		StringBuilder codigo = new StringBuilder();
+		codigo.append("Tipos_Incompatibles:" + "\n");
+		codigo.append("invoke MessageBox, NULL, addr Error_TiposIncompatibles, addr Error_TiposIncompatibles, MB_OK \n");
+		codigo.append("JMP fin" + "\n");
+		return codigo;
+	}
+
 	public static String crearAuxiliar(Tipo tipo) {
 		Simbolo simb = new Simbolo();
 		simb.setTipoVar(tipo);
@@ -287,26 +359,76 @@ public class GeneradorCodigoAssembler {
 		return("@aux"+(numAuxiliares-1));
 	}
 	
+	public static String comprobarOperandoLiteral(String operando) {
+		if(AnalizadorLexico.TablaDeSimbolos.get(operando).esLiteral()) { 
+			operando = convertirOperandoLiteral(operando);
+		}
+		return operando;
+	}
 	
+	public static String convertirOperandoLiteral(String operando) {
+		switch(AnalizadorLexico.TablaDeSimbolos.get(operando).getTipo().toString()) {
+		case "INTEGER", "integer", "Integer":
+			operando="int"+operando;
+			System.out.println("EL OPERANDO CONVERTIDO ES " + operando + "\n");
+			return operando;
+		case "OCTAL", "octal", "Octal":
+			operando="octi"+operando;
+			return operando;
+		case "DOUBLE", "double", "Double":
+			operando="float"+operando;
+			return operando;
+		}
+		System.out.println("CONVERTIR OPERANDO LITERAL NO HIZO NADA \n");
+		return operando;
+	}
+	
+	public static String convertirLexemaFlotante(String operando) {
+		//Convierto los '.' en @ para que el assembler me los reconozca y también elimino el simbolo + que podria darme problemas y es redundante y reemplazo el '-' por el '_'
+		return operando.replace('.', '@').replace("+", "").replace('-', '_');
+	}
+	
+	public static String convertirLexemaCadena(String operando) {
+		//Convierto los '.' en @ para que el assembler me los reconozca y también elimino el simbolo + que podria darme problemas y es redundante y reemplazo el '-' por el '_'
+		return operando.replace("\r", "").replace("\n", "_").replace('.', '@').replace("+", "").replace('-', '_').replace("[", "").replace("]", "").replaceAll("\\s+", "_");
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	//---------------------------------------------------------------------------------------------------------------------------
+	//----------------------------------------GENERACION TEMPLATE ASSEMBLER PENTIUM----------------------------------------------
+	//---------------------------------------------------------------------------------------------------------------------------
 	
 	public static StringBuilder generarData() {
 		StringBuilder codigo = new StringBuilder();
-		//System.out.println("Entro a GENERAR DATA \n");
+		System.out.println("Entro a GENERAR DATA \n");
 		codigo.append(".data \n");
+		codigo.append("Error_DivisionCero DB \"Error: Division por cero\", 10, 0 \n");
+		codigo.append("Error_TiposIncompatibles DB \"Error: Operacion entre tipos incompatibles\", 10, 0 \n");
+		codigo.append("Error_Overflow DB \"Error: Overflow en producto entre Enteros\", 10, 0 \n");
+		codigo.append("ESPERAR_ACCION_USUARIO DB \"Haga click en ACEPTAR para cerrar el programa y la consola\", 10, 0 \n");
 		for (Map.Entry<String, Simbolo> iterador : AnalizadorLexico.TablaDeSimbolos.entrySet()) {
 			
 			String lexema = iterador.getKey();
-			//System.out.println("Lexema TS: " + lexema + "\n");
 			Simbolo simbolo = iterador.getValue();
-			//System.out.println("Simbolo TS: " + simbolo.toString() + "\n");
-			//System.out.println("");
 			Tipo tipo = simbolo.getTipoVar();
 			if(tipo != null) {
 				String tipoString = tipo.toString();
+
 				switch (tipoString) {
 					case "INTEGER":
 						if (simbolo.esLiteral()) { //Verifico primero si es una constante literal para saber si le cargo el valor o va el '?'
-							codigo.append(lexema + " DW " + simbolo.getEntero() + "\n");
+							System.out.println("ES LITERAL \n");
+							if(codigo.indexOf("int" + lexema + " DW")==-1) { //Me fijo si en el StringBuilder ya existe algun substring que sea intNumero DW. Si devuelve -1 entonces lo inserto
+								codigo.append("int" + lexema + " DW " + simbolo.getEntero() + "\n");
+							}
 						}
 						else {
 							codigo.append(lexema + " DW ?" + "\n");
@@ -314,7 +436,10 @@ public class GeneradorCodigoAssembler {
 						break;
 					case "DOUBLE":
 						if (simbolo.esLiteral()) { //Verifico primero si es una constante literal para saber si le cargo el valor o va el '?'
-							codigo.append(lexema + " DQ " + simbolo.getEntero() + "\n");
+							lexema = convertirLexemaFlotante(lexema);
+							if(codigo.indexOf("float" + lexema + " DQ")==-1) { //Me fijo si en el StringBuilder ya existe algun substring que sea intNumero DQ. Si devuelve -1 entonces lo inserto
+								codigo.append("float" + lexema + " DQ " + simbolo.getDoub() + "\n");
+							}
 						}
 						else {
 							codigo.append(lexema + " DQ ?" + "\n");
@@ -322,16 +447,21 @@ public class GeneradorCodigoAssembler {
 						break;
 					case "OCTAL": //Me guio del octi DW 077o de test_print
 						if (simbolo.esLiteral()) { //Verifico primero si es una constante literal para saber si le cargo el valor o va el '?'
-							codigo.append(lexema + " DW " + simbolo.getEntero() + "\n");
+							if(codigo.indexOf("octi" + lexema + " DW")==-1) { //Me fijo si en el StringBuilder ya existe algun substring que sea intNumero DW. Si devuelve -1 entonces lo inserto
+								codigo.append("octi" + lexema + " DW " + simbolo.getEntero() + "\n");
+							}
 						}
 						else {
 							codigo.append(lexema + " DW ?" + "\n");
 						}
 						break;
-					case "STRING":
-						codigo.append("");
+					case "CADENAMULTILINEA":
+						String lexemaConvertido = convertirLexemaCadena(lexema);
+						if(codigo.indexOf(lexemaConvertido)==-1) {
+							codigo.append(lexemaConvertido).append(" db \"").append(lexema.replace("\n", " ").replace("[", "").replace("]", "").replaceAll("\\s+", " ").trim()).append("\", 0 \n"); //Lo hago de esta manera para poder guardar el lexema entre comillas
+						}
 						break;
-					default: //Tipos no primitivos entrarÃ­an aquÃ­, VER COMO PROCEDER
+					default: //Tipos no primitivos entrarían aquí, VER COMO PROCEDER
 						break;
 				}
 			}
@@ -342,7 +472,7 @@ public class GeneradorCodigoAssembler {
 	public static StringBuilder generarCode() {
 		StringBuilder codigo = new StringBuilder();
 		codigo.append(".code \n \n");
-		//Key polaca main :MAIN
+		//Key polaca main $MAIN
 		//Cuando recorra el map de polacas en la parte de funciones tengo que agregar el sufijo:
 		/*
 		 * PUSH EBP
@@ -355,7 +485,7 @@ public class GeneradorCodigoAssembler {
 			String ambito = iterador.getKey();
 			ArrayList<String> polacaActual = iterador.getValue();
 			
-			if(ambito != ":MAIN") { //Genero el cÃ³digo de las polacas de funciones
+			if(ambito != "$MAIN") { //Genero el código de las polacas de funciones
 				codigo.append(ambito + ": \n");
 				codigo.append("PUSH EBP \n");
 				codigo.append("MOV EBP, ESP \n");
@@ -365,10 +495,15 @@ public class GeneradorCodigoAssembler {
 				codigo.append(recorrerPolaca(polacaActual) + "\n");
 			}
 		}
-		//Luego de cargar las funciones en .code, recorro la polaca :MAIN
+		//Luego de cargar las funciones en .code, recorro la polaca $MAIN
 		codigo.append("start: \n");
-		codigo.append(recorrerPolaca(GeneradorCodigoIntermedio.polacaFuncional.get(":MAIN")));
+		codigo.append(recorrerPolaca(GeneradorCodigoIntermedio.polacaFuncional.get("$MAIN")));
+		codigo.append("JMP fin \n \n");
+		codigo.append(crearErrorDivisionPorCero() + "\n");
+		codigo.append(crearErrorOverflow() + "\n");
+		codigo.append(crearErrorTiposIncompatibles() + "\n");
 		codigo.append("fin: \n");
+		codigo.append("invoke MessageBox, NULL, addr ESPERAR_ACCION_USUARIO, addr ESPERAR_ACCION_USUARIO, MB_OK \n");
 		codigo.append("invoke ExitProcess, 0 \n");
 		codigo.append("end start");
 		return codigo;
@@ -378,14 +513,18 @@ public class GeneradorCodigoAssembler {
 		StringBuilder codigo = new StringBuilder();
 		//Copio el encabezado de funciones.asm dado por la catedra
 		codigo.append(".586 \n");
-		codigo.append(".model flat, stdcall \n \n");
+		//codigo.append(".model flat, stdcall \n \n"); //masm32rt.inc lo hace automaticamente
 		codigo.append("option casemap :none \n");
-		codigo.append("include \\masm32\\include\\windows.inc \n");
-		codigo.append("include \\masm32\\include\\kernel32.inc \n");
-		codigo.append("include \\masm32\\include\\user32.inc \n");
-		codigo.append("includelib \\masm32\\lib\\kernel32.lib \n");
-		codigo.append("includelib \\masm32\\lib\\user32.lib \n \n");
+        codigo.append("include \\masm32\\include\\masm32rt.inc \n");
+        codigo.append("includelib \\masm32\\lib\\kernel32.lib \n");
+        codigo.append("includelib \\masm32\\lib\\user32.lib \n");
+        codigo.append("includelib \\masm32\\lib\\masm32.lib \n");
+		codigo.append("\ndll_dllcrt0 PROTO C" + "\n");
+		codigo.append("printf PROTO C : VARARG \n");
+		codigo.append("\n");
 		return codigo;
+		
+		
 	}
 	
 	public static void generarPrograma() {
@@ -402,6 +541,5 @@ public class GeneradorCodigoAssembler {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-
 	}
 }

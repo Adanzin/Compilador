@@ -1,5 +1,10 @@
 lala
 begin    
-	integer a,b,c,e;
-	 	IF(a=2.0)THEN OUTF([HOLAAA]); END_IF;
+	double a;
+	a:=2.0;
+	IF(a!=2.0)THEN
+		OUTF([PRIMERA CADENA MULTILINEA]);
+	ELSE
+		OUTF([SEGUNDA CADENA MULTILINEA]);
+	END_IF;
 End

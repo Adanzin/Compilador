@@ -4,13 +4,13 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 public class Tipo {
-    public String type=null; 
-    public boolean subTipo=false;
-    public double rangInferior=0;
-    public double rangSuperior=0;
-    public boolean triple =false;
-    public int[] valInt = new int[3];
-    public double[] valDouble = new double[3];
+    private String type=null; 
+    private boolean subTipo=false;
+    private double rangInferior=0;
+    private double rangSuperior=0;
+    private boolean triple =false;
+    private int[] valInt = new int[3];
+    private double[] valDouble = new double[3];
 
 	public Tipo(String t) {
 		this.type=t;

@@ -1,7 +1,10 @@
 
  Linea 3 declaracion de variables  
- Linea 4: Condicion 
- Linea 4: cadena multilinea  
- Linea :4 Se reconocio OUTF de cadena de caracteres  
- Linea 4: Sentencia IF  
+ Linea :4 Asignacion  
+ Linea 5: Condicion 
+ Linea 6: cadena multilinea  
+ Linea :6 Se reconocio OUTF de cadena de caracteres  
+ Linea 8: cadena multilinea  
+ Linea :8 Se reconocio OUTF de cadena de caracteres  
+ Linea 9: Sentencia IF  
  [0mSe identifico el programa lala 

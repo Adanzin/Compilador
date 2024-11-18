@@ -1,25 +1,29 @@
 
  Identificador lala 
  Identificador begin 
- Identificador integer 
+ Identificador double 
  Identificador a 
- , 
- Identificador b 
- , 
- Identificador c 
- , 
- Identificador e 
+ ; 
+ Identificador a 
+ := 
+ Constante double 2.0 
  ; 
  Identificador IF 
  ( 
  Identificador a 
- = 
+ != 
  Constante double 2.0 
  ) 
  Identificador THEN 
  Identificador OUTF 
  ( 
- Cadena multilinea HOLAAA 
+ Cadena multilinea PRIMERA CADENA MULTILINEA 
+ ) 
+ ; 
+ Identificador ELSE 
+ Identificador OUTF 
+ ( 
+ Cadena multilinea SEGUNDA CADENA MULTILINEA 
  ) 
  ; 
  Identificador END_IF 

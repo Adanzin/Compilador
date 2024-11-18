@@ -238,7 +238,7 @@ public class Simbolo {
 
 	public boolean sonCompatibles(Simbolo simb2) {
 		//System.out.println("Se estan comparando "+ this + " con un "+ simb2);
-		if(this.getTipo().equals(simb2.getTipo())) {
+		if(this.tipoVar.sonCompatibles(simb2.getTipo())) {
 			return true;
 		}
 		System.out.println("Tipos incompatibles, se intento operar un "+ this.getTipo() + " con un "+ simb2.getTipo());
