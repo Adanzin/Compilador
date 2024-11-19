@@ -11,8 +11,6 @@ public class GeneradorCodigoAssembler {
 	public static Stack<String> pila = new Stack<String>();
 	
 	public static int numAuxiliares = 1;
-	public static String ambitoActual = "";
-	public static Integer numLabel = 1;
 	
 	private static String ultimaFuncion = null;
 	public static String ultimaOperacion = null; //Se usa para debuggear nomas
@@ -42,7 +40,7 @@ public class GeneradorCodigoAssembler {
 					ultimaOperacion = elemento;
 					operadorSentenciasControl(elemento, codigo, polacaActual.get(i-2));
 					break;
-				case "<",">","<=",">=","==", "!=":
+				case "<",">","<=",">=","==", "!=":	
 					ultimaOperacion = elemento;
 					operadorComparacion(elemento, codigo);
 					break;
@@ -159,6 +157,7 @@ public class GeneradorCodigoAssembler {
 				codigo.append("JMP LABEL" + operador + "\n \n"); //Salto sí o sí a la etiqueta
 				break;
 		}
+		
 	}
 	
 	public static void operacionEnteroOctal(String operando1, String operando2, String operacion, StringBuilder codigo, Tipo tipoOperando) {
@@ -171,11 +170,10 @@ public class GeneradorCodigoAssembler {
 				codigo.append("ADD AX," + operando2 + "\n");
 				break;
 			case "-":
-				//Revisar caso de la resta
 				codigo.append("SUB AX," + operando2 + "\n"); 
 				break;
 			case "*":
-				codigo.append("IMUL " + operando2 + "\n"); //Uso IMUL para cubrir el caso en que el operando sea una constante literal
+				codigo.append("IMUL " + operando2 + "\n");
 				codigo.append("JO Overflow \n"); //Salto si se activo el flag de overflow
 				break;
 			case "/":
@@ -255,7 +253,7 @@ public class GeneradorCodigoAssembler {
 		operando = comprobarOperandoLiteral(operando);
 		switch (elemento) {
 			case "INTEGER", "OCTAL", "DOUBLE":
-				operacionConversion(operando, elemento, codigo, tipoOperando);
+				operadorConversion(operando, elemento, codigo, tipoOperando);
 				break;
 			case "RET":
 				codigo.append("MOV AX, " + operando + "\n"); //Guardo la variable que quiero retornar en AX
@@ -269,12 +267,12 @@ public class GeneradorCodigoAssembler {
 		}
 	}
 	
-	public static void operacionConversion(String operando, String elemento, StringBuilder codigo, Tipo tipoOperando) {
+	public static void operadorConversion(String operando, String elemento, StringBuilder codigo, Tipo tipoOperando) {
 		operando = comprobarOperandoLiteral(operando);
 		switch (elemento) {
 			case "DOUBLE":
-				if (tipoOperando == Parser.tipos.get("INTEGER")) {
-					//Conversion de Entero a Double
+				if (tipoOperando == Parser.tipos.get("INTEGER")||tipoOperando == Parser.tipos.get("OCTAL")) {
+					//Conversion de Entero/Octal a Double
 					codigo.append("FILD " + operando + "\n"); //Cargo el entero como double
 					codigo.append("FSTP @aux" + numAuxiliares + "\n \n"); //Almaceno el resultado en @aux
 					pila.push(crearAuxiliar(Parser.tipos.get("DOUBLE")));
@@ -305,15 +303,13 @@ public class GeneradorCodigoAssembler {
 			if (tipoOperando.getType()=="INTEGER" || tipoOperando.getType()=="OCTAL") {
 				operando1 = comprobarOperandoLiteral(operando1);
 				operando2 = comprobarOperandoLiteral(operando2);
-				operando1 = convertirLexemaFlotante(operando1); //Lo hago en caso que sea flotante, sino no afecta en nada igual
-				operando2 = convertirLexemaFlotante(operando2); //Lo hago en caso que sea flotante, sino no afecta en nada igual
 				codigo.append("MOV AX, " + operando1 + "\n");
 				codigo.append("SUB AX, " + operando2 + "\n \n"); //Comparo los operandos y el resultado va a afectar a los flags para los saltos
-			} else {
+			} else if(tipoOperando.getType()=="DOUBLE") {
 				operando1 = comprobarOperandoLiteral(operando1);
 				operando2 = comprobarOperandoLiteral(operando2);
-				operando1 = convertirLexemaFlotante(operando1); //Lo hago en caso que sea flotante, sino no afecta en nada igual
-				operando2 = convertirLexemaFlotante(operando2); //Lo hago en caso que sea flotante, sino no afecta en nada igual
+				operando1 = convertirLexemaFlotante(operando1);
+				operando2 = convertirLexemaFlotante(operando2);
 				codigo.append("FLD " + operando2 + "\n"); //Apilo el operando2
 				codigo.append("FLD " + operando1 + "\n"); //Apilo el operando1
 				codigo.append("FCOMPP"  + "\n"); 

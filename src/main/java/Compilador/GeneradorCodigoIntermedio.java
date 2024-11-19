@@ -25,7 +25,6 @@ public class GeneradorCodigoIntermedio {
 
 
 	public static void addNuevaPolaca() {
-		System.out.println(" > Se creo una nueva polaca llamada "+Parser.AMBITO.toString());
 		polacaFuncional.put(Parser.AMBITO.toString(), new ArrayList<String>());
 		Pilas.put(Parser.AMBITO.toString(),new Stack<Integer>());
 		pos.put(Parser.AMBITO.toString(), 0);
@@ -39,21 +38,16 @@ public class GeneradorCodigoIntermedio {
 		        int a=0;
 		        // Imprimir los elementos de la lista `polaca` con formato de 2 dígitos
 		        for (String elemento : polaca) {
-		            System.out.print( "[ " + a + " | " + elemento +  " ]"+ "\n");
+		        	 System.out.print(" | " + elemento);
 		            a++;
 		        }
-		        System.out.println("\n"); // Espacio entre funciones
 		    }
 		}
 	public static void desapilar() {
-		System.out.println(Pilas.get(Parser.AMBITO.toString()).toString());
 		Pilas.get(Parser.AMBITO.toString()).pop();
-		System.out.println(Pilas.get(Parser.AMBITO.toString()).toString());
 	}
 	public static void apilar(int elm){
-		System.out.println(Pilas.get(Parser.AMBITO.toString()).toString());
 		Pilas.get(Parser.AMBITO.toString()).push(elm);
-		System.out.println(Pilas.get(Parser.AMBITO.toString()).toString());
 	}
 	public static int getPila() {
 		int salida =Pilas.get(Parser.AMBITO.toString()).lastElement();
@@ -87,7 +81,6 @@ public class GeneradorCodigoIntermedio {
 		pos.put(Parser.AMBITO.toString(),pos.get(Parser.AMBITO.toString())+1);//pos++
 	}
 	public static void bifurcarAlInicio() {
-		System.out.println("BIFURCACION AL INICIO");
 		String aux =String.valueOf(getPila());
 		polacaFuncional.get(Parser.AMBITO.toString()).add(aux);
 		pos.put(Parser.AMBITO.toString(),pos.get(Parser.AMBITO.toString())+1); //pos++
@@ -98,7 +91,6 @@ public class GeneradorCodigoIntermedio {
 
 	}
 	public static void invocar(String id) {
-		System.out.println("invocacion A FUNCION");
 		polacaFuncional.get(Parser.AMBITO.toString()).add(id);
 		pos.put(Parser.AMBITO.toString(),pos.get(Parser.AMBITO.toString())+1); //pos++;
 		polacaFuncional.get(Parser.AMBITO.toString()).add("CALL");
@@ -112,7 +104,6 @@ public class GeneradorCodigoIntermedio {
 		pos.put(Parser.AMBITO.toString(),pos.get(Parser.AMBITO.toString())+1); //pos++;
 	}
 	public static void BifurcarAGoto(String id) {
-		System.out.println("BIFURCACION A TO GO");		
 		addGoto(id);
 		polacaFuncional.get(Parser.AMBITO.toString()).add(" ");
 		pos.put(Parser.AMBITO.toString(),pos.get(Parser.AMBITO.toString())+1); //pos++;
@@ -126,18 +117,19 @@ public class GeneradorCodigoIntermedio {
 		BaulDeGoto.get(id).push(pos.get(Parser.AMBITO.toString()));
 	}
 	public static int getGoto(String id) {
-		System.out.println(BaulDeGoto.toString());
 		if(BaulDeGoto.get(id).isEmpty()) {
 			return -1;
 		}
 		return BaulDeGoto.get(id).pop();
 	}
-	public static void bifurcarFaux(ArrayList<String> aux, int posAux) {
+	
+	/*public static void bifurcarFaux(ArrayList<String> aux, int posAux) {
 		apilar(posAux);
 		aux.add(" ");
 		aux.add("BF");
 		
-	};
+	};*/
+	
 	//esta funcion saca de la polaca los operandos y los pega en un arreglo auxiliar. En esta se cargan ordenado
 	// y se vuelven a cargar en la polaca. 
 	/*public static void addOperadorEnPattMatch(String operador,int cantOP) {

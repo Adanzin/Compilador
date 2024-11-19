@@ -242,7 +242,7 @@ condicion	: '(' '(' list_expre ')' comparador '(' list_expre ')' ')' {if($3.ival
 			| '(' list_expre ')' comparador '(' list_expre ')' ')' {cargarErrorEImprimirlo("Linea " + AnalizadorLexico.saltoDeLinea + "Error : Falta el '(' en la condicion ");}
 			| '(' '(' list_expre ')' comparador '(' list_expre ')' {cargarErrorEImprimirlo("Linea " + AnalizadorLexico.saltoDeLinea + "Error : Falta el ')' en la condicion ");}
 			|'(' list_expre ')' comparador '(' list_expre ')' {cargarErrorEImprimirlo("Linea " + AnalizadorLexico.saltoDeLinea + "Error : Faltan los parentesis en la condicion ");}
-			| '(' expresion_arit comparador expresion_arit ')' {$$.ival=1;opCondicion($3.sval); cargarErrorEImprimirlo("Linea " + AnalizadorLexico.saltoDeLinea + ": Condicion");}
+			| '(' expresion_arit comparador expresion_arit ')' {$$.ival=1;opCondicion($3.sval);}
 			|  expresion_arit comparador expresion_arit ')' {cargarErrorEImprimirlo("Linea " + AnalizadorLexico.saltoDeLinea + "Error : Falta el '(' en la condicion ");}
 			| '(' expresion_arit comparador expresion_arit  {cargarErrorEImprimirlo("Linea " + AnalizadorLexico.saltoDeLinea + "Error : Falta el ')' en la condicion ");}
 			| expresion_arit comparador expresion_arit  {cargarErrorEImprimirlo("Linea " + AnalizadorLexico.saltoDeLinea + "Error : Faltan los parentesis en la condicion ");}
@@ -357,11 +357,9 @@ private static void opCondicion(String operador){
 };
 
 private static void completarBifurcacionAGoto(String id){
-	System.out.println("BIFURCACION a GOTO "+id+" pos "+GeneradorCodigoIntermedio.getPos());
 	int pos = GeneradorCodigoIntermedio.getGoto(id);
 	String elm = String.valueOf(GeneradorCodigoIntermedio.getPos());
 	while (pos!=-1){
-		System.out.println(">>>>>Se agrega " + elm + " en la posicion " + pos);
 		GeneradorCodigoIntermedio.reemplazarElm(elm,pos);
 		pos = GeneradorCodigoIntermedio.getGoto(id);
 	}

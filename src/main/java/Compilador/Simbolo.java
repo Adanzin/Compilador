@@ -9,8 +9,7 @@ public class Simbolo {
     private String tipoParFormal=" ";
     private String tipoRetorno=" ";
     private String ambitoVar="";
-    private int dirMEM=-1;
-    private int base;  // Base del n�mero (8 = octal, 10 = decimal, 16 = hexadecimal)
+    private int base;  // Base del numero (8 = octal, 10 = decimal, 16 = hexadecimal)
     private int contadorDeReferencias;
     private boolean defPorUser;
     private boolean seDeclaro;
@@ -186,10 +185,6 @@ public class Simbolo {
             sb.append(" El Retorno es : "+tipoParFormal);
             sb.append(" - ");
         }
-        if(this.dirMEM!=-1) {
-            sb.append(" Esta ubicado Polaca["+dirMEM+"]");
-            sb.append(" - ");
-        }
 
         // Si ningun valor fue inicializado
         if (sb.length() == 0) {
@@ -290,12 +285,7 @@ public class Simbolo {
 	public void setTipoRetorno(String tipoRetorno) {
 		this.tipoRetorno = tipoRetorno;
 	}
-	public int getDirMEM() {
-		return dirMEM;
-	}
-	public void setDirMEM(int dirMEM) {
-		this.dirMEM = dirMEM;
-	}
+	
 	public boolean esDouble() {
     	if (this.doub == -1.0) {
     		return false;

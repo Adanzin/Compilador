@@ -847,11 +847,9 @@ private static void opCondicion(String operador){
 };
 
 private static void completarBifurcacionAGoto(String id){
-	System.out.println("BIFURCACION a GOTO "+id+" pos "+GeneradorCodigoIntermedio.getPos());
 	int pos = GeneradorCodigoIntermedio.getGoto(id);
 	String elm = String.valueOf(GeneradorCodigoIntermedio.getPos());
 	while (pos!=-1){
-		System.out.println(">>>>>Se agrega " + elm + " en la posicion " + pos);
 		GeneradorCodigoIntermedio.reemplazarElm(elm,pos);
 		pos = GeneradorCodigoIntermedio.getGoto(id);
 	}
@@ -1107,7 +1105,7 @@ private static boolean estaRango(String key) {
 	}
 	return true;
 }
-//#line 1038 "Parser.java"
+//#line 1036 "Parser.java"
 //###############################################################
 // method: yylexdebug : check lexer state
 //###############################################################
@@ -1717,7 +1715,7 @@ case 115:
 break;
 case 116:
 //#line 245 "gramatica.y"
-{yyval.ival=1;opCondicion(val_peek(2).sval); cargarErrorEImprimirlo("Linea " + AnalizadorLexico.saltoDeLinea + ": Condicion");}
+{yyval.ival=1;opCondicion(val_peek(2).sval);}
 break;
 case 117:
 //#line 246 "gramatica.y"
@@ -1856,7 +1854,7 @@ case 150:
 //#line 311 "gramatica.y"
 {cargarErrorEImprimirlo("Linea :" + AnalizadorLexico.saltoDeLinea + " Error: Falta la etiqueta en GOTO ");}
 break;
-//#line 1782 "Parser.java"
+//#line 1780 "Parser.java"
 //########## END OF USER-SUPPLIED ACTIONS ##########
     }//switch
     //#### Now let's reduce... ####

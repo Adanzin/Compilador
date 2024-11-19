@@ -9,8 +9,6 @@ public class Tipo {
     private double rangInferior=0;
     private double rangSuperior=0;
     private boolean triple =false;
-    private int[] valInt = new int[3];
-    private double[] valDouble = new double[3];
 
 	public Tipo(String t) {
 		this.type=t;

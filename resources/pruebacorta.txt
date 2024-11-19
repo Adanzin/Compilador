@@ -1,19 +1,5 @@
 program
 begin  
-	integer a,b;  
-	a:=15000;
-	##b:= a*5;
-	goto adan@;
-	octal c,d,e;
-	c := 077;
-	d:= 02;
-	e:= 01;
-	goto adan@;
-	OUTF(c+d);
-	OUTF(c-d);
-	OUTF(c*d);
-	OUTF(c/d);
 	adan@;
-	OUTF(e-d);
 	
 End
