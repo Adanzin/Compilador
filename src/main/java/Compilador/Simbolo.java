@@ -109,18 +109,24 @@ public class Simbolo {
 
     //amb va a venir del siguiente formato ".A.B"
     public void agregarAmbito(String amb) {
-        Simbolo simb = new Simbolo(this.id,this.entero, this.doub,this.tipoVar,this.uso,this.base,this.contadorDeReferencias,
-        		this.defPorUser,this.seDeclaro);
+        Simbolo simb = new Simbolo(this.id+amb,this.entero, this.doub,this.tipoVar,this.uso,this.base,this.contadorDeReferencias,
+        		this.defPorUser,this.seDeclaro,amb);
         AnalizadorLexico.TablaDeSimbolos.put(this.id+amb, simb);
-        this.ambitoVar=amb;
     }
     public String getAmbito() {
         return this.ambitoVar;
     }
     
     
-    public Simbolo(String id, int entero, double doub, Tipo tipoVar, String uso, int base, int contadorDeReferencias,
-			boolean esSubTipo, boolean seDeclaro) {
+    public String getAmbitoVar() {
+		return ambitoVar;
+	}
+	public void setAmbitoVar(String ambitoVar) {
+		this.ambitoVar = ambitoVar;
+	}
+	
+	public Simbolo(String id, int entero, double doub, Tipo tipoVar, String uso, int base, int contadorDeReferencias,
+			boolean esSubTipo, boolean seDeclaro, String amb) {
 		super();
 		this.id=id;
 		this.entero = entero;
@@ -131,6 +137,7 @@ public class Simbolo {
 		this.contadorDeReferencias = contadorDeReferencias;
 		this.defPorUser = esSubTipo;
 		this.seDeclaro = seDeclaro;
+		this.ambitoVar=amb;
 
 	}
 	@Override

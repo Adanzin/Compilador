@@ -36,23 +36,29 @@ public class Main {
             //System.out.println("Se compilo");
             AnalizadorLexico.lexico.flush();
             AnalizadorLexico.sintactico.flush();
+            
+            	
         } catch (IOException e) {
             System.out.println("Ocurrió un error al leer el archivo: " + e.getMessage());
         }
+        
         System.out.println("       ");
         System.out.println("       ");
         System.out.println("       >>>>>  TABLA DE SIMBOLOS <<<<<");
         getSimbolos();
-        System.out.println("       ");
-        System.out.println("       >>>>>  TIPOS   <<<<<");
-        System.out.println("       ");
-        getTipos();
-        System.out.println("       ");
-        System.out.println("       >>>>>  POLACA   <<<<<");
-        GeneradorCodigoIntermedio.imprimirPolaca();
-        System.out.println("       ");
-        System.out.println("		>>>>>  ASSEMBLER   <<<<<");
-        GeneradorCodigoAssembler.generarPrograma();   
+		if (CreacionDeSalidas.outputlexico.length()==0 && CreacionDeSalidas.outputsintactico.length()==0) {
+			// Si es null que se ejecute polaca y assembler
+			System.out.println("       ");
+			System.out.println("       >>>>>  TIPOS   <<<<<");
+			System.out.println("       ");
+			getTipos();
+			System.out.println("       ");
+			System.out.println("       >>>>>  POLACA   <<<<<");
+			GeneradorCodigoIntermedio.imprimirPolaca();
+			System.out.println("       ");
+			System.out.println("		>>>>>  ASSEMBLER   <<<<<");
+			GeneradorCodigoAssembler.generarPrograma();
+		}
     }
 	
 	public static void getSimbolos() {

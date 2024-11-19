@@ -36,16 +36,11 @@ public class GeneradorCodigoIntermedio {
 
 		        // Imprimir el nombre de la función
 		        System.out.println("Polaca: " + key);
-
+		        int a=0;
 		        // Imprimir los elementos de la lista `polaca` con formato de 2 dígitos
 		        for (String elemento : polaca) {
-		            System.out.print(String.format("%2s", elemento) + " ");
-		        }
-		        System.out.println();
-
-		        // Imprimir los índices correspondientes con formato de 2 dígitos
-		        for (int i = 0; i < polaca.size(); i++) {
-		            System.out.print(String.format("%02d", i) + " ");
+		            System.out.print( "[ " + a + " | " + elemento +  " ]"+ "\n");
+		            a++;
 		        }
 		        System.out.println("\n"); // Espacio entre funciones
 		    }

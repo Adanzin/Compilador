@@ -10,38 +10,78 @@ printf PROTO C : VARARG
 
 .data 
 Error_DivisionCero DB "Error: Division por cero", 10, 0 
-Error_TiposIncompatibles DB "Error: Operacion entre tipos incompatibles", 10, 0 
 Error_Overflow DB "Error: Overflow en producto entre Enteros", 10, 0 
 ESPERAR_ACCION_USUARIO DB "Haga click en ACEPTAR para cerrar el programa y la consola", 10, 0 
-float2@0 DQ 2.0
-PRIMERA_CADENA_MULTILINEA db "PRIMERA CADENA MULTILINEA", 0 
-a$MAIN DQ ?
-SEGUNDA_CADENA_MULTILINEA db "SEGUNDA CADENA MULTILINEA", 0 
-@aux1 DQ ?
+e$MAIN DW ?
+b$MAIN DW ?
+octi01 DW 1o 
+octi02 DW 2o 
+@aux5 DW ?
+@ParametroRealInt DW ?
+@aux4 DW ?
+int15000 DW 15000
+@ParametroRealFloat DQ ?
+octi077 DW 77o 
+c$MAIN DW ?
+a$MAIN DW ?
+d$MAIN DW ?
+@aux3 DW ?
+@aux2 DW ?
+@aux1 DW ?
 
 .code 
  
 start: 
-FLD a$MAIN
-FLD float2@0
-FSTP a$MAIN
+MOV AX, int15000
+MOV a$MAIN, AX
+
  
-FLD float2@0
-FLD a$MAIN
-FCOMPP
-FSTSW AX 
-SAHF 
+MOV AX, octi077
+MOV c$MAIN, AX
+
  
-JE LABEL12
+MOV AX, octi02
+MOV d$MAIN, AX
+
  
-invoke MessageBox, NULL, addr PRIMERA_CADENA_MULTILINEA, addr PRIMERA_CADENA_MULTILINEA, MB_OK 
+MOV AX, octi01
+MOV e$MAIN, AX
+
  
-JMP LABEL15
+MOV AX, c$MAIN
+ADD AX,d$MAIN
+MOV @aux1,AX
  
-LABEL12: 
-invoke MessageBox, NULL, addr SEGUNDA_CADENA_MULTILINEA, addr SEGUNDA_CADENA_MULTILINEA, MB_OK 
+invoke printf, cfm$("%hi\n"), @aux1
  
-LABEL15: 
+MOV AX, c$MAIN
+SUB AX,d$MAIN
+MOV @aux2,AX
+ 
+invoke printf, cfm$("%hi\n"), @aux2
+ 
+MOV AX, c$MAIN
+IMUL d$MAIN
+JO Overflow 
+MOV @aux3,AX
+ 
+invoke printf, cfm$("%hi\n"), @aux3
+ 
+MOV AX, c$MAIN
+MOV BX,d$MAIN
+CMP BX,0
+JE Divison_Por_Cero 
+IDIV d$MAIN
+MOV @aux4,AX
+ 
+invoke printf, cfm$("%hi\n"), @aux4
+ 
+MOV AX, e$MAIN
+SUB AX,d$MAIN
+MOV @aux5,AX
+ 
+invoke printf, cfm$("%hi\n"), @aux5
+ 
 JMP fin 
  
 Divison_Por_Cero:
@@ -50,10 +90,6 @@ JMP fin
 
 Overflow:
 invoke MessageBox, NULL, addr Error_Overflow, addr Error_Overflow, MB_OK 
-JMP fin
-
-Tipos_Incompatibles:
-invoke MessageBox, NULL, addr Error_TiposIncompatibles, addr Error_TiposIncompatibles, MB_OK 
 JMP fin
 
 fin: 

@@ -1,10 +1,19 @@
-lala
-begin    
-	double a;
-	a:=2.0;
-	IF(a!=2.0)THEN
-		OUTF([PRIMERA CADENA MULTILINEA]);
-	ELSE
-		OUTF([SEGUNDA CADENA MULTILINEA]);
-	END_IF;
+program
+begin  
+	integer a,b;  
+	a:=15000;
+	##b:= a*5;
+	
+	octal c,d,e;
+	c := 077;
+	d:= 02;
+	e:= 01;
+	
+	OUTF(c+d);
+	OUTF(c-d);
+	OUTF(c*d);
+	OUTF(c/d);
+	
+	OUTF(e-d);
+	
 End

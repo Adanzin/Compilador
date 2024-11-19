@@ -19,8 +19,6 @@ public class AS_CadenaML extends AccionSemantica {
 		simb.setId("CADENAMULTILINEA");
 		TablaDeSimbolos.put("["+token.toString()+"]", simb);
 		AnalizadorLexico.Lexema = "["+token.toString()+"]";  //LE PASO EL ID A LA TABLA DE SIMBOLOS AL PARSER.
-		System.out.println("	╔═ Cadena multilinea " + token.toString());
-		cargarSalida("Cadena multilinea " + token.toString());
         AnalizadorLexico.token_actual.setLength(0); //VACIAMOS EL BUFFER YA QUE SE ESPERA UN NUEVO TOKEN
         return PalabrasReservadas.obtenerIdentificador("CADENAMULTILINEA"); //devolvemos el token correspondiente 
     }; 

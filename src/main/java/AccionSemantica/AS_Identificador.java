@@ -26,8 +26,6 @@ public class AS_Identificador extends AccionSemantica {
         }else {
         	salida=PalabrasReservadas.obtenerIdentificador(tokenString);
         }
-        System.out.println("	╔═ Identificador "+tokenString);
-		cargarSalida("Identificador "+tokenString);
 		//Se repite el ultimo caracter leido
         AnalizadorLexico.SEREPITE=true;
 		if(car==AnalizadorLexico.SALTO_DE_LINEA) {
@@ -40,8 +38,8 @@ public class AS_Identificador extends AccionSemantica {
 		String token =tokenString;
 		if(token.length() > 15) {
 			token=token.substring(0, 15);
-			System.out.println("\u001B[31m"+"Linea "+ AnalizadorLexico.saltoDeLinea +" WARNING: El identificador '" 
-								+ tokenString + "' fue truncado a '"+token+ "' y este podria reconocerse como palabra reservada."+"\u001B[0m");
+			System.out.println("Linea "+ AnalizadorLexico.saltoDeLinea +" WARNING: El identificador '" 
+								+ tokenString + "' fue truncado a '"+token+ "' y este podria reconocerse como palabra reservada.");
 		}
 		return token;
 	}

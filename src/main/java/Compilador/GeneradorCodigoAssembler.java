@@ -14,37 +14,50 @@ public class GeneradorCodigoAssembler {
 	public static int numAuxiliares = 1;
 	public static String ambitoActual = "";
 	public static Integer numLabel = 1;
+	
+	private static String ultimaFuncion = null;
+	public static String ultimaOperacion = null; //Se usa para debuggear nomas
 		
 	public GeneradorCodigoAssembler() {
 	}
 	
-	public static StringBuilder recorrerPolaca(ArrayList<String> polacaActual) {
+	public static StringBuilder recorrerPolaca(ArrayList<String> polacaActual, String nombrePolaca) {
 		StringBuilder codigo = new StringBuilder();
 		String elemento;
 		for (int i=0; i < polacaActual.size();i++) {
 			elemento = polacaActual.get(i);
 			switch (elemento) {
 				case "+","-","*","/",":=":
-					System.out.println("ENTRO EN ASIGNACION \n");
+					ultimaOperacion = elemento;
 					operadorBinario(elemento, codigo);
 					break;
 				case "INTEGER", "DOUBLE", "OCTAL", "RET":
-					operadorUnario(elemento, codigo);
+					ultimaOperacion = elemento;
+					operadorUnario(elemento, codigo, nombrePolaca);
 					break;
 				case "CALL":
+					ultimaOperacion = elemento;
 					operadorFuncion(codigo);
 					break;
 				case "BF","BI":
+					ultimaOperacion = elemento;
 					operadorSentenciasControl(elemento, codigo, polacaActual.get(i-2));
 					break;
 				case "<",">","<=",">=","==", "!=":
+					ultimaOperacion = elemento;
 					operadorComparacion(elemento, codigo);
 					break;
 				case "OUTF":
+					ultimaOperacion = elemento;
 					imprimirPorPantalla(codigo);
+					break;
+				case "PF":
+					ultimaOperacion = elemento;
+					operadorInicioFuncion(codigo);
 					break;
 				default: //Entra si es un operando o si es un LABEL+N° que no puedo chequear en el CASE
 					if(elemento.startsWith("LABEL")) { //Es una etiqueta
+						ultimaOperacion = elemento;
 						codigo.append(elemento + ": \n");
 					}
 					else { //Es un operando sino
@@ -71,22 +84,19 @@ public class GeneradorCodigoAssembler {
 	
 	public static void operadorBinario(String operacion, StringBuilder codigo) {
 		String operando2 = pila.pop();
-		System.out.println("operando2: " + operando2 + "\n");
 		String operando1 = pila.pop();
-		System.out.println("operando1: " + operando1 + "\n");
-		if(	AnalizadorLexico.TablaDeSimbolos.get(operando1).sonCompatibles(AnalizadorLexico.TablaDeSimbolos.get(operando2))) {
-			Tipo tipoOperando = AnalizadorLexico.TablaDeSimbolos.get(operando1).getTipo();
-			if (tipoOperando==Parser.tipos.get("INTEGER") || tipoOperando==Parser.tipos.get("OCTAL")) {
+
+		Simbolo simbOperando1 = Parser.getVariableFueraDeAmbito(operando1);
+		Simbolo simbOperando2 = Parser.getVariableFueraDeAmbito(operando2);
+		operando1 = simbOperando1.getId();
+		operando2 = simbOperando2.getId();
+		if(simbOperando1.sonCompatibles(simbOperando2)) {
+			Tipo tipoOperando = simbOperando1.getTipo();
+			if (tipoOperando.getType()=="INTEGER" || tipoOperando.getType()=="OCTAL") {
 				operando1 = comprobarOperandoLiteral(operando1);
 				operando2 = comprobarOperandoLiteral(operando2);
-				System.out.println("\n \n ------------------------------------------------------ \n \n");
-				System.out.println("OPERANDO 1: " + operando1 +  "\n");
-				System.out.println("OPERANDO 2: " + operando2 + "\n");
 				operacionEnteroOctal(operando1, operando2, operacion, codigo, tipoOperando);
 			} else {
-				System.out.println("\n \n ------------------------------------------------------ \n \n");
-				System.out.println("OPERANDO 1: " + operando1 +  "\n");
-				System.out.println("OPERANDO 2: " + operando2 + "\n");
 				operando1 = comprobarOperandoLiteral(operando1);
 				operando2 = comprobarOperandoLiteral(operando2);
 				operacionDouble(operando1, operando2, operacion, codigo, tipoOperando);
@@ -99,9 +109,25 @@ public class GeneradorCodigoAssembler {
 	}
 	
 	public static void operadorFuncion(StringBuilder codigo) {
-		String operando = pila.pop(); //Es el nombre de la funcion
-		//Queda apilado el parametro real para que lo desapile la funcion
-		codigo.append("CALL " + operando + "\n");
+		String operando1 = pila.pop(); //Es el nombre de la funcion
+		String operando2 = pila.pop(); //Es el parametro real
+		Simbolo simbOperando2 = Parser.getVariableFueraDeAmbito(operando2);
+		if(simbOperando2.getTipo().getType()=="INTEGER" || simbOperando2.getTipo().getType()=="OCTAL") {
+			codigo.append("MOV AX, " + operando2 + "\n");
+			codigo.append("MOV @ParametroRealInt, AX \n");
+		}
+		else if(simbOperando2.getTipo().getType()=="DOUBLE") {
+			codigo.append("FLD " + operando2 + "\n"); //Apilo el parametro real
+			codigo.append("FSTP @ParametroRealFloat \n");
+		}
+		codigo.append("CALL " + AnalizadorLexico.TablaDeSimbolos.get(operando1).getAmbitoVar() + "\n");
+		ultimaFuncion = AnalizadorLexico.TablaDeSimbolos.get(operando1).getAmbitoVar();
+		
+		String key="@RET"+ultimaFuncion;
+		if(!AnalizadorLexico.TablaDeSimbolos.containsKey("@RET"+ultimaFuncion)) {
+			key = crearAuxiliarRetornoFuncion(AnalizadorLexico.TablaDeSimbolos.get(operando1).getTipo());
+		}
+		pila.push(key); //Apilo el nombre de la variable que debera retornar la funcion		
 	}
 	
 	public static void operadorSentenciasControl(String elemento, StringBuilder codigo, String comparadorAnterior) {
@@ -151,6 +177,7 @@ public class GeneradorCodigoAssembler {
 				break;
 			case "*":
 				codigo.append("IMUL " + operando2 + "\n"); //Uso IMUL para cubrir el caso en que el operando sea una constante literal
+				codigo.append("JO Overflow \n"); //Salto si se activo el flag de overflow
 				break;
 			case "/":
 				codigo.append("MOV BX," + operando2 + "\n"); //Uso BX para no pisar AX con el operando1
@@ -160,7 +187,6 @@ public class GeneradorCodigoAssembler {
 				codigo.append("IDIV " + operando2 + "\n");
 				break;
 			case ":=":
-				System.out.println("ENTRO A ASIGNACION \n");
 				String auxOp = operando1;
 				operando1 = operando2;
 				operando2 = auxOp;
@@ -222,8 +248,10 @@ public class GeneradorCodigoAssembler {
 		}
 	}
 	
-	public static void operadorUnario(String elemento, StringBuilder codigo) {
+	public static void operadorUnario(String elemento, StringBuilder codigo, String nombrePolaca) {
 		String operando = pila.pop();
+		Simbolo simbOperando = Parser.getVariableFueraDeAmbito(operando);
+		operando = simbOperando.getId();
 		Tipo tipoOperando = AnalizadorLexico.TablaDeSimbolos.get(operando).getTipo();
 		operando = comprobarOperandoLiteral(operando);
 		switch (elemento) {
@@ -232,8 +260,7 @@ public class GeneradorCodigoAssembler {
 				break;
 			case "RET":
 				codigo.append("MOV AX, " + operando + "\n"); //Guardo la variable que quiero retornar en AX
-				codigo.append("MOV @aux " + numAuxiliares + ", AX" + "\n");
-				pila.push(crearAuxiliar(tipoOperando));
+				codigo.append("MOV @RET" + nombrePolaca + ", AX" + "\n");
 				codigo.append("POP ESI \n");
 				codigo.append("POP EDI \n");
 				codigo.append("MOV ESP, EBP \n");
@@ -269,12 +296,14 @@ public class GeneradorCodigoAssembler {
 	
 	public static void operadorComparacion(String elemento, StringBuilder codigo) {
 		String operando2 = pila.pop();
-		System.out.println("operando2: " + operando2 + "\n");
 		String operando1 = pila.pop();
-		System.out.println("operando1: " + operando1 + "\n");
+		Simbolo simbOperando1 = Parser.getVariableFueraDeAmbito(operando1);
+		operando1 = simbOperando1.getId();
+		Simbolo simbOperando2 = Parser.getVariableFueraDeAmbito(operando2);
+		operando2 = simbOperando2.getId();
 		if(	AnalizadorLexico.TablaDeSimbolos.get(operando1).sonCompatibles(AnalizadorLexico.TablaDeSimbolos.get(operando2))) {
 			Tipo tipoOperando = AnalizadorLexico.TablaDeSimbolos.get(operando1).getTipo();
-			if (tipoOperando==Parser.tipos.get("INTEGER") || tipoOperando==Parser.tipos.get("OCTAL")) {
+			if (tipoOperando.getType()=="INTEGER" || tipoOperando.getType()=="OCTAL") {
 				operando1 = comprobarOperandoLiteral(operando1);
 				operando2 = comprobarOperandoLiteral(operando2);
 				operando1 = convertirLexemaFlotante(operando1); //Lo hago en caso que sea flotante, sino no afecta en nada igual
@@ -294,6 +323,22 @@ public class GeneradorCodigoAssembler {
 			}
 		}
 	}
+	
+	public static void operadorInicioFuncion(StringBuilder codigo) {
+		String operando = pila.pop();
+		codigo.append("PUSH EBP \n");
+		codigo.append("MOV EBP, ESP \n");
+		codigo.append("SUB ESP, 4 \n");
+		codigo.append("PUSH EDI \n");
+		codigo.append("PUSH ESI \n");
+		if (AnalizadorLexico.TablaDeSimbolos.get(operando).getTipo().getType()=="INTEGER" || AnalizadorLexico.TablaDeSimbolos.get(operando).getTipo().getType()=="OCTAL") {
+			codigo.append("MOV AX, @ParametroRealInt \n");
+			codigo.append("MOV " + operando + ", AX \n \n"); //Primero asigno el valor del ParametroRealInt cuando hago el CALL
+		}
+		else if (AnalizadorLexico.TablaDeSimbolos.get(operando).getTipo().getType()=="DOUBLE") {
+			codigo.append("FSTP " + operando + "\n \n"); //Primero apilo el valor del ParametroRealFloat en ST cuando hago el CALL
+		}
+	}
 
 	
 	
@@ -310,16 +355,17 @@ public class GeneradorCodigoAssembler {
 	
 	public static void imprimirPorPantalla(StringBuilder codigo) {
 		String operando = pila.pop();
-		Simbolo simbOperando = AnalizadorLexico.TablaDeSimbolos.get(operando);
-		System.out.println("Simbolo --> " + simbOperando.toString() + "\n");
+		Simbolo simbOperando = Parser.getVariableFueraDeAmbito(operando);
+		
 		if (simbOperando.getTipo().toString().contains("INTEGER") ||simbOperando.getTipo().toString().contains("OCTAL")) { //Tengo en cuenta primitivos y subtipos
+			operando = simbOperando.getId();
 			codigo.append("invoke printf, cfm$(\"%hi\\n\"), " + operando + "\n \n" ); //Copio el invoke de _inti del archivo de moodle
 		}
 		else if(simbOperando.getTipo().toString().contains("DOUBLE")) { //Tengo en cuenta primitivos y subtipos
+			operando = simbOperando.getId();
 			codigo.append("invoke printf, cfm$(\"%.20Lf\\n\"), " + operando + "\n \n" ); //Copio el invoke de _floati del archivo de moodle
 		}
 		else if(simbOperando.getTipo().toString()==Parser.tipos.get("CADENAMULTILINEA").toString()) {
-			System.out.println("ENTRO AL OUTF CADENAML CON OP: " + operando + "\n");
 			operando = convertirLexemaCadena(operando);
 			codigo.append("");
 			codigo.append("invoke MessageBox, NULL, addr " + operando + ", addr " + operando + ", MB_OK \n \n" );
@@ -341,22 +387,40 @@ public class GeneradorCodigoAssembler {
 		codigo.append("JMP fin" + "\n");
 		return codigo;
 	}
-	
-	public static StringBuilder crearErrorTiposIncompatibles() {
-		StringBuilder codigo = new StringBuilder();
-		codigo.append("Tipos_Incompatibles:" + "\n");
-		codigo.append("invoke MessageBox, NULL, addr Error_TiposIncompatibles, addr Error_TiposIncompatibles, MB_OK \n");
-		codigo.append("JMP fin" + "\n");
-		return codigo;
-	}
 
 	public static String crearAuxiliar(Tipo tipo) {
 		Simbolo simb = new Simbolo();
 		simb.setTipoVar(tipo);
+		simb.setId("@aux" + numAuxiliares);
 		simb.setUso("Var Aux");
 		AnalizadorLexico.TablaDeSimbolos.put("@aux"+numAuxiliares,simb); //Agrego la nueva auxiliar a la TS
 		numAuxiliares++;
 		return("@aux"+(numAuxiliares-1));
+	}
+	
+	public static void crearAuxiliarParametroReal(Tipo tipo) {
+		Simbolo simb = new Simbolo();
+		simb.setTipoVar(tipo);
+		if(tipo.getType()=="INTEGER" || (tipo.getType()=="OCTAL")){
+			simb.setId("@ParametroRealInt");
+			simb.setUso("Var Aux ParametroRealInt");
+			AnalizadorLexico.TablaDeSimbolos.put("@ParametroRealInt",simb);
+		}
+		else if(tipo.getType()=="DOUBLE") {
+			simb.setId("@ParametroRealFloat");
+			simb.setUso("Var Aux ParametroRealFloat");
+			AnalizadorLexico.TablaDeSimbolos.put("@ParametroRealFloat",simb);
+		}
+	}
+	
+	public static String crearAuxiliarRetornoFuncion(Tipo tipo) {
+		Simbolo simb = new Simbolo();
+		simb.setId("@RET"+ultimaFuncion);
+		simb.setUso("Var Aux Retorno Funcion");
+		simb.setTipoVar(tipo);
+		String key = "@RET"+ultimaFuncion;
+		AnalizadorLexico.TablaDeSimbolos.put(key,simb);
+		return key;
 	}
 	
 	public static String comprobarOperandoLiteral(String operando) {
@@ -370,7 +434,6 @@ public class GeneradorCodigoAssembler {
 		switch(AnalizadorLexico.TablaDeSimbolos.get(operando).getTipo().toString()) {
 		case "INTEGER", "integer", "Integer":
 			operando="int"+operando;
-			System.out.println("EL OPERANDO CONVERTIDO ES " + operando + "\n");
 			return operando;
 		case "OCTAL", "octal", "Octal":
 			operando="octi"+operando;
@@ -379,7 +442,6 @@ public class GeneradorCodigoAssembler {
 			operando="float"+operando;
 			return operando;
 		}
-		System.out.println("CONVERTIR OPERANDO LITERAL NO HIZO NADA \n");
 		return operando;
 	}
 	
@@ -408,10 +470,8 @@ public class GeneradorCodigoAssembler {
 	
 	public static StringBuilder generarData() {
 		StringBuilder codigo = new StringBuilder();
-		System.out.println("Entro a GENERAR DATA \n");
 		codigo.append(".data \n");
 		codigo.append("Error_DivisionCero DB \"Error: Division por cero\", 10, 0 \n");
-		codigo.append("Error_TiposIncompatibles DB \"Error: Operacion entre tipos incompatibles\", 10, 0 \n");
 		codigo.append("Error_Overflow DB \"Error: Overflow en producto entre Enteros\", 10, 0 \n");
 		codigo.append("ESPERAR_ACCION_USUARIO DB \"Haga click en ACEPTAR para cerrar el programa y la consola\", 10, 0 \n");
 		for (Map.Entry<String, Simbolo> iterador : AnalizadorLexico.TablaDeSimbolos.entrySet()) {
@@ -425,7 +485,6 @@ public class GeneradorCodigoAssembler {
 				switch (tipoString) {
 					case "INTEGER":
 						if (simbolo.esLiteral()) { //Verifico primero si es una constante literal para saber si le cargo el valor o va el '?'
-							System.out.println("ES LITERAL \n");
 							if(codigo.indexOf("int" + lexema + " DW")==-1) { //Me fijo si en el StringBuilder ya existe algun substring que sea intNumero DW. Si devuelve -1 entonces lo inserto
 								codigo.append("int" + lexema + " DW " + simbolo.getEntero() + "\n");
 							}
@@ -448,7 +507,7 @@ public class GeneradorCodigoAssembler {
 					case "OCTAL": //Me guio del octi DW 077o de test_print
 						if (simbolo.esLiteral()) { //Verifico primero si es una constante literal para saber si le cargo el valor o va el '?'
 							if(codigo.indexOf("octi" + lexema + " DW")==-1) { //Me fijo si en el StringBuilder ya existe algun substring que sea intNumero DW. Si devuelve -1 entonces lo inserto
-								codigo.append("octi" + lexema + " DW " + simbolo.getEntero() + "\n");
+								codigo.append("octi" + lexema + " DW " + simbolo.getEntero() + "o \n");
 							}
 						}
 						else {
@@ -470,6 +529,10 @@ public class GeneradorCodigoAssembler {
 	}
 	
 	public static StringBuilder generarCode() {
+		Tipo tipoINTEGER = new Tipo("INTEGER");
+		Tipo tipoDOUBLE = new Tipo("DOUBLE");
+		crearAuxiliarParametroReal(tipoINTEGER);
+		crearAuxiliarParametroReal(tipoDOUBLE);
 		StringBuilder codigo = new StringBuilder();
 		codigo.append(".code \n \n");
 		//Key polaca main $MAIN
@@ -487,21 +550,16 @@ public class GeneradorCodigoAssembler {
 			
 			if(ambito != "$MAIN") { //Genero el código de las polacas de funciones
 				codigo.append(ambito + ": \n");
-				codigo.append("PUSH EBP \n");
-				codigo.append("MOV EBP, ESP \n");
-				codigo.append("SUB ESP, 4 \n");
-				codigo.append("PUSH EDI \n");
-				codigo.append("PUSH ESI \n");
-				codigo.append(recorrerPolaca(polacaActual) + "\n");
+				
+				codigo.append(recorrerPolaca(polacaActual, ambito) + "\n");
 			}
 		}
 		//Luego de cargar las funciones en .code, recorro la polaca $MAIN
 		codigo.append("start: \n");
-		codigo.append(recorrerPolaca(GeneradorCodigoIntermedio.polacaFuncional.get("$MAIN")));
+		codigo.append(recorrerPolaca(GeneradorCodigoIntermedio.polacaFuncional.get("$MAIN"),"$MAIN"));
 		codigo.append("JMP fin \n \n");
 		codigo.append(crearErrorDivisionPorCero() + "\n");
 		codigo.append(crearErrorOverflow() + "\n");
-		codigo.append(crearErrorTiposIncompatibles() + "\n");
 		codigo.append("fin: \n");
 		codigo.append("invoke MessageBox, NULL, addr ESPERAR_ACCION_USUARIO, addr ESPERAR_ACCION_USUARIO, MB_OK \n");
 		codigo.append("invoke ExitProcess, 0 \n");

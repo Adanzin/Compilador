@@ -15,6 +15,7 @@ public class AS_Int extends AccionSemantica {
 	        	if(!TablaDeSimbolos.containsKey(token.toString())){
 	        		Simbolo simb = new Simbolo();
 	        		int tokenaux = (int)tokenlong;
+	        		simb.setId(token.toString());
 	        		simb.setEntero(tokenaux);
 	        		Parser.tipos.put("INTEGER", new Tipo("INTEGER"));
 	        		simb.setTipoVar(Parser.tipos.get("INTEGER"));	     
@@ -22,13 +23,9 @@ public class AS_Int extends AccionSemantica {
 	        	}else {TablaDeSimbolos.get(token.toString()).incrementarContDeRef();}
 	        	AnalizadorLexico.Lexema = token.toString();  //LE PASO EL ID A LA TABLA DE SIMBOLOS AL PARSER.
 	        }else {
-	        	System.out.println("\u001B[31m"+"Error lexico en la linea " + AnalizadorLexico.saltoDeLinea+" : Constante entera fuera de rango"+"\u001B[0m");
 	    		cargarSalida("Error lexico en la linea " + AnalizadorLexico.saltoDeLinea+" : Constante entera fuera de rango");
 	        }
-	        System.out.println("	╔═ Constante entera "+tokenlong);
-	        cargarSalida("Constante entera "+tokenlong);
     	} catch (NumberFormatException e) {
-        	System.out.println("\u001B[31m"+"Error lexico en la linea " + AnalizadorLexico.saltoDeLinea+" : Constante entera fuera de rango"+"\u001B[0m");
     		cargarSalida("Error lexico en la linea " + AnalizadorLexico.saltoDeLinea+" : Constante entera fuera de rango");
         }
         AnalizadorLexico.SEREPITE=true;

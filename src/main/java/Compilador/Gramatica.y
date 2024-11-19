@@ -12,8 +12,8 @@ import java.io.IOException;
 %% /* Gramatica */
 									/* PROGRAMA */
 																		
-programa	: ID_simple BEGIN sentencias END {cargarErrorEImprimirlo( "\u001B[0m"+"Se identifico el programa "+ $1.sval );}
-			| ID_simple BEGIN END {	cargarErrorEImprimirlo( "\u001B[0m"+"Se identifico el programa "+ $1.sval );}	
+programa	: ID_simple BEGIN sentencias END 
+			| ID_simple BEGIN END 
 			| BEGIN sentencias END {cargarErrorEImprimirlo("\u2718"+"Linea " + AnalizadorLexico.saltoDeLinea + " Error: Falta el nombre del programa ");}
 			| ID_simple BEGIN sentencias {cargarErrorEImprimirlo("\u2718"+"Linea " + AnalizadorLexico.saltoDeLinea + " Error: Falta el delimitador END ");}
 			| ID_simple sentencias END {cargarErrorEImprimirlo("\u2718"+"Linea " + AnalizadorLexico.saltoDeLinea + " Error: Falta el delimitador BEGIN ");}
@@ -39,7 +39,7 @@ sentencia_declarativa 	: declaracion_variable
 						| declaracion_subtipo {cargarErrorEImprimirlo("Linea " + AnalizadorLexico.saltoDeLinea + " Error: Falta ';' al final de la sentencia ");}
 ;
 
-declaracion_variable	: tipo variables ';' {cargarVariables($2.sval,(Tipo)$1.obj," nombre de variable "); cargarErrorEImprimirlo("Linea " + AnalizadorLexico.saltoDeLinea + " declaracion de variables ");}
+declaracion_variable	: tipo variables ';' {cargarVariables($2.sval,(Tipo)$1.obj," nombre de variable "); }
 						| tipo variables error {cargarErrorEImprimirlo("Linea " + AnalizadorLexico.saltoDeLinea + " Error: Falta ';' al final de la sentencia ");}
 ;
 
@@ -56,11 +56,11 @@ tipo_primitivo: INTEGER { if(!tipos.containsKey("INTEGER")){tipos.put("INTEGER",
 							$$.obj = tipos.get("OCTAL");}			
 ;
 
-declaracion_subtipo : TYPEDEF ID_simple ASIGNACION tipo '{' CTE_con_sig ',' CTE_con_sig '}' {if($4.obj != null){cargarVariables($2.sval,cargarSubtipo($2.sval,(Tipo)$4.obj,$6.sval,$8.sval)," nombre de SubTipo ");cargarErrorEImprimirlo("Linea " + AnalizadorLexico.saltoDeLinea +  " declaracion de Subtipo ");}else{cargarErrorEImprimirlo("Linea " + AnalizadorLexico.saltoDeLinea + " Error: No se puede crear una tripla de un tipo no declarado. ");}}
+declaracion_subtipo : TYPEDEF ID_simple ASIGNACION tipo '{' CTE_con_sig ',' CTE_con_sig '}' {if($4.obj != null){cargarVariables($2.sval,cargarSubtipo($2.sval,(Tipo)$4.obj,$6.sval,$8.sval)," nombre de SubTipo ");}else{cargarErrorEImprimirlo("Linea " + AnalizadorLexico.saltoDeLinea + " Error: No se puede crear una tripla de un tipo no declarado. ");}}
                     | TYPEDEF ID_simple ASIGNACION tipo CTE_con_sig ',' CTE_con_sig '}' {cargarErrorEImprimirlo("Linea " + AnalizadorLexico.saltoDeLinea + " Error: Faltan el '{' en el rango ");}
                     | TYPEDEF ID_simple ASIGNACION tipo '{' CTE_con_sig ',' CTE_con_sig {cargarErrorEImprimirlo("Linea " + AnalizadorLexico.saltoDeLinea + " Error: Faltan el '}' en el rango ");}
                     | TYPEDEF ID_simple ASIGNACION tipo CTE_con_sig ',' CTE_con_sig {cargarErrorEImprimirlo("Linea " + AnalizadorLexico.saltoDeLinea + " Error: Faltan ambos '{' '}' en el rango ");}
-                    | TYPEDEF TRIPLE '<' tipo '>' ID_simple  {if($4.obj != null){cargarVariables($6.sval,cargarTripla($6.sval,(Tipo)$4.obj,true)," nombre de Triple ");cargarErrorEImprimirlo("Linea " + AnalizadorLexico.saltoDeLinea +  " declaracion de Triple ");}else{cargarErrorEImprimirlo("Linea " + AnalizadorLexico.saltoDeLinea + " Error: No se puede crear una tripla de un tipo no declarado. ");}}
+                    | TYPEDEF TRIPLE '<' tipo '>' ID_simple  {if($4.obj != null){cargarVariables($6.sval,cargarTripla($6.sval,(Tipo)$4.obj,true)," nombre de Triple ");}else{cargarErrorEImprimirlo("Linea " + AnalizadorLexico.saltoDeLinea + " Error: No se puede crear una tripla de un tipo no declarado. ");}}
 					| TYPEDEF ID_simple ASIGNACION tipo '{' ',' CTE_con_sig '}' {cargarErrorEImprimirlo("Linea " + AnalizadorLexico.saltoDeLinea + " Error: Falta rango inferior ");}
 					| TYPEDEF ID_simple ASIGNACION tipo '{' CTE_con_sig '}' {cargarErrorEImprimirlo("Linea " + AnalizadorLexico.saltoDeLinea + " Error: Falta alguno de los rangos ");}
 					| TYPEDEF ID_simple ASIGNACION tipo '{' CTE_con_sig ',' '}' {cargarErrorEImprimirlo("Linea " + AnalizadorLexico.saltoDeLinea + " Error: Falta rango superior ");}
@@ -82,11 +82,11 @@ declaracion_funciones     : encabezado_funcion parametros_parentesis BEGIN cuerp
 								}                  
 ;
 
-encabezado_funcion 	: tipo FUN ID {$$.sval=$3.sval;cargarVariables($3.sval,(Tipo)$1.obj," nombre de funcion ");agregarAmbito($3.sval);DENTRODELAMBITO.push($3.sval);GeneradorCodigoIntermedio.addNuevaPolaca();cargarErrorEImprimirlo(" Encabezado de la funcion ");}
+encabezado_funcion 	: tipo FUN ID {$$.sval=$3.sval;cargarVariables($3.sval,(Tipo)$1.obj," nombre de funcion ");;agregarAmbito($3.sval);DENTRODELAMBITO.push($3.sval);GeneradorCodigoIntermedio.addNuevaPolaca();}
 					| tipo FUN {cargarErrorEImprimirlo("Linea " + AnalizadorLexico.saltoDeLinea + ": Error: Faltan el nombre en la funcion ");}
 ;
 
-parametros_parentesis: '(' tipo_primitivo ID_simple ')' {$$.obj=$2.obj;cargarVariables($3.sval,(Tipo)$2.obj," nombre de parametro real ");}
+parametros_parentesis: '(' tipo_primitivo ID_simple ')' {$$.obj=$2.obj; GeneradorCodigoIntermedio.addElemento($3.sval + AMBITO.toString()); GeneradorCodigoIntermedio.addElemento("PF");cargarVariables($3.sval,(Tipo)$2.obj," nombre de parametro real ");}
 					| '(' tipo_primitivo ')' {cargarErrorEImprimirlo("Linea " + AnalizadorLexico.saltoDeLinea +" Error: Falta el nombre del parametro en la funcion ");} 
 					| '(' ID_simple ')' {cargarErrorEImprimirlo("Linea " + AnalizadorLexico.saltoDeLinea +" Error: Falta el tipo del parametro en la funcion ");}
                     | '(' ')' {cargarErrorEImprimirlo("Linea " + AnalizadorLexico.saltoDeLinea +" Error: Falta el parametro en la funcion ");}
@@ -96,7 +96,10 @@ parametros_parentesis: '(' tipo_primitivo ID_simple ')' {$$.obj=$2.obj;cargarVar
 cuerpo_funcion	: sentencias {if($1.sval=="RET"){$$.sval="RET";}}
 ;
 
-retorno	: RET '(' expresion_arit ')' {if(!existeFuncion()){cargarErrorEImprimirlo("Linea :" + AnalizadorLexico.saltoDeLinea +  " Error : RETORNO declarado fuera del ambito de una funcion  ");}}
+retorno	: RET '(' expresion_arit ')' {if(!existeFuncion()){cargarErrorEImprimirlo("Linea :" + AnalizadorLexico.saltoDeLinea +  " Error : RETORNO declarado fuera del ambito de una funcion  ");
+										}else{
+											GeneradorCodigoIntermedio.addElemento("RET");
+										}}
 		| RET '('  ')' {cargarErrorEImprimirlo("Linea :" + AnalizadorLexico.saltoDeLinea +  " Error : Falta el parametro del RETORNO  ");
 						if(!existeFuncion())
 										{cargarErrorEImprimirlo("Linea :" + AnalizadorLexico.saltoDeLinea +  " Error : RETORNO declarado fuera del ambito de una funcion  ");
@@ -108,14 +111,14 @@ sentencia_ejecutable	: asignacion
 						| sentencia_IF {if($1.sval=="RET"){$$.sval="RET";}}
 						| sentencia_WHILE
 						| sentencia_goto
-						| ETIQUETA {if(existeEnEsteAmbito($1.sval)){completarBifurcacionAGoto($1.sval+AMBITO.toString());cargarErrorEImprimirlo("Linea :" + AnalizadorLexico.saltoDeLinea + " Se identifico una etiqueta " );}else{cargarErrorEImprimirlo("Linea :" + AnalizadorLexico.saltoDeLinea +  " Error : La ETIQUETA que se pretende bifurcar no existe.  ");}}
+						| ETIQUETA {if(fueDeclarado($1.sval)){completarBifurcacionAGoto($1.sval);}else{cargarErrorEImprimirlo("Linea :" + AnalizadorLexico.saltoDeLinea +  " Error : La ETIQUETA que se pretende bifurcar no existe.  ");}}
 						| outf_rule
 						| retorno {$$.sval="RET";}
 ;
 
-outf_rule    : OUTF '(' expresion_arit ')' {GeneradorCodigoIntermedio.addElemento("OUTF");cargarErrorEImprimirlo("Linea :" + AnalizadorLexico.saltoDeLinea + " Se reconocio OUTF de Expresion Aritmetica ");}
+outf_rule    : OUTF '(' expresion_arit ')' {GeneradorCodigoIntermedio.addElemento("OUTF");}
             | OUTF '(' ')' {cargarErrorEImprimirlo("Linea :" + AnalizadorLexico.saltoDeLinea +  " Error : Falta el parametro del OUTF  ");}
-            | OUTF '(' cadena ')'    {GeneradorCodigoIntermedio.addElemento("OUTF");cargarErrorEImprimirlo("Linea :" + AnalizadorLexico.saltoDeLinea +  " Se reconocio OUTF de cadena de caracteres ");}
+            | OUTF '(' cadena ')'    {GeneradorCodigoIntermedio.addElemento("OUTF");}
             | OUTF '(' sentencias ')'  {cargarErrorEImprimirlo("Linea :" + AnalizadorLexico.saltoDeLinea +  " Error : Parametro incorrecto en sentencia OUTF. ");}
 ;
 
@@ -124,8 +127,8 @@ asignacion	: variable_simple ASIGNACION expresion_arit {if(fueDeclarado($1.sval)
 															GeneradorCodigoIntermedio.addElemento($1.sval+Parser.AMBITO.toString());
 															GeneradorCodigoIntermedio.addElemento(":="); 
 															}else{
-																cargarErrorEImprimirlo("Linea :" + AnalizadorLexico.saltoDeLinea +  " Error:  se invocÃ³ una variable no declarada ");}
-															cargarErrorEImprimirlo("Linea :" + AnalizadorLexico.saltoDeLinea + " Asignacion ");}
+																cargarErrorEImprimirlo("Linea :" + AnalizadorLexico.saltoDeLinea +  " Error:  se invocó una variable no declarada ");}
+															}
 			| variable_simple '{' CTE '}' ASIGNACION expresion_arit  {if(fueDeclarado($1.sval)){
 																		if(Integer.valueOf($3.sval) <= 3){
 																			$$.sval = $1.sval;
@@ -135,30 +138,33 @@ asignacion	: variable_simple ASIGNACION expresion_arit {if(fueDeclarado($1.sval)
 																			GeneradorCodigoIntermedio.addElemento(":="); 
 																			}else{cargarErrorEImprimirlo("Linea :" + AnalizadorLexico.saltoDeLinea +  " Error:  Tripla fuera de rango ");}														
 																	}else{
-																		cargarErrorEImprimirlo("Linea :" + AnalizadorLexico.saltoDeLinea +  " Error:  se invocÃ³ una variable no declarada ");}}
+																		cargarErrorEImprimirlo("Linea :" + AnalizadorLexico.saltoDeLinea +  " Error:  se invocó una variable no declarada ");}}
 			| variable_simple '{' '-' CTE '}' ASIGNACION expresion_arit {cargarErrorEImprimirlo("Linea " + AnalizadorLexico.saltoDeLinea + " Error: no se puede acceder a una posicion negativa de un arreglo ");}
 ;
 
 invocacion	: ID_simple '(' expresion_arit ')' {if(!fueDeclarado($1.sval)){
-													System.out.println(" NO SE DECLARO ");
-													cargarErrorEImprimirlo("Linea :" + AnalizadorLexico.saltoDeLinea +  " Error:  se invocÃ³ una funcion no declarada ");}
-													else{														
-														System.out.println(" llegas hasta aca ");
-														cargarErrorEImprimirlo("Linea :" + AnalizadorLexico.saltoDeLinea + " Invocacion a funcion ");														
-														GeneradorCodigoIntermedio.invocar($1.sval+AMBITO.toString());}																										
-												}
+													cargarErrorEImprimirlo("Linea :" + AnalizadorLexico.saltoDeLinea +  " Error:  se invocó una funcion no declarada ");}
+													else{	
+														if(AnalizadorLexico.TablaDeSimbolos.get($1.sval+AMBITO.toString()).getTipoParFormal()==AnalizadorLexico.TablaDeSimbolos.get($3.sval+AMBITO.toString()).getTipo().getType()){
+															GeneradorCodigoIntermedio.invocar($1.sval+AMBITO.toString());
+														}else{
+															cargarErrorEImprimirlo("Linea :" + AnalizadorLexico.saltoDeLinea +  " Error: El parametro real es incompatible con el parametro formal ");
+														}																																																		
+												}}
 			| ID_simple '(' tipo_primitivo '(' expresion_arit ')' ')' 
 												{if(!fueDeclarado($1.sval)){
-													System.out.println(" CONVERSION ");
-													cargarErrorEImprimirlo("Linea :" + AnalizadorLexico.saltoDeLinea +  " Error:  se invocÃ³ una funcion no declarada ");}
+													cargarErrorEImprimirlo("Linea :" + AnalizadorLexico.saltoDeLinea +  " Error:  se invocó una funcion no declarada ");}
 													else{
-														System.out.println(" CONVERSION ");
-														cargarErrorEImprimirlo("Linea :" + AnalizadorLexico.saltoDeLinea +  " Invocacion con conversion ");
-														GeneradorCodigoIntermedio.invocar($1.sval+AMBITO.toString());}
-												}
+														if(AnalizadorLexico.TablaDeSimbolos.get($1.sval+AMBITO.toString()).getTipoParFormal()==((Tipo)$3.obj).getType()){
+															GeneradorCodigoIntermedio.invocar($1.sval+AMBITO.toString());
+														}else{
+															cargarErrorEImprimirlo("Linea :" + AnalizadorLexico.saltoDeLinea +  " Error: El parametro real se quiere convertir en un tipo incompatible con el parametro formal ");
+														}
+												}}
 			| ID_simple '(' ')' {cargarErrorEImprimirlo("Linea :" + AnalizadorLexico.saltoDeLinea +  " Error:  faltan los parametros reales en la invocacion");}
-			| ID_simple '(' error ')' {cargarErrorEImprimirlo("Linea :" + AnalizadorLexico.saltoDeLinea +  " Error:  Se excedio el numero de parametros en la invocacion (1)");}
+			| ID_simple '(' error ')' {cargarErrorEImprimirlo("Linea :" + AnalizadorLexico.saltoDeLinea +  " Error:  Se excedio el numero de parametros en la invocacion (1)");}
 ;
+
 
 list_expre	: list_expre ',' expresion_arit {$$.ival=$1.ival + 1;}
 			| ',' expresion_arit {cargarErrorEImprimirlo("Linea " + AnalizadorLexico.saltoDeLinea + " Error: Falta de expresion en lista de expresiones.  ");}
@@ -173,7 +179,7 @@ expresion_arit  : expresion_arit '+' termino {GeneradorCodigoIntermedio.addEleme
 				| error '-' error{cargarErrorEImprimirlo("Linea :" + AnalizadorLexico.saltoDeLinea +  " Error:  La expresion esta mal escrita, falta alguno de los operandos o ambos");}
 				| expresion_arit '+' error {cargarErrorEImprimirlo("Linea :" + AnalizadorLexico.saltoDeLinea +  " Error:  La expresion esta mal escrita, falta el operando de la derecha");}
 				| expresion_arit '-' error {cargarErrorEImprimirlo("Linea :" + AnalizadorLexico.saltoDeLinea +  " Error:  La expresion esta mal escrita, falta el operando de la derecha");}
-				| error termino {GeneradorCodigoIntermedio.imprimirPolaca();cargarErrorEImprimirlo("Linea :" + AnalizadorLexico.saltoDeLinea +  " Error:  La expresion esta mal escrita, falta el operador");}
+				| error termino {cargarErrorEImprimirlo("Linea :" + AnalizadorLexico.saltoDeLinea +  " Error:  La expresion esta mal escrita, falta el operador");}
 ;
 
 termino : termino '*' factor {GeneradorCodigoIntermedio.addElemento("*");} 
@@ -185,7 +191,7 @@ termino : termino '*' factor {GeneradorCodigoIntermedio.addElemento("*");}
 		| termino '/' error {cargarErrorEImprimirlo("Linea :" + AnalizadorLexico.saltoDeLinea +  " Error:  La expresion esta mal escrita");}
 ;
 
-factor 	: variable_simple {if(fueDeclarado($1.sval)){System.out.println(" VARSIMPLE "+ $1.sval+Parser.AMBITO.toString());GeneradorCodigoIntermedio.addElemento($1.sval+Parser.AMBITO.toString());AnalizadorLexico.TablaDeSimbolos.get($1.sval).incrementarContDeRef(); $$.sval = $1.sval;}else{cargarErrorEImprimirlo("Linea :" + AnalizadorLexico.saltoDeLinea +  " Error:  se invocÃ³ una variable no declarada ");};}
+factor 	: variable_simple {if(fueDeclarado($1.sval)){GeneradorCodigoIntermedio.addElemento($1.sval+Parser.AMBITO.toString());AnalizadorLexico.TablaDeSimbolos.get($1.sval).incrementarContDeRef(); $$.sval = $1.sval;}else{cargarErrorEImprimirlo("Linea :" + AnalizadorLexico.saltoDeLinea +  " Error:  se invocó una variable no declarada ");};}
 		| CTE_con_sig {GeneradorCodigoIntermedio.addElemento($1.sval);}
 		| invocacion 
 		| variable_simple '{' CTE '}' {if(fueDeclarado($1.sval)){ 
@@ -197,7 +203,7 @@ factor 	: variable_simple {if(fueDeclarado($1.sval)){System.out.println(" VARSIM
 											}else{
 												cargarErrorEImprimirlo("Linea :" + AnalizadorLexico.saltoDeLinea +  " Error:  Tripla fuera de rango ");
 											}
-										}else{cargarErrorEImprimirlo("Linea :" + AnalizadorLexico.saltoDeLinea +  " Error:  se invocÃ³ una variable no declarada ");};}
+										}else{cargarErrorEImprimirlo("Linea :" + AnalizadorLexico.saltoDeLinea +  " Error:  se invocó una variable no declarada ");};}
 		| variable_simple '{' '-' CTE '}' {cargarErrorEImprimirlo("Linea " + AnalizadorLexico.saltoDeLinea + " Error: no se puede acceder a una posicion negativa de un arreglo ");}
 ;
 variables 	: variables ',' variable_simple { $$.sval = $1.sval + "/"+$3.sval;} 
@@ -216,8 +222,8 @@ CTE_con_sig : CTE {if(estaRango($1.sval)) { $$.sval = $1.sval; } }
 			| '-' CTE { cambioCTENegativa($2.sval); $$.sval = "-" + $2.sval;}
 ;				
 
-sentencia_IF: IF condicion THEN bloque_unidad ';' bloque_else ';' END_IF {if($4.sval=="RET" && $6.sval=="RET"){$$.sval="RET";};completarBifurcacionI();cargarErrorEImprimirlo("Linea " + AnalizadorLexico.saltoDeLinea +  ": Sentencia IF ");}
-            | IF condicion THEN bloque_unidad ';' END_IF {$$.sval=$4.sval;completarBifurcacionISinElse();cargarErrorEImprimirlo("Linea " + AnalizadorLexico.saltoDeLinea + ": Sentencia IF ");}
+sentencia_IF: IF condicion THEN bloque_unidad ';' bloque_else ';' END_IF {if($4.sval=="RET" && $6.sval=="RET"){$$.sval="RET";};completarBifurcacionI();}
+            | IF condicion THEN bloque_unidad ';' END_IF {$$.sval=$4.sval;completarBifurcacionISinElse();}
 			| IF condicion THEN bloque_else ';' END_IF {cargarErrorEImprimirlo("Linea " + AnalizadorLexico.saltoDeLinea +  " Error : Falta de contenido en bloque THEN");}
 			| IF condicion THEN END_IF {cargarErrorEImprimirlo("Linea :" + AnalizadorLexico.saltoDeLinea + " Error: Falta de contenido en bloque THEN.");}
 			| IF condicion THEN bloque_unidad ';' ELSE END_IF {{cargarErrorEImprimirlo("Linea " + AnalizadorLexico.saltoDeLinea + " Error : falta cuerpo en el ELSE ");};}
@@ -232,7 +238,7 @@ sentencia_IF: IF condicion THEN bloque_unidad ';' bloque_else ';' END_IF {if($4.
 			| IF condicion THEN bloque_unidad ';' bloque_else ';' error{cargarErrorEImprimirlo("Linea " + AnalizadorLexico.saltoDeLinea + ": Error : Falta el END_IF en IF ");}
 ;
 
-condicion	: '(' '(' list_expre ')' comparador '(' list_expre ')' ')' {if($3.ival == $7.ival){$$.ival=$3.ival;modificarPolacaPM($5.sval,$3.ival);cargarErrorEImprimirlo("Linea " + AnalizadorLexico.saltoDeLinea + ": Condicion con lista de expresiones ");}else{cargarErrorEImprimirlo("Linea " + AnalizadorLexico.saltoDeLinea + "Error : Cantidad de operandor incompatibles en la comparacion ");}}
+condicion	: '(' '(' list_expre ')' comparador '(' list_expre ')' ')' {if($3.ival == $7.ival){$$.ival=$3.ival;modificarPolacaPM($5.sval,$3.ival);}else{cargarErrorEImprimirlo("Linea " + AnalizadorLexico.saltoDeLinea + "Error : Cantidad de operandor incompatibles en la comparacion ");}}
 			| '(' list_expre ')' comparador '(' list_expre ')' ')' {cargarErrorEImprimirlo("Linea " + AnalizadorLexico.saltoDeLinea + "Error : Falta el '(' en la condicion ");}
 			| '(' '(' list_expre ')' comparador '(' list_expre ')' {cargarErrorEImprimirlo("Linea " + AnalizadorLexico.saltoDeLinea + "Error : Falta el ')' en la condicion ");}
 			|'(' list_expre ')' comparador '(' list_expre ')' {cargarErrorEImprimirlo("Linea " + AnalizadorLexico.saltoDeLinea + "Error : Faltan los parentesis en la condicion ");}
@@ -287,12 +293,12 @@ bloque_sent_ejecutables	: bloque_sent_ejecutables ';' bloque_sentencia_simple {i
 bloque_sentencia_simple: sentencia_ejecutable {if($1.sval=="RET"){$$.sval="RET";};}
 ;
 
-cadena	: CADENAMULTILINEA {cargarCadenaMultilinea($1.sval);GeneradorCodigoIntermedio.addElemento($1.sval);cargarErrorEImprimirlo("Linea " + AnalizadorLexico.saltoDeLinea + ": cadena multilinea ");}
+cadena	: CADENAMULTILINEA {cargarCadenaMultilinea($1.sval);GeneradorCodigoIntermedio.addElemento($1.sval);}
 ;
 
 									/* TEMAS PARTICULARES */
 /* Temas 13:  Sentencias de Control */
-sentencia_WHILE	: encabezado_WHILE condicion bloque_unidad {operacionesWhile($2.ival);cargarErrorEImprimirlo("Linea " + AnalizadorLexico.saltoDeLinea + ": Se identifico un WHILE ");}
+sentencia_WHILE	: encabezado_WHILE condicion bloque_unidad {operacionesWhile($2.ival);}
 				| encabezado_WHILE condicion error {cargarErrorEImprimirlo("Linea " + AnalizadorLexico.saltoDeLinea +  " Error: falta el cuerpo del WHILE ");}
 ;	
 
@@ -300,7 +306,9 @@ encabezado_WHILE : WHILE {esWHILE=true;GeneradorCodigoIntermedio.apilar(Generado
 ;
 
 /* Tema 23: goto */
-sentencia_goto	: GOTO ETIQUETA {cargarVariables($2.sval,(Tipo)$1.obj," Etiqueta ");GeneradorCodigoIntermedio.BifurcarAGoto($2.sval+AMBITO.toString());cargarErrorEImprimirlo("Linea " + AnalizadorLexico.saltoDeLinea + ": Sentencia GOTO ");}
+sentencia_goto	: GOTO ETIQUETA { if(!tipos.containsKey("ETIQUETA")){tipos.put("ETIQUETA",new Tipo("ETIQUETA"));}
+								cargarVariables($2.sval,tipos.get("ETIQUETA"),"ETIQUETA");
+								GeneradorCodigoIntermedio.BifurcarAGoto($2.sval);}
 				| GOTO error  {cargarErrorEImprimirlo("Linea :" + AnalizadorLexico.saltoDeLinea + " Error: Falta la etiqueta en GOTO ");}
 ;
 /* Tema 19: Pattern Matching*/
@@ -316,17 +324,15 @@ public static boolean RETORNOELSE = false;
 public static Map<String,Tipo> tipos = new HashMap<>();
 public static boolean esWHILE = false;
 
-	private static void cargarErrorEImprimirlo(String salida) {
-		System.out.println("\u001B[31m"+salida+"\u001B[0m");
+private static void cargarErrorEImprimirlo(String salida) {	
 		try {
-			AnalizadorLexico.sintactico.newLine();  // Agregar un salto de lÃ­nea
+			AnalizadorLexico.sintactico.newLine();  // Agregar un salto de línea
 			AnalizadorLexico.sintactico.write(" "+salida+" ");
-
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-	}
+}
 
 private static void cargarCadenaMultilinea(String cadena){
 	Tipo t = new Tipo("CADENAMULTILINEA");
@@ -346,11 +352,8 @@ private static void opCondicion(String operador){
 };
 
 private static void completarBifurcacionAGoto(String id){
-	System.out.println("BIFURCACION a GOTO "+id+" pos "+GeneradorCodigoIntermedio.getPos());
-	int pos = GeneradorCodigoIntermedio.getGoto(id);
-	System.out.println("BIFURCACION a GOTO "+id+" pos "+ pos);
+	int pos = GeneradorCodigoIntermedio.getGoto(id);	
 	String elm = String.valueOf(GeneradorCodigoIntermedio.getPos());
-	System.out.println("BIFURCACION a GOTO "+id+" pos "+ pos + " elm "+elm);
 	GeneradorCodigoIntermedio.reemplazarElm(elm,pos);
 	GeneradorCodigoIntermedio.addElemento("LABEL"+elm);
 } 
@@ -363,22 +366,22 @@ private static void operacionesWhile(int cantDeOperandos){
 }
 
 private static void completarBifurcacionISinElse(){
-	System.out.println("BIFURCACION POR F");
+	
 	int pos = GeneradorCodigoIntermedio.getPila();
-	System.out.println(pos);
+	
 	String elm = String.valueOf(GeneradorCodigoIntermedio.getPos()+2);
-	System.out.println(elm);
+	
 	GeneradorCodigoIntermedio.reemplazarElm(elm,pos);
 	GeneradorCodigoIntermedio.addElemento("LABEL"+elm);
 
 }
 
 private static void operacionesIF(){
-	System.out.println("BIFURCACION POR F");
+	
 	int pos = GeneradorCodigoIntermedio.getPila();
-	System.out.println(pos);
+	
 	String elm = String.valueOf(GeneradorCodigoIntermedio.getPos()+2);
-	System.out.println(elm);
+	
 	GeneradorCodigoIntermedio.reemplazarElm(elm,pos);
 	GeneradorCodigoIntermedio.bifurcarI();
 	GeneradorCodigoIntermedio.addElemento("LABEL"+elm);
@@ -386,15 +389,15 @@ private static void operacionesIF(){
 }
 
 private static void completarBifurcacionF(){
-	System.out.println("BIFURCACION POR F");
+	
 	int pos = GeneradorCodigoIntermedio.getPila();
-	System.out.println(pos);
+	
 	String elm = String.valueOf(GeneradorCodigoIntermedio.getPos()+2);
-	System.out.println(elm);
+	
 	GeneradorCodigoIntermedio.reemplazarElm(elm,pos);
 }
 private static void completarBifurcacionI(){
-	System.out.println("BIFURCACION POR I ");
+	
 	int pos = GeneradorCodigoIntermedio.getPila();
 	String elm = String.valueOf(GeneradorCodigoIntermedio.getPos());
 	GeneradorCodigoIntermedio.reemplazarElm(elm,pos);
@@ -418,7 +421,7 @@ private static Tipo getTipoDef(String id){
 }
 
 private static Tipo cargarSubtipo(String name, Tipo t,  String min, String max){
-	System.out.println(" el tipo es " + t.toString());
+	
 	if(t.esSubTipo()){
 		cargarErrorEImprimirlo( "Linea :" +" No se puede declarar un subTipo de un tipo definido por el usuario ");
 	}else if(t.esTripla()){
@@ -432,7 +435,7 @@ private static Tipo cargarSubtipo(String name, Tipo t,  String min, String max){
 }
 
 private static Tipo cargarTripla(String name, Tipo t, boolean tripla){
-	System.out.println(" el tipo es " + t.toString());
+	
 	if(t.esSubTipo()){
 		cargarErrorEImprimirlo( "Linea :" + " No se puede declarar un subTipo de un tipo definido por el usuario ");
 	}else if(t.esTripla()){
@@ -444,39 +447,55 @@ private static Tipo cargarTripla(String name, Tipo t, boolean tripla){
 }
 
 private static boolean fueDeclarado(String id){
-	System.out.println("  > Buscando la declaracion < ");
+	
     String ambitoActual = AMBITO.toString(); // Convertimos AMBITO (StringBuilder) a String
 
     while (true) {
-        // Construimos la clave: id + Ã¡mbito actual
+        // Construimos la clave: id + ámbito actual
         String key = id + ambitoActual;
-		//System.out.println("  > Key buscada "+ key + "En el ambito "+ ambitoActual);
-
         // Buscamos en el mapa
         if (AnalizadorLexico.TablaDeSimbolos.containsKey(key)) {
             return AnalizadorLexico.TablaDeSimbolos.get(key).estaDeclarada(); // Si la clave existe, devolvemos el valor
         }
 
-        // Reducimos el Ã¡mbito: eliminamos el Ãºltimo ':NIVEL'
+        // Reducimos el ámbito: eliminamos el último ':NIVEL'
         int pos = ambitoActual.lastIndexOf("$");
         if (pos == -1) {
-            break; // Si ya no hay mÃ¡s Ã¡mbitos, salimos del ciclo
+            break; // Si ya no hay más ámbitos, salimos del ciclo
         }
 
-        // Reducimos el Ã¡mbito actual
+        // Reducimos el ámbito actual
         ambitoActual = ambitoActual.substring(0, pos);
     }
 
-    // Si no se encuentra en ningÃºn Ã¡mbito, lanzamos un error o devolvemos null
-    throw new RuntimeException( "Linea :" + AnalizadorLexico.saltoDeLinea +"Error: ID '" + id + "' no encontrado en ningÃºn Ã¡mbito.");
+    // Si no se encuentra en ningún ámbito, lanzamos un error o devolvemos null
+    throw new RuntimeException( "Linea :" + AnalizadorLexico.saltoDeLinea +"Error: ID '" + id + "' no encontrado en ningún ámbito.");
+}
+
+public static Simbolo getVariableFueraDeAmbito(String id){
+    String ambitoActual = AMBITO.toString(); // Convertimos AMBITO (StringBuilder) a String
+    String key = id;
+    while (true) {
+        // Construimos la clave: id + ámbito actual
+
+        // Buscamos en el mapa
+        if (AnalizadorLexico.TablaDeSimbolos.containsKey(key)) {
+            return AnalizadorLexico.TablaDeSimbolos.get(key); // Si la clave existe, devolvemos el valor
+        }
+
+        // Reducimos el ámbito: eliminamos el último '$NIVEL'
+        int pos = key.lastIndexOf("$");
+
+        // Reducimos el ámbito actual
+        key = key.substring(0,pos);
+    }
 }
 private static boolean existeEnEsteAmbito(String id){
 	//System.out.println("  > Buscando la declaracion < ");
     String ambitoActual = AMBITO.toString(); // Convertimos AMBITO (StringBuilder) a String
 
-    // Construimos la clave: id + Ã¡mbito actual
+    // Construimos la clave: id + ámbito actual
     String key = id + ambitoActual;
-		System.out.println(" Se busca la existencia de "+ key);
 	//System.out.println("  > Key buscada "+ key + "En el ambito "+ ambitoActual);
 
     // Buscamos en el mapa
@@ -487,23 +506,30 @@ private static boolean existeEnEsteAmbito(String id){
 }
 
 private static void cargarVariables(String variables, Tipo tipo, String uso){
-	System.out.println(variables);
 	String[] var = getVariables(variables,"/");
 	for (String v : var) {
-		if(!existeEnEsteAmbito(v)){
+		if(tipo.getType() != "ETIQUETA"){
+			if(!existeEnEsteAmbito(v)){
 			if(tipo.getType()=="CADENAMULTILINEA"){
 				addTipo(v,tipo);
 				addUso(v,uso);
 				declarar(v);
 			}else{
 				addAmbitoID(v);
+				AnalizadorLexico.TablaDeSimbolos.get(v+AMBITO.toString()).setAmbitoVar(AMBITO.toString()+"$"+v);
 				addTipo(v+AMBITO.toString(),tipo);
 				addUso(v+AMBITO.toString(),uso);
 				declarar(v+AMBITO.toString());
 			}
-		}else{
+			}else{
 			cargarErrorEImprimirlo("Linea :" + AnalizadorLexico.saltoDeLinea +"  La variable  " + v + " ya fue declarada.");
+			}
+		}else{
+			addTipo(v,tipo);
+			addUso(v,uso);
+			declarar(v);
 		}
+
     }
 
 }
@@ -517,10 +543,10 @@ private static void addUso(String id,String uso){
 private static String[] getVariables(String var, String separador) {
     // Verifica si el string contiene '/'
     if (!var.contains(separador)) {
-        // Retorna un arreglo vacÃ­o o el string completo como Ãºnico elemento
+        // Retorna un arreglo vacío o el string completo como único elemento
         return new String[] { var };
     }
-    // Usa split() para dividir el String por el carÃ¡cter '/'
+    // Usa split() para dividir el String por el carácter '/'
     String[] variables = var.split(separador);
     return variables;
 }
@@ -541,7 +567,6 @@ private static void sacarAmbito() {
 }
 
 private static void addAmbitoID(String id) {
-	System.out.println(" add ambito ID :"+ id +" "+ AnalizadorLexico.TablaDeSimbolos.get(id).toString());
 	AnalizadorLexico.TablaDeSimbolos.get(id).agregarAmbito(AMBITO.toString());
 }
 
@@ -564,7 +589,6 @@ private static void cambioCTENegativa(String key) {
 			AnalizadorLexico.TablaDeSimbolos.put(keyNeg, AnalizadorLexico.TablaDeSimbolos.get(key).getCopiaNeg());
 		}
 		AnalizadorLexico.TablaDeSimbolos.get(keyNeg).incrementarContDeRef();
-		System.out.println("Linea " + AnalizadorLexico.saltoDeLinea +  " se reconocio token negativo ");
 		// es ultimo ya decrementa
 		if (AnalizadorLexico.TablaDeSimbolos.get(key).esUltimo()) {
 			AnalizadorLexico.TablaDeSimbolos.remove(key);
