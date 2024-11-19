@@ -36,6 +36,8 @@ MOV AX, int15000
 MOV a$MAIN, AX
 
  
+JMP LABEL32
+ 
 MOV AX, octi077
 MOV c$MAIN, AX
 
@@ -47,6 +49,8 @@ MOV d$MAIN, AX
 MOV AX, octi01
 MOV e$MAIN, AX
 
+ 
+JMP LABEL32
  
 MOV AX, c$MAIN
 ADD AX,d$MAIN
@@ -76,6 +80,7 @@ MOV @aux4,AX
  
 invoke printf, cfm$("%hi\n"), @aux4
  
+LABEL32: 
 MOV AX, e$MAIN
 SUB AX,d$MAIN
 MOV @aux5,AX

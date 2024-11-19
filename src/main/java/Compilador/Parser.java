@@ -803,15 +803,21 @@ final static String yyrule[] = {
 "sentencia_goto : GOTO error",
 };
 
-//#line 318 "gramatica.y"
+//#line 317 "gramatica.y"
 	
 public static StringBuilder AMBITO = new StringBuilder("$MAIN");																 
 public static Stack<String> DENTRODELAMBITO = new Stack<String>(); 
-public static boolean RETORNO = false;
 public static boolean RETORNOTHEN = false;
 public static boolean RETORNOELSE = false;
 public static Map<String,Tipo> tipos = new HashMap<>();
 public static boolean esWHILE = false;
+static{
+	tipos.put("INTEGER", new Tipo("INTEGER"));
+	tipos.put("DOUBLE", new Tipo("DOUBLE"));
+	tipos.put("OCTAL", new Tipo("OCTAL"));
+	tipos.put("ETIQUETA", new Tipo("ETIQUETA"));
+}
+
 
 private static void cargarErrorEImprimirlo(String salida) {	
 		try {
@@ -841,13 +847,16 @@ private static void opCondicion(String operador){
 };
 
 private static void completarBifurcacionAGoto(String id){
-	int pos = GeneradorCodigoIntermedio.getGoto(id);	
+	System.out.println("BIFURCACION a GOTO "+id+" pos "+GeneradorCodigoIntermedio.getPos());
+	int pos = GeneradorCodigoIntermedio.getGoto(id);
 	String elm = String.valueOf(GeneradorCodigoIntermedio.getPos());
-	GeneradorCodigoIntermedio.reemplazarElm(elm,pos);
+	while (pos!=-1){
+		System.out.println(">>>>>Se agrega " + elm + " en la posicion " + pos);
+		GeneradorCodigoIntermedio.reemplazarElm(elm,pos);
+		pos = GeneradorCodigoIntermedio.getGoto(id);
+	}
 	GeneradorCodigoIntermedio.addElemento("LABEL"+elm);
 } 
-
-
 
 private static void operacionesWhile(int cantDeOperandos){
 	completarBifurcacionF();
@@ -1098,7 +1107,7 @@ private static boolean estaRango(String key) {
 	}
 	return true;
 }
-//#line 1029 "Parser.java"
+//#line 1038 "Parser.java"
 //###############################################################
 // method: yylexdebug : check lexer state
 //###############################################################
@@ -1840,15 +1849,14 @@ case 148:
 break;
 case 149:
 //#line 309 "gramatica.y"
-{ if(!tipos.containsKey("ETIQUETA")){tipos.put("ETIQUETA",new Tipo("ETIQUETA"));}
-								cargarVariables(val_peek(0).sval,tipos.get("ETIQUETA"),"ETIQUETA");
+{cargarVariables(val_peek(0).sval,tipos.get("ETIQUETA"),"ETIQUETA");
 								GeneradorCodigoIntermedio.BifurcarAGoto(val_peek(0).sval);}
 break;
 case 150:
-//#line 312 "gramatica.y"
+//#line 311 "gramatica.y"
 {cargarErrorEImprimirlo("Linea :" + AnalizadorLexico.saltoDeLinea + " Error: Falta la etiqueta en GOTO ");}
 break;
-//#line 1774 "Parser.java"
+//#line 1782 "Parser.java"
 //########## END OF USER-SUPPLIED ACTIONS ##########
     }//switch
     //#### Now let's reduce... ####

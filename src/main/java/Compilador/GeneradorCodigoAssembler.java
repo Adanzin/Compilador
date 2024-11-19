@@ -2,7 +2,6 @@ package main.java.Compilador;
 
 import java.util.Stack;
 import java.util.HashMap;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Map;
 
@@ -592,12 +591,8 @@ public class GeneradorCodigoAssembler {
 		codigo.append(generarEncabezado());
 		codigo.append(generarData() + "\n");
 		codigo.append(seccionCode);
-
-        try {
-			CreacionDeSalidas.Assembler.write(codigo.toString());
-			CreacionDeSalidas.Assembler.flush();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		
+		CreacionDeSalidas.writeAssembler(codigo.toString());
+		
 	}
 }

@@ -9,7 +9,7 @@ public class GeneradorCodigoIntermedio {
 	public static Map<String, ArrayList<String>> polacaFuncional = new HashMap<>();
 	public static Map<String,Stack<Integer>> Pilas = new HashMap<>();
 	public static Map<String,Integer> pos = new HashMap<>();
-    public static Map<String, Integer> BaulDeGoto = new HashMap<>();  
+    public static Map<String,Stack<Integer>> BaulDeGoto = new HashMap<>();  
     static {
         polacaFuncional.put("$MAIN", new ArrayList<String>());
         Pilas.put("$MAIN", new Stack<Integer>());
@@ -120,12 +120,17 @@ public class GeneradorCodigoIntermedio {
 		pos.put(Parser.AMBITO.toString(),pos.get(Parser.AMBITO.toString())+1); //pos++;
 	}
 	public static void addGoto(String id) {
-		BaulDeGoto.put(id, pos.get(Parser.AMBITO.toString()));
-		System.out.println(BaulDeGoto.toString());
+		if(BaulDeGoto.get(id)==null) {
+			BaulDeGoto.put(id,new Stack<Integer>());	
+		}
+		BaulDeGoto.get(id).push(pos.get(Parser.AMBITO.toString()));
 	}
 	public static int getGoto(String id) {
 		System.out.println(BaulDeGoto.toString());
-		return BaulDeGoto.get(id);
+		if(BaulDeGoto.get(id).isEmpty()) {
+			return -1;
+		}
+		return BaulDeGoto.get(id).pop();
 	}
 	public static void bifurcarFaux(ArrayList<String> aux, int posAux) {
 		apilar(posAux);

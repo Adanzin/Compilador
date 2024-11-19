@@ -46,7 +46,7 @@ public class Main {
         System.out.println("       ");
         System.out.println("       >>>>>  TABLA DE SIMBOLOS <<<<<");
         getSimbolos();
-		if (CreacionDeSalidas.outputlexico.length()==0 && CreacionDeSalidas.outputsintactico.length()==0) {
+		if (CreacionDeSalidas.getOutputLexico().length()==0 && CreacionDeSalidas.getOutputSintactico().length()==0) {
 			// Si es null que se ejecute polaca y assembler
 			System.out.println("       ");
 			System.out.println("       >>>>>  TIPOS   <<<<<");

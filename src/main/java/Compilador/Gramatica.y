@@ -306,8 +306,7 @@ encabezado_WHILE : WHILE {esWHILE=true;GeneradorCodigoIntermedio.apilar(Generado
 ;
 
 /* Tema 23: goto */
-sentencia_goto	: GOTO ETIQUETA { if(!tipos.containsKey("ETIQUETA")){tipos.put("ETIQUETA",new Tipo("ETIQUETA"));}
-								cargarVariables($2.sval,tipos.get("ETIQUETA"),"ETIQUETA");
+sentencia_goto	: GOTO ETIQUETA {cargarVariables($2.sval,tipos.get("ETIQUETA"),"ETIQUETA");
 								GeneradorCodigoIntermedio.BifurcarAGoto($2.sval);}
 				| GOTO error  {cargarErrorEImprimirlo("Linea :" + AnalizadorLexico.saltoDeLinea + " Error: Falta la etiqueta en GOTO ");}
 ;
@@ -318,11 +317,17 @@ sentencia_goto	: GOTO ETIQUETA { if(!tipos.containsKey("ETIQUETA")){tipos.put("E
 %%	
 public static StringBuilder AMBITO = new StringBuilder("$MAIN");																 
 public static Stack<String> DENTRODELAMBITO = new Stack<String>(); 
-public static boolean RETORNO = false;
 public static boolean RETORNOTHEN = false;
 public static boolean RETORNOELSE = false;
 public static Map<String,Tipo> tipos = new HashMap<>();
 public static boolean esWHILE = false;
+static{
+	tipos.put("INTEGER", new Tipo("INTEGER"));
+	tipos.put("DOUBLE", new Tipo("DOUBLE"));
+	tipos.put("OCTAL", new Tipo("OCTAL"));
+	tipos.put("ETIQUETA", new Tipo("ETIQUETA"));
+}
+
 
 private static void cargarErrorEImprimirlo(String salida) {	
 		try {
@@ -352,13 +357,16 @@ private static void opCondicion(String operador){
 };
 
 private static void completarBifurcacionAGoto(String id){
-	int pos = GeneradorCodigoIntermedio.getGoto(id);	
+	System.out.println("BIFURCACION a GOTO "+id+" pos "+GeneradorCodigoIntermedio.getPos());
+	int pos = GeneradorCodigoIntermedio.getGoto(id);
 	String elm = String.valueOf(GeneradorCodigoIntermedio.getPos());
-	GeneradorCodigoIntermedio.reemplazarElm(elm,pos);
+	while (pos!=-1){
+		System.out.println(">>>>>Se agrega " + elm + " en la posicion " + pos);
+		GeneradorCodigoIntermedio.reemplazarElm(elm,pos);
+		pos = GeneradorCodigoIntermedio.getGoto(id);
+	}
 	GeneradorCodigoIntermedio.addElemento("LABEL"+elm);
 } 
-
-
 
 private static void operacionesWhile(int cantDeOperandos){
 	completarBifurcacionF();
