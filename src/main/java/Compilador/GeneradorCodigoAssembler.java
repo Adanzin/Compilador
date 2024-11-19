@@ -308,11 +308,11 @@ public class GeneradorCodigoAssembler {
 			} else if(tipoOperando.getType()=="DOUBLE") {
 				operando1 = comprobarOperandoLiteral(operando1);
 				operando2 = comprobarOperandoLiteral(operando2);
-				operando1 = convertirLexemaFlotante(operando1);
-				operando2 = convertirLexemaFlotante(operando2);
+				operando1 = convertirLexemaFlotante(operando1); //Convierto a los lexema flotantes
+				operando2 = convertirLexemaFlotante(operando2); //Convierto a los lexema flotantes
 				codigo.append("FLD " + operando2 + "\n"); //Apilo el operando2
 				codigo.append("FLD " + operando1 + "\n"); //Apilo el operando1
-				codigo.append("FCOMPP"  + "\n"); 
+				codigo.append("FCOMPP"  + "\n"); //Compara los operandos extrayendo ambos operandos de la pila
 				codigo.append("FSTSW AX \n");
 				codigo.append("SAHF \n \n");
 			}
@@ -326,7 +326,8 @@ public class GeneradorCodigoAssembler {
 		codigo.append("SUB ESP, 4 \n");
 		codigo.append("PUSH EDI \n");
 		codigo.append("PUSH ESI \n");
-		if (AnalizadorLexico.TablaDeSimbolos.get(operando).getTipo().getType()=="INTEGER" || AnalizadorLexico.TablaDeSimbolos.get(operando).getTipo().getType()=="OCTAL") {
+		if (AnalizadorLexico.TablaDeSimbolos.get(operando).getTipo().getType()=="INTEGER" || 
+				AnalizadorLexico.TablaDeSimbolos.get(operando).getTipo().getType()=="OCTAL") {
 			codigo.append("MOV AX, @ParametroRealInt \n");
 			codigo.append("MOV " + operando + ", AX \n \n"); //Primero asigno el valor del ParametroRealInt cuando hago el CALL
 		}
