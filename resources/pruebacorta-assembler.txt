@@ -12,27 +12,18 @@ printf PROTO C : VARARG
 Error_DivisionCero DB "Error: Division por cero", 10, 0 
 Error_Overflow DB "Error: Overflow en producto entre Enteros", 10, 0 
 ESPERAR_ACCION_USUARIO DB "Haga click en ACEPTAR para cerrar el programa y la consola", 10, 0 
-b$MAIN DW ?
+tripleintb$MAIN DW ?, ?, ? 
 @ParametroRealInt DW ?
 @ParametroRealFloat DQ ?
-int2 DW 2
+subtypeintflotadito$MAIN DW ?, -6, -8
 int6 DW 6
 int8 DW 8
-a$MAIN DW ?
+subtypeinta$MAIN DW ?, -6, -8
+tripleinttint$MAIN DW ?, ?, ? 
 
 .code 
  
 start: 
-MOV AX, int2
-MOV a$MAIN, AX
-
- 
-MOV AX, a$MAIN
-MOV c$MAIN, AX
-
- 
-invoke printf, cfm$("%hi\n"), a$MAIN
- 
 JMP fin 
  
 Divison_Por_Cero:

@@ -38,7 +38,7 @@ public class GeneradorCodigoIntermedio {
 		        int a=0;
 		        // Imprimir los elementos de la lista `polaca` con formato de 2 dígitos
 		        for (String elemento : polaca) {
-		        	 System.out.print(" | " + elemento);
+		        	 System.out.println("["+a+" | " + elemento);
 		            a++;
 		        }
 		    }

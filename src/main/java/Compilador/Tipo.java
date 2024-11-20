@@ -1,8 +1,5 @@
 package main.java.Compilador;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-
 public class Tipo {
     private String type=null; 
     private boolean subTipo=false;
@@ -13,16 +10,25 @@ public class Tipo {
 	public Tipo(String t) {
 		this.type=t;
     }
-	public Tipo(String t,double rangInferior, double rangSuperior) {
+	public Tipo(String t, double rangInferior, double rangSuperior) {
         this.type=t;
         this.subTipo=true;
         this.rangInferior=rangInferior;
         this.rangSuperior=rangSuperior;
     }
+	
 	public Tipo(String t, boolean tri) {
         this.type=t;
         this.triple=tri;
     }
+	
+	public double getRangoInferior() {
+		return this.rangInferior;
+	}
+	
+	public double getRangoSuperior() {
+		return this.rangSuperior;
+	}
 	
 	public boolean esSubTipo() {
 		return subTipo;

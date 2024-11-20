@@ -148,7 +148,9 @@ invocacion	: ID_simple '(' expresion_arit ')' {if(!fueDeclarado($1.sval)){
 														if(AnalizadorLexico.TablaDeSimbolos.get($1.sval+AMBITO.toString()).getTipoParFormal()==AnalizadorLexico.TablaDeSimbolos.get($3.sval+AMBITO.toString()).getTipo().getType()){
 															GeneradorCodigoIntermedio.invocar($1.sval+AMBITO.toString());
 														}else{
-															cargarErrorEImprimirlo("Linea :" + AnalizadorLexico.saltoDeLinea +  " Error: El parametro real es incompatible con el parametro formal ");
+															cargarErrorEImprimirlo("Linea :" + AnalizadorLexico.saltoDeLinea +  " Error: Tipos incompatibles entre  "
+															 + AnalizadorLexico.TablaDeSimbolos.get($1.sval+AMBITO.toString()).getTipoParFormal()
+															  + " y " +AnalizadorLexico.TablaDeSimbolos.get($3.sval+AMBITO.toString()).getTipo().getType());
 														}																																																		
 												}}
 			| ID_simple '(' tipo_primitivo '(' expresion_arit ')' ')' 
@@ -158,7 +160,9 @@ invocacion	: ID_simple '(' expresion_arit ')' {if(!fueDeclarado($1.sval)){
 														if(AnalizadorLexico.TablaDeSimbolos.get($1.sval+AMBITO.toString()).getTipoParFormal()==((Tipo)$3.obj).getType()){
 															GeneradorCodigoIntermedio.invocar($1.sval+AMBITO.toString());
 														}else{
-															cargarErrorEImprimirlo("Linea :" + AnalizadorLexico.saltoDeLinea +  " Error: El parametro real se quiere convertir en un tipo incompatible con el parametro formal ");
+															cargarErrorEImprimirlo("Linea :" + AnalizadorLexico.saltoDeLinea +  " Error: Tipos incompatibles entre  "
+															 + AnalizadorLexico.TablaDeSimbolos.get($1.sval+AMBITO.toString()).getTipoParFormal()
+															  + " y " +((Tipo)$3.obj).getType());
 														}
 												}}
 			| ID_simple '(' ')' {cargarErrorEImprimirlo("Linea :" + AnalizadorLexico.saltoDeLinea +  " Error:  faltan los parametros reales en la invocacion");}

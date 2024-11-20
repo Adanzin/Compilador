@@ -1,9 +1,7 @@
 program
 begin  
-	integer a,b;	 
+	TYPEDEF TRIPLE < integer > tint;
 	TYPEDEF flotadito := integer {-6, -8};
-	flotadito c;
-	a:=2;
-	c := a;
-	OUTF(a);
+	flotadito a;
+	tint b;
 End

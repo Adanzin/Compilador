@@ -1,13 +1,11 @@
 package main.java.Compilador;
 
 import java.util.Stack;
-import java.util.HashMap;
 import java.util.ArrayList;
 import java.util.Map;
 
 public class GeneradorCodigoAssembler {
 	
-	public static Map<String, StringBuilder> codigoAssembler = new HashMap<>();
 	public static Stack<String> pila = new Stack<String>();
 	
 	public static int numAuxiliares = 1;
@@ -251,18 +249,29 @@ public class GeneradorCodigoAssembler {
 		operando = simbOperando.getId();
 		Tipo tipoOperando = AnalizadorLexico.TablaDeSimbolos.get(operando).getTipo();
 		operando = comprobarOperandoLiteral(operando);
+		//Lo siguiente que hago es invertir nombrePolaca que en realidad es el ambito para que 
+		//pase de ser, por ejemplo, $MAIN$nombrefun a nombrefun$MAIN$ y luego uso el metodo que lo busca en la TS por ambito
+		Simbolo retorno = Parser.getVariableFueraDeAmbito(invertirAmbito(nombrePolaca));
 		switch (elemento) {
 			case "INTEGER", "OCTAL", "DOUBLE":
 				operadorConversion(operando, elemento, codigo, tipoOperando);
 				break;
 			case "RET":
-				codigo.append("MOV AX, " + operando + "\n"); //Guardo la variable que quiero retornar en AX
-				codigo.append("MOV @RET" + nombrePolaca + ", AX" + "\n");
-				codigo.append("POP ESI \n");
-				codigo.append("POP EDI \n");
-				codigo.append("MOV ESP, EBP \n");
-				codigo.append("POP EBP \n");
-				codigo.append("RET" + "\n \n");
+				if(retorno.sonCompatibles(simbOperando)) {
+					System.out.println("nombre polaca: " + nombrePolaca);
+					codigo.append("MOV AX, " + operando + "\n"); //Guardo la variable que quiero retornar en AX
+					codigo.append("MOV @RET" + nombrePolaca + ", AX" + "\n");
+					codigo.append("POP ESI \n");
+					codigo.append("POP EDI \n");
+					codigo.append("MOV ESP, EBP \n");
+					codigo.append("POP EBP \n");
+					codigo.append("RET" + "\n \n");
+				}
+				else {
+					System.out.println("SE ESTA RETORNANDO UN TIPO DIFERENTE AL DE LA FUNCION \n");
+					System.exit(1); //Termino la ejecución del compilador por error en etapa de compilacion
+				}
+				
 				break;
 		}
 	}
@@ -451,6 +460,19 @@ public class GeneradorCodigoAssembler {
 		return operando.replace("\r", "").replace("\n", "_").replace('.', '@').replace("+", "").replace('-', '_').replace("[", "").replace("]", "").replaceAll("\\s+", "_");
 	}
 	
+	public static String invertirAmbito(String operando) {
+		String[] ambitos = operando.split("\\$"); //Recorto el operando y cargo el arreglo de String con los recortes
+		
+		StringBuilder resultado = new StringBuilder();
+		for (int i=ambitos.length-1;i>=0;i--) {
+			resultado.append(ambitos[i]); //Primero cargo el elemento del arreglo
+			if (i>0) {
+				resultado.append("$"); //Luego de haber cargado el elemento, concateno el $
+			}
+		}
+		return resultado.toString(); //Devuelvo el toString.
+	}
+	
 	
 	
 	
@@ -469,57 +491,90 @@ public class GeneradorCodigoAssembler {
 		codigo.append(".data \n");
 		codigo.append("Error_DivisionCero DB \"Error: Division por cero\", 10, 0 \n");
 		codigo.append("Error_Overflow DB \"Error: Overflow en producto entre Enteros\", 10, 0 \n");
-		codigo.append("ESPERAR_ACCION_USUARIO DB \"Haga click en ACEPTAR para cerrar el programa y la consola\", 10, 0 \n");
+		codigo.append(
+				"ESPERAR_ACCION_USUARIO DB \"Haga click en ACEPTAR para cerrar el programa y la consola\", 10, 0 \n");
 		for (Map.Entry<String, Simbolo> iterador : AnalizadorLexico.TablaDeSimbolos.entrySet()) {
-			
+
 			String lexema = iterador.getKey();
 			Simbolo simbolo = iterador.getValue();
 			Tipo tipo = simbolo.getTipoVar();
-			if(tipo != null) {
+			if (tipo != null) {
 				String tipoString = tipo.toString();
 
-				switch (tipoString) {
-					case "INTEGER":
-						if (simbolo.esLiteral()) { //Verifico primero si es una constante literal para saber si le cargo el valor o va el '?'
-							if(codigo.indexOf("int" + lexema + " DW")==-1) { //Me fijo si en el StringBuilder ya existe algun substring que sea intNumero DW. Si devuelve -1 entonces lo inserto
+				if (tipoString.contains("INTEGER")) {
+					if(tipo.esSubTipo()) {
+						if (codigo.indexOf("subtypeint" + lexema + " DW") == -1) { // Me fijo si en el StringBuilder ya existe algun substring que sea intNumero DW. Si devuelve -1 entonces lo inserto
+							codigo.append("subtypeint" + lexema + " DW ?, " + (int)tipo.getRangoInferior() + ", " + (int)tipo.getRangoSuperior() + "\n"); //Declaro la variable como un arreglo de 3 donde el primer elemento es el valor y los otros los rangos
+						}
+					}
+					else if(tipo.esTripla()) {
+						if (codigo.indexOf("tripleint" + lexema + " DW") == -1) { // Me fijo si en el StringBuilder ya existe algun substring que sea intNumero DW. Si devuelve -1 entonces lo inserto
+							codigo.append("tripleint" + lexema + " DW ?, ?, ? " + "\n"); //Declaro la variable como un arreglo de 3 valores
+						}
+					}
+					else {
+						if (simbolo.esLiteral()) { // Verifico primero si es una constante literal para saber si le cargo el valor o va el '?'
+							if (codigo.indexOf("int" + lexema + " DW") == -1) { // Me fijo si en el StringBuilder ya existe algun substring que sea intNumero DW. Si devuelve -1 entonces lo inserto
 								codigo.append("int" + lexema + " DW " + simbolo.getEntero() + "\n");
 							}
-						}
+						} 
 						else {
 							codigo.append(lexema + " DW ?" + "\n");
 						}
-						break;
-					case "DOUBLE":
-						if (simbolo.esLiteral()) { //Verifico primero si es una constante literal para saber si le cargo el valor o va el '?'
-							lexema = convertirLexemaFlotante(lexema);
-							if(codigo.indexOf("float" + lexema + " DQ")==-1) { //Me fijo si en el StringBuilder ya existe algun substring que sea intNumero DQ. Si devuelve -1 entonces lo inserto
-								codigo.append("float" + lexema + " DQ " + simbolo.getDoub() + "\n");
-							}
+					}
+				}
+				else if (tipoString.contains("DOUBLE")) {
+					if(tipo.esSubTipo()) {
+						if (codigo.indexOf("subtypefloat" + lexema + " DQ") == -1) { // Me fijo si en el StringBuilder ya existe algun substring que sea intNumero DW. Si devuelve -1 entonces lo inserto
+							codigo.append("subtypefloat" + lexema + " DQ ?, " + tipo.getRangoInferior() + ", " + tipo.getRangoSuperior() + "\n"); //Declaro la variable como un arreglo de 3 donde el primer elemento es el valor y los otros los rangos
 						}
-						else {
-							codigo.append(lexema + " DQ ?" + "\n");
+					}
+					else if(tipo.esTripla()) {
+						if (codigo.indexOf("triplefloat" + lexema + " DQ") == -1) { // Me fijo si en el StringBuilder ya existe algun substring que sea intNumero DW. Si devuelve -1 entonces lo inserto
+							codigo.append("triplefloat" + lexema + " DQ ?, ?, ? " + "\n"); //Declaro la variable como un arreglo de 3 valores
 						}
-						break;
-					case "OCTAL": //Me guio del octi DW 077o de test_print
-						if (simbolo.esLiteral()) { //Verifico primero si es una constante literal para saber si le cargo el valor o va el '?'
-							if(codigo.indexOf("octi" + lexema + " DW")==-1) { //Me fijo si en el StringBuilder ya existe algun substring que sea intNumero DW. Si devuelve -1 entonces lo inserto
+					}
+					else if (simbolo.esLiteral()) { // Verifico primero si es una constante literal para saber si le cargo el valor o va el '?'
+						lexema = convertirLexemaFlotante(lexema);
+						if (codigo.indexOf("float" + lexema + " DQ") == -1) { // Me fijo si en el StringBuilder ya existe algun substring que sea intNumero DQ. Si devuelve -1 entonces lo inserto
+							codigo.append("float" + lexema + " DQ " + simbolo.getDoub() + "\n");
+						}
+					} else {
+						codigo.append(lexema + " DQ ?" + "\n");
+					}
+				}
+				else if (tipoString.contains("OCTAL")) {
+					if(tipo.esSubTipo()) {
+						if (codigo.indexOf("subtypeint" + lexema + " DW") == -1) { // Me fijo si en el StringBuilder ya existe algun substring que sea intNumero DW. Si devuelve -1 entonces lo inserto
+							codigo.append("subtypeint" + lexema + " DW ?, " + (int)tipo.getRangoInferior() + ", " + (int)tipo.getRangoSuperior() + "\n"); //Declaro la variable como un arreglo de 3 donde el primer elemento es el valor y los otros los rangos
+						}
+					}
+					else if(tipo.esTripla()) {
+						if (codigo.indexOf("tripleint" + lexema + " DW") == -1) { // Me fijo si en el StringBuilder ya existe algun substring que sea intNumero DW. Si devuelve -1 entonces lo inserto
+							codigo.append("tripleint" + lexema + " DW ?, ?, ? " + "\n"); //Declaro la variable como un arreglo de 3 valores
+						}
+					}
+					else {
+						if (simbolo.esLiteral()) { // Verifico primero si es una constante literal para saber si le cargo el
+													// valor o va el '?'
+							if (codigo.indexOf("octi" + lexema + " DW") == -1) { // Me fijo si en el StringBuilder ya existe algun substring que sea intNumero DW. Si devuelve -1 entonces lo inserto
 								codigo.append("octi" + lexema + " DW " + simbolo.getEntero() + "o \n");
 							}
-						}
+						} 
 						else {
 							codigo.append(lexema + " DW ?" + "\n");
 						}
-						break;
-					case "CADENAMULTILINEA":
-						String lexemaConvertido = convertirLexemaCadena(lexema);
-						if(codigo.indexOf(lexemaConvertido)==-1) {
-							codigo.append(lexemaConvertido).append(" db \"").append(lexema.replace("\n", " ").replace("[", "").replace("]", "").replaceAll("\\s+", " ").trim()).append("\", 0 \n"); //Lo hago de esta manera para poder guardar el lexema entre comillas
-						}
-						break;
-					default: //Tipos no primitivos entrarían aquí, VER COMO PROCEDER
-						break;
+					}
 				}
-			}
+				else if (tipoString.contains("CADENAMULTILINEA")) {
+					String lexemaConvertido = convertirLexemaCadena(lexema);
+					if (codigo.indexOf(lexemaConvertido) == -1) {
+						codigo.append(lexemaConvertido).append(" db \"").append(
+								lexema.replace("\n", " ").replace("[", "").replace("]", "").replaceAll("\\s+", " ").trim())
+								.append("\", 0 \n"); // Lo hago de esta manera para poder guardar el lexema entre comillas
+					}
+				}
+		}
 		}
 		return codigo;
 	}
