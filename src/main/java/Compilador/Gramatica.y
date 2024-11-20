@@ -127,7 +127,7 @@ asignacion	: variable_simple ASIGNACION expresion_arit {if(fueDeclarado($1.sval)
 															GeneradorCodigoIntermedio.addElemento($1.sval+Parser.AMBITO.toString());
 															GeneradorCodigoIntermedio.addElemento(":="); 
 															}else{
-																cargarErrorEImprimirlo("Linea :" + AnalizadorLexico.saltoDeLinea +  " Error:  se invocó una variable no declarada ");}
+																cargarErrorEImprimirlo("Linea :" + AnalizadorLexico.saltoDeLinea +  " Error:  se invoc  una variable no declarada ");}
 															}
 			| variable_simple '{' CTE '}' ASIGNACION expresion_arit  {if(fueDeclarado($1.sval)){
 																		if(Integer.valueOf($3.sval) <= 3){
@@ -138,12 +138,12 @@ asignacion	: variable_simple ASIGNACION expresion_arit {if(fueDeclarado($1.sval)
 																			GeneradorCodigoIntermedio.addElemento(":="); 
 																			}else{cargarErrorEImprimirlo("Linea :" + AnalizadorLexico.saltoDeLinea +  " Error:  Tripla fuera de rango ");}														
 																	}else{
-																		cargarErrorEImprimirlo("Linea :" + AnalizadorLexico.saltoDeLinea +  " Error:  se invocó una variable no declarada ");}}
+																		cargarErrorEImprimirlo("Linea :" + AnalizadorLexico.saltoDeLinea +  " Error:  se invoc  una variable no declarada ");}}
 			| variable_simple '{' '-' CTE '}' ASIGNACION expresion_arit {cargarErrorEImprimirlo("Linea " + AnalizadorLexico.saltoDeLinea + " Error: no se puede acceder a una posicion negativa de un arreglo ");}
 ;
 
 invocacion	: ID_simple '(' expresion_arit ')' {if(!fueDeclarado($1.sval)){
-													cargarErrorEImprimirlo("Linea :" + AnalizadorLexico.saltoDeLinea +  " Error:  se invocó una funcion no declarada ");}
+													cargarErrorEImprimirlo("Linea :" + AnalizadorLexico.saltoDeLinea +  " Error:  se invoc  una funcion no declarada ");}
 													else{	
 														if(AnalizadorLexico.TablaDeSimbolos.get($1.sval+AMBITO.toString()).getTipoParFormal()==AnalizadorLexico.TablaDeSimbolos.get($3.sval+AMBITO.toString()).getTipo().getType()){
 															GeneradorCodigoIntermedio.invocar($1.sval+AMBITO.toString());
@@ -155,7 +155,7 @@ invocacion	: ID_simple '(' expresion_arit ')' {if(!fueDeclarado($1.sval)){
 												}}
 			| ID_simple '(' tipo_primitivo '(' expresion_arit ')' ')' 
 												{if(!fueDeclarado($1.sval)){
-													cargarErrorEImprimirlo("Linea :" + AnalizadorLexico.saltoDeLinea +  " Error:  se invocó una funcion no declarada ");}
+													cargarErrorEImprimirlo("Linea :" + AnalizadorLexico.saltoDeLinea +  " Error:  se invoc  una funcion no declarada ");}
 													else{
 														if(AnalizadorLexico.TablaDeSimbolos.get($1.sval+AMBITO.toString()).getTipoParFormal()==((Tipo)$3.obj).getType()){
 															GeneradorCodigoIntermedio.invocar($1.sval+AMBITO.toString());
@@ -166,7 +166,7 @@ invocacion	: ID_simple '(' expresion_arit ')' {if(!fueDeclarado($1.sval)){
 														}
 												}}
 			| ID_simple '(' ')' {cargarErrorEImprimirlo("Linea :" + AnalizadorLexico.saltoDeLinea +  " Error:  faltan los parametros reales en la invocacion");}
-			| ID_simple '(' error ')' {cargarErrorEImprimirlo("Linea :" + AnalizadorLexico.saltoDeLinea +  " Error:  Se excedio el numero de parametros en la invocacion (1)");}
+			| ID_simple '(' error ')' {cargarErrorEImprimirlo("Linea :" + AnalizadorLexico.saltoDeLinea +  " Error:  Se excedio el numero de parametros en la invocacion (1)");}
 ;
 
 
@@ -186,7 +186,7 @@ expresion_arit  : expresion_arit '+' termino {GeneradorCodigoIntermedio.addEleme
 				| error termino {cargarErrorEImprimirlo("Linea :" + AnalizadorLexico.saltoDeLinea +  " Error:  La expresion esta mal escrita, falta el operador");}
 ;
 
-termino : termino '*' factor {GeneradorCodigoIntermedio.addElemento("*");} 
+termino : termino '' factor {GeneradorCodigoIntermedio.addElemento("");} 
         | termino '/' factor {GeneradorCodigoIntermedio.addElemento("/");}
         | factor 
 		| error '*' error{cargarErrorEImprimirlo("Linea :" + AnalizadorLexico.saltoDeLinea +  " Error:  La expresion esta mal escrita");}
@@ -195,7 +195,7 @@ termino : termino '*' factor {GeneradorCodigoIntermedio.addElemento("*");}
 		| termino '/' error {cargarErrorEImprimirlo("Linea :" + AnalizadorLexico.saltoDeLinea +  " Error:  La expresion esta mal escrita");}
 ;
 
-factor 	: variable_simple {if(fueDeclarado($1.sval)){GeneradorCodigoIntermedio.addElemento($1.sval+Parser.AMBITO.toString());AnalizadorLexico.TablaDeSimbolos.get($1.sval).incrementarContDeRef(); $$.sval = $1.sval;}else{cargarErrorEImprimirlo("Linea :" + AnalizadorLexico.saltoDeLinea +  " Error:  se invocó una variable no declarada ");};}
+factor 	: variable_simple {if(fueDeclarado($1.sval)){GeneradorCodigoIntermedio.addElemento($1.sval+Parser.AMBITO.toString());AnalizadorLexico.TablaDeSimbolos.get($1.sval).incrementarContDeRef(); $$.sval = $1.sval;}else{cargarErrorEImprimirlo("Linea :" + AnalizadorLexico.saltoDeLinea +  " Error:  se invoc  una variable no declarada ");};}
 		| CTE_con_sig {GeneradorCodigoIntermedio.addElemento($1.sval);}
 		| invocacion 
 		| variable_simple '{' CTE '}' {if(fueDeclarado($1.sval)){ 
@@ -207,7 +207,7 @@ factor 	: variable_simple {if(fueDeclarado($1.sval)){GeneradorCodigoIntermedio.a
 											}else{
 												cargarErrorEImprimirlo("Linea :" + AnalizadorLexico.saltoDeLinea +  " Error:  Tripla fuera de rango ");
 											}
-										}else{cargarErrorEImprimirlo("Linea :" + AnalizadorLexico.saltoDeLinea +  " Error:  se invocó una variable no declarada ");};}
+										}else{cargarErrorEImprimirlo("Linea :" + AnalizadorLexico.saltoDeLinea +  " Error:  se invoc  una variable no declarada ");};}
 		| variable_simple '{' '-' CTE '}' {cargarErrorEImprimirlo("Linea " + AnalizadorLexico.saltoDeLinea + " Error: no se puede acceder a una posicion negativa de un arreglo ");}
 ;
 variables 	: variables ',' variable_simple { $$.sval = $1.sval + "/"+$3.sval;} 
@@ -226,20 +226,19 @@ CTE_con_sig : CTE {if(estaRango($1.sval)) { $$.sval = $1.sval; } }
 			| '-' CTE { cambioCTENegativa($2.sval); $$.sval = "-" + $2.sval;}
 ;				
 
-sentencia_IF: IF condicion THEN bloque_unidad ';' bloque_else ';' END_IF {if($4.sval=="RET" && $6.sval=="RET"){$$.sval="RET";};completarBifurcacionI();}
-            | IF condicion THEN bloque_unidad ';' END_IF {$$.sval=$4.sval;completarBifurcacionISinElse();}
-			| IF condicion THEN bloque_else ';' END_IF {cargarErrorEImprimirlo("Linea " + AnalizadorLexico.saltoDeLinea +  " Error : Falta de contenido en bloque THEN");}
+sentencia_IF: IF condicion bloque_THEN ';' bloque_else ';' END_IF {if($4.sval=="RET" && $6.sval=="RET"){$$.sval="RET";};completarBifurcacionI();}
+            | IF condicion bloque_THEN ';' END_IF {$$.sval=$4.sval;completarBifurcacionISinElse();}
 			| IF condicion THEN END_IF {cargarErrorEImprimirlo("Linea :" + AnalizadorLexico.saltoDeLinea + " Error: Falta de contenido en bloque THEN.");}
-			| IF condicion THEN bloque_unidad ';' ELSE END_IF {{cargarErrorEImprimirlo("Linea " + AnalizadorLexico.saltoDeLinea + " Error : falta cuerpo en el ELSE ");};}
+			| IF condicion bloque_THEN ';' ELSE END_IF {{cargarErrorEImprimirlo("Linea " + AnalizadorLexico.saltoDeLinea + " Error : falta cuerpo en el ELSE ");};}
 
 
-			| IF condicion THEN bloque_unidad bloque_else ';' END_IF {cargarErrorEImprimirlo("Linea " + AnalizadorLexico.saltoDeLinea + " Error: Falta ';' al final de la sentencia del bloque del THEN ");}
-			| IF condicion THEN bloque_unidad END_IF {cargarErrorEImprimirlo("Linea " + AnalizadorLexico.saltoDeLinea + " Error: Falta ';' al final de la sentencia del bloque del THEN  ");}
-			| IF condicion THEN bloque_unidad ';' bloque_else END_IF {cargarErrorEImprimirlo("Linea " + AnalizadorLexico.saltoDeLinea + " Error: Falta ';' al final de la sentencia del bloque del ELSE  ");}
-			| IF condicion THEN bloque_unidad bloque_else END_IF {cargarErrorEImprimirlo("Linea " + AnalizadorLexico.saltoDeLinea + " Error: Falta ';' al final de los bloques del IF ");}
+			| IF condicion bloque_THEN bloque_else ';' END_IF {cargarErrorEImprimirlo("Linea " + AnalizadorLexico.saltoDeLinea + " Error: Falta ';' al final de la sentencia del bloque del THEN ");}
+			| IF condicion bloque_THEN END_IF {cargarErrorEImprimirlo("Linea " + AnalizadorLexico.saltoDeLinea + " Error: Falta ';' al final de la sentencia del bloque del THEN  ");}
+			| IF condicion bloque_THEN ';' bloque_else END_IF {cargarErrorEImprimirlo("Linea " + AnalizadorLexico.saltoDeLinea + " Error: Falta ';' al final de la sentencia del bloque del ELSE  ");}
+			| IF condicion bloque_THEN bloque_else END_IF {cargarErrorEImprimirlo("Linea " + AnalizadorLexico.saltoDeLinea + " Error: Falta ';' al final de los bloques del IF ");}
 			
-			| IF condicion THEN bloque_unidad ';' error{cargarErrorEImprimirlo("Linea " + AnalizadorLexico.saltoDeLinea + ": Error : Falta el END_IF en IF  ");}
-			| IF condicion THEN bloque_unidad ';' bloque_else ';' error{cargarErrorEImprimirlo("Linea " + AnalizadorLexico.saltoDeLinea + ": Error : Falta el END_IF en IF ");}
+			| IF condicion bloque_THEN ';' error{cargarErrorEImprimirlo("Linea " + AnalizadorLexico.saltoDeLinea + ": Error : Falta el END_IF en IF  ");}
+			| IF condicion bloque_THEN ';' bloque_else ';' error{cargarErrorEImprimirlo("Linea " + AnalizadorLexico.saltoDeLinea + ": Error : Falta el END_IF en IF ");}
 ;
 
 condicion	: '(' '(' list_expre ')' comparador '(' list_expre ')' ')' {if($3.ival == $7.ival){$$.ival=$3.ival;modificarPolacaPM($5.sval,$3.ival);}else{cargarErrorEImprimirlo("Linea " + AnalizadorLexico.saltoDeLinea + "Error : Cantidad de operandor incompatibles en la comparacion ");}}
@@ -265,7 +264,7 @@ comparador	: '>' {$$.sval=">";}
 			| '=' {$$.sval="=";} 
 			| DISTINTO {$$.sval="!=";} 
 ;
-
+// ELSE
 bloque_else: bloque_else_simple {if($1.sval=="RET"){$$.sval="RET";};}
 			| bloque_else_multiple {if($1.sval=="RET"){$$.sval="RET";};}
 ;
@@ -276,10 +275,24 @@ bloque_else_multiple:	ELSE BEGIN bloque_sent_ejecutables ';' END {if($3.sval=="R
 
 bloque_else_simple:	ELSE bloque_sentencia_simple {if($2.sval=="RET"){$$.sval="RET";};}
 ;
+//THEN
+bloque_THEN: bloque_THEN_simple {if($1.sval=="RET"){$$.sval="RET";};operacionesIF();}
+			| bloque_THEN_multiple {if($1.sval=="RET"){$$.sval="RET";};operacionesIF();}
+;
 
-bloque_unidad	: bloque_unidad_simple {if($1.sval=="RET"){$$.sval="RET";};if(esWHILE==false){operacionesIF();}else{esWHILE=false;}}
-				| bloque_unidad_multiple {if($1.sval=="RET"){$$.sval="RET";};if(esWHILE==false){operacionesIF();}else{esWHILE=false;}}
+bloque_THEN_multiple:	THEN BEGIN bloque_sent_ejecutables ';' END {if($3.sval=="RET"){$$.sval="RET";};}
+					| THEN BEGIN bloque_sent_ejecutables END {cargarErrorEImprimirlo("Linea " + AnalizadorLexico.saltoDeLinea + " Error: Falta ';' al final de la sentencia ");}
+;
+
+bloque_THEN_simple:	THEN bloque_sentencia_simple {if($2.sval=="RET"){$$.sval="RET";};}
+;
+
+//SIMPLE
+bloque_unidad	: bloque_unidad_simple {if($1.sval=="RET"){$$.sval="RET";};}
+				| bloque_unidad_multiple {if($1.sval=="RET"){$$.sval="RET";};}
 ;		
+
+
 
 bloque_unidad_multiple  : BEGIN bloque_sent_ejecutables ';' END {if($2.sval=="RET"){$$.sval="RET";};}
 						| BEGIN END {cargarErrorEImprimirlo("Linea " + AnalizadorLexico.saltoDeLinea +  " Error: falta el bloque de sentencias ");}
@@ -333,9 +346,9 @@ static{
 }
 
 
-private static void cargarErrorEImprimirlo(String salida) {	
+public static void cargarErrorEImprimirlo(String salida) {	
 		try {
-			AnalizadorLexico.sintactico.newLine();  // Agregar un salto de línea
+			AnalizadorLexico.sintactico.newLine();  // Agregar un salto de l nea
 			AnalizadorLexico.sintactico.write(" "+salida+" ");
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
@@ -461,42 +474,42 @@ private static boolean fueDeclarado(String id){
     String ambitoActual = AMBITO.toString(); // Convertimos AMBITO (StringBuilder) a String
 
     while (true) {
-        // Construimos la clave: id + ámbito actual
+        // Construimos la clave: id +  mbito actual
         String key = id + ambitoActual;
         // Buscamos en el mapa
         if (AnalizadorLexico.TablaDeSimbolos.containsKey(key)) {
             return AnalizadorLexico.TablaDeSimbolos.get(key).estaDeclarada(); // Si la clave existe, devolvemos el valor
         }
 
-        // Reducimos el ámbito: eliminamos el último ':NIVEL'
+        // Reducimos el  mbito: eliminamos el  ltimo ':NIVEL'
         int pos = ambitoActual.lastIndexOf("$");
         if (pos == -1) {
-            break; // Si ya no hay más ámbitos, salimos del ciclo
+            break; // Si ya no hay m s  mbitos, salimos del ciclo
         }
 
-        // Reducimos el ámbito actual
+        // Reducimos el  mbito actual
         ambitoActual = ambitoActual.substring(0, pos);
     }
 
-    // Si no se encuentra en ningún ámbito, lanzamos un error o devolvemos null
-    throw new RuntimeException( "Linea :" + AnalizadorLexico.saltoDeLinea +"Error: ID '" + id + "' no encontrado en ningún ámbito.");
+    // Si no se encuentra en ning n  mbito, lanzamos un error o devolvemos null
+    throw new RuntimeException( "Linea :" + AnalizadorLexico.saltoDeLinea +"Error: ID '" + id + "' no encontrado en ning n  mbito.");
 }
 
 public static Simbolo getVariableFueraDeAmbito(String id){
     String ambitoActual = AMBITO.toString(); // Convertimos AMBITO (StringBuilder) a String
     String key = id;
     while (true) {
-        // Construimos la clave: id + ámbito actual
+        // Construimos la clave: id +  mbito actual
 
         // Buscamos en el mapa
         if (AnalizadorLexico.TablaDeSimbolos.containsKey(key)) {
             return AnalizadorLexico.TablaDeSimbolos.get(key); // Si la clave existe, devolvemos el valor
         }
 
-        // Reducimos el ámbito: eliminamos el último '$NIVEL'
+        // Reducimos el  mbito: eliminamos el  ltimo '$NIVEL'
         int pos = key.lastIndexOf("$");
 
-        // Reducimos el ámbito actual
+        // Reducimos el  mbito actual
         key = key.substring(0,pos);
     }
 }
@@ -504,7 +517,7 @@ private static boolean existeEnEsteAmbito(String id){
 	//System.out.println("  > Buscando la declaracion < ");
     String ambitoActual = AMBITO.toString(); // Convertimos AMBITO (StringBuilder) a String
 
-    // Construimos la clave: id + ámbito actual
+    // Construimos la clave: id +  mbito actual
     String key = id + ambitoActual;
 	//System.out.println("  > Key buscada "+ key + "En el ambito "+ ambitoActual);
 
@@ -553,10 +566,10 @@ private static void addUso(String id,String uso){
 private static String[] getVariables(String var, String separador) {
     // Verifica si el string contiene '/'
     if (!var.contains(separador)) {
-        // Retorna un arreglo vacío o el string completo como único elemento
+        // Retorna un arreglo vac o o el string completo como  nico elemento
         return new String[] { var };
     }
-    // Usa split() para dividir el String por el carácter '/'
+    // Usa split() para dividir el String por el car cter '/'
     String[] variables = var.split(separador);
     return variables;
 }

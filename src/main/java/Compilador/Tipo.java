@@ -57,12 +57,7 @@ public class Tipo {
 	}
 
 	public boolean sonCompatibles(Tipo t) {
-		if(this.esSubTipo() && !t.esSubTipo()) {
-			return this.getType().contains(t.getType());
-		}else if(!this.esSubTipo() && t.esSubTipo()) {
-			return t.getType().contains(this.getType());
-		}
-		return this.getType()==t.getType();
+		return this.getType().toString().equals(t.getType().toString());
 	}
 
 }

@@ -1,7 +1,19 @@
 program
 begin  
-	TYPEDEF TRIPLE < integer > tint;
-	TYPEDEF flotadito := integer {-6, -8};
-	flotadito a;
-	tint b;
+	
+	integer a;
+	a:=5;
+	
+	WHILE(a<10)BEGIN
+		OUTF(a);
+		IF(a=6)THEN BEGIN
+			OUTF([entro a IF]);
+			GOTO afuera@;
+			
+		END;
+		END_IF;
+		a:=a+1;
+	END;
+	afuera@;
+	
 End

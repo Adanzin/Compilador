@@ -243,7 +243,7 @@ public class Simbolo {
 		if(this.tipoVar.sonCompatibles(simb2.getTipo())) {
 			return true;
 		}
-		System.out.println("Tipos incompatibles, se intento operar un "+ this.getTipo() + " con un "+ simb2.getTipo());
+		Parser.cargarErrorEImprimirlo("Tipos incompatibles, se intento operar un "+ this.getTipo() + " con un "+ simb2.getTipo());
 		return false;
 	}
 	
