@@ -55,6 +55,9 @@ public class GeneradorCodigoAssembler {
 					ultimaOperacion = elemento;
 					operadorInicioFuncion(codigo);
 					break;
+				case "INDEX":
+					ultimaOperacion = elemento;
+					break;
 				default: //Entra si es un operando o si es un LABEL+N° que no puedo chequear en el CASE
 					if(elemento.startsWith("LABEL")) { //Es una etiqueta
 						ultimaOperacion = elemento;
@@ -101,8 +104,7 @@ public class GeneradorCodigoAssembler {
 				}else {
 					operacionSubtipoFloat(operando1, operando2, operacion, codigo, tipoOperando);
 				}
-			}else {
-				
+			}else {	
 				operando1 = comprobarOperandoLiteral(operando1);
 				operando2 = comprobarOperandoLiteral(operando2);
 				if (tipoOperando.getType()=="INTEGER" || tipoOperando.getType()=="OCTAL") {
@@ -424,7 +426,60 @@ public class GeneradorCodigoAssembler {
 	}
 	
 	public static void operacionTriplaIntegerOctal(String operando1, String operando2, String operacion, StringBuilder codigo, Tipo tipoOperando) {
-		
+		codigo.append("MOV ECX, OFFSET " + operando1 + "\n"); //Guardo la posicion inicial del primer elemento del operando1 (valor) 
+		codigo.append("MOV EDX, OFFSET " + operando2 + "\n"); //Guardo la posicion inicial del primer elemento del operando1 (valor)
+		codigo.append("MOV AX, [ECX]  \n"); //Guardo en AX el valor del primer elemento del operando1
+		codigo.append("MOV BX, [EDX] \n"); //Guardo en BX el valor del primer elemento del operando2
+		switch (operacion) {
+			case "+":
+				codigo.append("ADD AX, BX \n");
+				codigo.append("CMP AX, [ECX + 2] \n"); //Me desplazo al segundo elemento (rango inferior) y comparo con el resultado
+				codigo.append("JL Subtipo_inferior \n"); //Si es menor al mínimo entonces salta a la etiqueta correspondiente
+				codigo.append("CMP AX, [ECX + 4] \n"); //Me desplazo al tercero elemento (rango superior) y comparo con el resultado
+				codigo.append("JG Subtipo_superior \n"); //Si es mayor al máximo entonces salta a la etiqueta correspondiente
+				break;
+			case "-":
+				codigo.append("SUB AX, BX \n"); 
+				codigo.append("CMP AX, [ECX + 2] \n"); //Me desplazo al segundo elemento (rango inferior) y comparo con el resultado
+				codigo.append("JL Subtipo_inferior \n"); //Si es menor al mínimo entonces salta a la etiqueta correspondiente
+				codigo.append("CMP AX, [ECX + 4] \n"); //Me desplazo al tercero elemento (rango superior) y comparo con el resultado
+				codigo.append("JG Subtipo_superior \n"); //Si es mayor al máximo entonces salta a la etiqueta correspondiente
+				break;
+			case "*":
+				codigo.append("IMUL BX \n");
+				codigo.append("CMP AX, [ECX + 2] \n"); //Me desplazo al segundo elemento (rango inferior) y comparo con el resultado
+				codigo.append("JL Subtipo_inferior \n"); //Si es menor al mínimo entonces salta a la etiqueta correspondiente
+				codigo.append("CMP AX, [ECX + 4] \n"); //Me desplazo al tercero elemento (rango superior) y comparo con el resultado
+				codigo.append("JG Subtipo_superior \n"); //Si es mayor al máximo entonces salta a la etiqueta correspondiente
+				break;
+			case "/":
+				codigo.append("MOV DX, 0 \n"); //Reseteo el valor de DX para evitar conflictos al hacer IDIV (DX:AX)
+				codigo.append("CMP BX" + ",0" + "\n");
+				codigo.append("JE Divison_Por_Cero \n"); //JZ salta si la comparacion del operando2 con el cero es TRUE
+				//Continua el flujo normal en caso de no saltar
+				codigo.append("IDIV BX \n");
+				
+				//Creo que en la division nunca va a existir el caso que por operar te vayas de rango en enteros
+				/*
+				codigo.append("CMP AX, [ECX + 2] \n"); //Me desplazo al segundo elemento (rango inferior) y comparo con el resultado
+				codigo.append("JL Subtipo_inferior \n"); //Si es menor al mínimo entonces salta a la etiqueta correspondiente
+				codigo.append("CMP AX, [ECX + 4] \n"); //Me desplazo al tercero elemento (rango superior) y comparo con el resultado
+				codigo.append("JG Subtipo_superior \n"); //Si es mayor al máximo entonces salta a la etiqueta correspondiente
+				*/
+				break;
+			case ":=":
+				//Uso los registros al reves por la particularidad de los operandos en la asignación
+				codigo.append("MOV [" + operando2 + "], AX \n"); //Guardo en la primera posicion (valor) el valor del operando
+				break;
+			default:
+				//Después veré pero acá no debería entrar nada
+				break;
+		}
+		if(operacion!= ":=") {
+			codigo.append("MOV [@aux" + numAuxiliares + "], AX");
+			pila.push(crearAuxiliarSubtipo(tipoOperando));
+		}
+		codigo.append("\n \n");
 	}
 	
 	public static void operacionSubtipoFloat(String operando1, String operando2, String operacion, StringBuilder codigo, Tipo tipoOperando) {

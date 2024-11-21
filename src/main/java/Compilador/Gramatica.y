@@ -12,7 +12,7 @@ import java.io.IOException;
 %% /* Gramatica */
 									/* PROGRAMA */
 																		
-programa	: ID_simple BEGIN sentencias END 
+programa	: ID_simple BEGIN sentencias END {if(!GeneradorCodigoIntermedio.BaulDeGoto.isEmpty()){cargarErrorEImprimirlo(" Error: No se cargo la direccion de salto a un GOTO. ");}}
 			| ID_simple BEGIN END 
 			| BEGIN sentencias END {cargarErrorEImprimirlo("\u2718"+"Linea " + AnalizadorLexico.saltoDeLinea + " Error: Falta el nombre del programa ");}
 			| ID_simple BEGIN sentencias {cargarErrorEImprimirlo("\u2718"+"Linea " + AnalizadorLexico.saltoDeLinea + " Error: Falta el delimitador END ");}
@@ -111,7 +111,7 @@ sentencia_ejecutable	: asignacion
 						| sentencia_IF {if($1.sval=="RET"){$$.sval="RET";}}
 						| sentencia_WHILE
 						| sentencia_goto
-						| ETIQUETA {if(fueDeclarado($1.sval)){completarBifurcacionAGoto($1.sval);}else{cargarErrorEImprimirlo("Linea :" + AnalizadorLexico.saltoDeLinea +  " Error : La ETIQUETA que se pretende bifurcar no existe.  ");}}
+						| ETIQUETA {if(fueDeclarado($1.sval)){completarBifurcacionAGoto($1.sval);GeneradorCodigoIntermedio.BaulDeGoto.remove($1.sval);}else{cargarErrorEImprimirlo("Linea :" + AnalizadorLexico.saltoDeLinea +  " Error : La ETIQUETA que se pretende bifurcar no existe.  ");}}
 						| outf_rule
 						| retorno {$$.sval="RET";}
 ;
@@ -170,10 +170,10 @@ invocacion	: ID_simple '(' expresion_arit ')' {if(!fueDeclarado($1.sval)){
 ;
 
 
-list_expre	: list_expre ',' expresion_arit {$$.ival=$1.ival + 1;}
+list_expre	: list_expre ',' expresion_arit {$$.ival=$1.ival + 1;GeneradorCodigoIntermedio.addElemento(",");}
 			| ',' expresion_arit {cargarErrorEImprimirlo("Linea " + AnalizadorLexico.saltoDeLinea + " Error: Falta de expresion en lista de expresiones.  ");}
 			| list_expre ','  {cargarErrorEImprimirlo("Linea " + AnalizadorLexico.saltoDeLinea + " Error: Falta de expresion en lista de expresiones.  ");}
-			| expresion_arit {$$.ival=1;}
+			| expresion_arit {$$.ival=1;GeneradorCodigoIntermedio.addElemento(",");}
 ;
 
 expresion_arit  : expresion_arit '+' termino {GeneradorCodigoIntermedio.addElemento("+"); }
@@ -186,7 +186,7 @@ expresion_arit  : expresion_arit '+' termino {GeneradorCodigoIntermedio.addEleme
 				| error termino {cargarErrorEImprimirlo("Linea :" + AnalizadorLexico.saltoDeLinea +  " Error:  La expresion esta mal escrita, falta el operador");}
 ;
 
-termino : termino '*' factor {GeneradorCodigoIntermedio.addElemento("*");} 
+termino : termino '' factor {GeneradorCodigoIntermedio.addElemento("");} 
         | termino '/' factor {GeneradorCodigoIntermedio.addElemento("/");}
         | factor 
 		| error '*' error{cargarErrorEImprimirlo("Linea :" + AnalizadorLexico.saltoDeLinea +  " Error:  La expresion esta mal escrita");}
@@ -241,11 +241,11 @@ sentencia_IF: IF condicion bloque_THEN ';' bloque_else ';' END_IF {if($4.sval=="
 			| IF condicion bloque_THEN ';' bloque_else ';' error{cargarErrorEImprimirlo("Linea " + AnalizadorLexico.saltoDeLinea + ": Error : Falta el END_IF en IF ");}
 ;
 
-condicion	: '(' '(' list_expre ')' comparador '(' list_expre ')' ')' {if($3.ival == $7.ival){$$.ival=$3.ival;modificarPolacaPM($5.sval,$3.ival);}else{cargarErrorEImprimirlo("Linea " + AnalizadorLexico.saltoDeLinea + "Error : Cantidad de operandor incompatibles en la comparacion ");}}
+condicion	: '(' '(' list_expre ')' comparador '(' list_expre ')' ')' {if($3.ival == $7.ival){cantDeOperandos=$3.ival;modificarPolacaPM($5.sval,$3.ival);}else{cargarErrorEImprimirlo("Linea " + AnalizadorLexico.saltoDeLinea + "Error : Cantidad de operandor incompatibles en la comparacion ");}}
 			| '(' list_expre ')' comparador '(' list_expre ')' ')' {cargarErrorEImprimirlo("Linea " + AnalizadorLexico.saltoDeLinea + "Error : Falta el '(' en la condicion ");}
 			| '(' '(' list_expre ')' comparador '(' list_expre ')' {cargarErrorEImprimirlo("Linea " + AnalizadorLexico.saltoDeLinea + "Error : Falta el ')' en la condicion ");}
 			|'(' list_expre ')' comparador '(' list_expre ')' {cargarErrorEImprimirlo("Linea " + AnalizadorLexico.saltoDeLinea + "Error : Faltan los parentesis en la condicion ");}
-			| '(' expresion_arit comparador expresion_arit ')' {$$.ival=1;opCondicion($3.sval);}
+			| '(' expresion_arit comparador expresion_arit ')' {cantDeOperandos=1;opCondicion($3.sval);}
 			|  expresion_arit comparador expresion_arit ')' {cargarErrorEImprimirlo("Linea " + AnalizadorLexico.saltoDeLinea + "Error : Falta el '(' en la condicion ");}
 			| '(' expresion_arit comparador expresion_arit  {cargarErrorEImprimirlo("Linea " + AnalizadorLexico.saltoDeLinea + "Error : Falta el ')' en la condicion ");}
 			| expresion_arit comparador expresion_arit  {cargarErrorEImprimirlo("Linea " + AnalizadorLexico.saltoDeLinea + "Error : Faltan los parentesis en la condicion ");}
@@ -293,7 +293,6 @@ bloque_unidad	: bloque_unidad_simple {if($1.sval=="RET"){$$.sval="RET";};}
 ;		
 
 
-
 bloque_unidad_multiple  : BEGIN bloque_sent_ejecutables ';' END {if($2.sval=="RET"){$$.sval="RET";};}
 						| BEGIN END {cargarErrorEImprimirlo("Linea " + AnalizadorLexico.saltoDeLinea +  " Error: falta el bloque de sentencias ");}
 						| BEGIN bloque_sent_ejecutables END {cargarErrorEImprimirlo("Linea " + AnalizadorLexico.saltoDeLinea + " Error: Falta ';' al final de la sentencia ");}
@@ -315,11 +314,11 @@ cadena	: CADENAMULTILINEA {cargarCadenaMultilinea($1.sval);GeneradorCodigoInterm
 
 									/* TEMAS PARTICULARES */
 /* Temas 13:  Sentencias de Control */
-sentencia_WHILE	: encabezado_WHILE condicion bloque_unidad {operacionesWhile($2.ival);}
+sentencia_WHILE	: encabezado_WHILE condicion bloque_unidad {operacionesWhile();}
 				| encabezado_WHILE condicion error {cargarErrorEImprimirlo("Linea " + AnalizadorLexico.saltoDeLinea +  " Error: falta el cuerpo del WHILE ");}
 ;	
 
-encabezado_WHILE : WHILE {esWHILE=true;GeneradorCodigoIntermedio.apilar(GeneradorCodigoIntermedio.getPos());GeneradorCodigoIntermedio.addElemento("LABEL"+GeneradorCodigoIntermedio.getPos());}
+encabezado_WHILE : WHILE {GeneradorCodigoIntermedio.apilar(GeneradorCodigoIntermedio.getPos());GeneradorCodigoIntermedio.addElemento("LABEL"+GeneradorCodigoIntermedio.getPos());}
 ;
 
 /* Tema 23: goto */
@@ -336,8 +335,8 @@ public static StringBuilder AMBITO = new StringBuilder("$MAIN");
 public static Stack<String> DENTRODELAMBITO = new Stack<String>(); 
 public static boolean RETORNOTHEN = false;
 public static boolean RETORNOELSE = false;
+public static int cantDeOperandos;
 public static Map<String,Tipo> tipos = new HashMap<>();
-public static boolean esWHILE = false;
 static{
 	tipos.put("INTEGER", new Tipo("INTEGER"));
 	tipos.put("DOUBLE", new Tipo("DOUBLE"));
@@ -363,9 +362,8 @@ private static void cargarCadenaMultilinea(String cadena){
 }
 
 private static void modificarPolacaPM(String operador, int cantDeOp){
-	//GeneradorCodigoIntermedio.addOperadorEnPattMatch(operador,cantDeOp);
-	GeneradorCodigoIntermedio.addElemento(operador);
-	GeneradorCodigoIntermedio.bifurcarF();
+	System.out.println(" Pattern Matching ");
+	GeneradorCodigoIntermedio.addOperadorEnPattMatch(operador,cantDeOp);
 }
 
 private static void opCondicion(String operador){
@@ -383,16 +381,20 @@ private static void completarBifurcacionAGoto(String id){
 	GeneradorCodigoIntermedio.addElemento("LABEL"+elm);
 } 
 
-private static void operacionesWhile(int cantDeOperandos){
-	completarBifurcacionF();
+private static void operacionesWhile(){
+	int aux=0;
+	while(aux<cantDeOperandos){
+		System.out.println(" SE BIFURCA POR F ");
+		completarBifurcacionF();
+		aux++;
+	}
 	GeneradorCodigoIntermedio.bifurcarAlInicio();
 }
 
 private static void completarBifurcacionISinElse(){
-	
 	int pos = GeneradorCodigoIntermedio.getPila();
 	
-	String elm = String.valueOf(GeneradorCodigoIntermedio.getPos()+2);
+	String elm = String.valueOf(GeneradorCodigoIntermedio.getPos());
 	
 	GeneradorCodigoIntermedio.reemplazarElm(elm,pos);
 	GeneradorCodigoIntermedio.addElemento("LABEL"+elm);
@@ -400,12 +402,13 @@ private static void completarBifurcacionISinElse(){
 }
 
 private static void operacionesIF(){
-	
-	int pos = GeneradorCodigoIntermedio.getPila();
-	
 	String elm = String.valueOf(GeneradorCodigoIntermedio.getPos()+2);
-	
-	GeneradorCodigoIntermedio.reemplazarElm(elm,pos);
+	int aux=0;
+	while(aux<cantDeOperandos){
+		System.out.println(" SE BIFURCA POR F ");
+		completarBifurcacionF();
+		aux++;
+	}
 	GeneradorCodigoIntermedio.bifurcarI();
 	GeneradorCodigoIntermedio.addElemento("LABEL"+elm);
 
@@ -420,7 +423,6 @@ private static void completarBifurcacionF(){
 	GeneradorCodigoIntermedio.reemplazarElm(elm,pos);
 }
 private static void completarBifurcacionI(){
-	
 	int pos = GeneradorCodigoIntermedio.getPila();
 	String elm = String.valueOf(GeneradorCodigoIntermedio.getPos());
 	GeneradorCodigoIntermedio.reemplazarElm(elm,pos);

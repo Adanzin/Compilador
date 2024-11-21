@@ -33,10 +33,10 @@ public class GeneradorCodigoIntermedio {
 		    for (String key : polacaFuncional.keySet()) {
 		        ArrayList<String> polaca = polacaFuncional.get(key);
 
-		        // Imprimir el nombre de la funciÃ³n
+		        // Imprimir el nombre de la función
 		        System.out.println("Polaca: " + key);
 		        int a=0;
-		        // Imprimir los elementos de la lista `polaca` con formato de 2 dÃ­gitos
+		        // Imprimir los elementos de la lista polaca con formato de 2 dígitos
 		        for (String elemento : polaca) {
 		        	 System.out.println("["+a+" | " + elemento);
 		            a++;
@@ -132,48 +132,50 @@ public class GeneradorCodigoIntermedio {
 	
 	//esta funcion saca de la polaca los operandos y los pega en un arreglo auxiliar. En esta se cargan ordenado
 	// y se vuelven a cargar en la polaca. 
-	/*public static void addOperadorEnPattMatch(String operador,int cantOP) {
-		int n = pos.get(Parser.AMBITO.toString())-cantOP*2; // posicion en la que inicia el patter
-		ArrayList<String> resultado = new ArrayList<>(); 
-        // Agregar bloques reordenados desde el final hacia el inicio
-		int posI=n;
-		int posD=n+cantOP;
-        // Operandos en el bloque actual
-        String operando1 = polacaFuncional.get(Parser.AMBITO.toString()).get(posI);
-        String operando2 = polacaFuncional.get(Parser.AMBITO.toString()).get(posD);
-        // Agregar al resultado en el orden correcto
-        resultado.add(operando1);               // Segundo operando
-        resultado.add(operando2);               // Primer operando
-        resultado.add(">=");      // Operador relacional '>='
-        int posDeLaBF = posI+2;
-    	bifurcarFaux(resultado, posDeLaBF);
-        while (posD < pos.get(Parser.AMBITO.toString())) {
-        	posI++;
-        	posD++;
-        	System.out.println("VA A BUSCAR EL VALOR EN LA POS" + posI + " Y " +posD + "Y LA LOG ES"+pos.get(Parser.AMBITO.toString()));
-            // Operandos en el bloque actual
-            operando1 = polacaFuncional.get(Parser.AMBITO.toString()).get(posI);
-            operando2 = polacaFuncional.get(Parser.AMBITO.toString()).get(posD);
+	public static void addOperadorEnPattMatch(String operador,int cantOP) {
+		int n = pos.get(Parser.AMBITO.toString())-1; // posicion en la que inicia el patter
+		pos.put(Parser.AMBITO.toString(),pos.get(Parser.AMBITO.toString())-1);
+		String expArit = polacaFuncional.get(Parser.AMBITO.toString()).get(n);
+		Stack<String> pilaIzq= new Stack<String>();
+		Stack<String> pilaDer = new Stack<String>();
+		int contadorComas=0;
+		while (expArit!=":=" && !expArit.contains("LABEL")) {
+			polacaFuncional.get(Parser.AMBITO.toString()).remove(n);
+			if(expArit==",") {
+				contadorComas++;
+			}
+			if(contadorComas<=cantOP) {
+				pilaDer.add(expArit);
+			}else {
+				pilaIzq.add(expArit);
+			}
+			n--;
+			pos.put(Parser.AMBITO.toString(),pos.get(Parser.AMBITO.toString())-1);
+			expArit = polacaFuncional.get(Parser.AMBITO.toString()).get(n);
+		}
+		pos.put(Parser.AMBITO.toString(),pos.get(Parser.AMBITO.toString())+1);
+		contadorComas = 0;
+		String var;
+		while(contadorComas<=cantOP*2-1) {
+			var=pilaIzq.pop();
+			while((var!=",")) {
+				addElemento(var);
+				var=pilaIzq.pop();
+				System.out.println(var);
+			}
+			contadorComas++;
+			var=pilaDer.pop();
+			while((var!=",")) {
+				addElemento(var);
+				var=pilaDer.pop();
+				System.out.println(var);
+			}
+			contadorComas++;
+			addElemento(operador);
+			apilar(pos.get(Parser.AMBITO.toString()));
+			addElemento(" ");
+			addElemento("BF");
 
-            // Agregar al resultado en el orden correcto
-            resultado.add(operando1);               // Segundo operando
-            resultado.add(operando2);               // Primer operando
-            resultado.add(">=");      // Operador relacional '>='
-            posDeLaBF = posI+4;
-            bifurcarFaux(resultado, posDeLaBF);
-        }
-        System.out.println("Asi quedo la palaca aux"+resultado);
-        int it=n;
-        int it2=0;
-        while(it2<resultado.size()) {
-            try {
-            	reemplazarElm(resultado.get(it2),it);
-            }catch(IndexOutOfBoundsException e){
-            	addElemento(resultado.get(it2));
-            }
-        	it2++;
-        	it++;
-        }
-
-	}*/
+		}
+	}
 }

@@ -14,103 +14,84 @@ Error_Overflow DB "Error: Overflow en producto entre Enteros", 10, 0
 Error_Subtipo_inferior DB "Error: Valor menor al rango inferior del subtipo ", 10, 0 
 Error_Subtipo_superior DB "Error: Valor mayor al limite superior del subtipo ", 10, 0 
 ESPERAR_ACCION_USUARIO DB "Haga click en ACEPTAR para cerrar el programa y la consola", 10, 0 
-integer99 DW 99
-b$MAIN DW ?, -100, 100
+e$MAIN DW ?
+b$MAIN DW ?
+h$MAIN DW ?
 @ParametroRealInt DW ?
-@aux4 DW ?, -100, 100
+Entro db "Entro", 0 
 @ParametroRealFloat DQ ?
-integer0 DW 0
-integer100 DW 100
-integer-100 DW -100
+integer1 DW 1
 integer2 DW 2
 integer3 DW 3
-flotadito$MAIN DW ?, -100, 100
-c$MAIN DW ?, -100, 100
-a$MAIN DW ?, -100, 100
+g$MAIN DW ?
+c$MAIN DW ?
+a$MAIN DW ?
 d$MAIN DW ?
-@aux3 DW ?, -100, 100
-@aux2 DW ?, -100, 100
-@aux1 DW ?, -100, 100
+f$MAIN DW ?
 
 .code 
  
 start: 
-MOV AX, integer0
+MOV AX, integer3
+MOV a$MAIN, AX
+
+ 
+MOV AX, integer1
+MOV b$MAIN, AX
+
+ 
+MOV AX, integer3
+MOV c$MAIN, AX
+
+ 
+MOV AX, integer3
 MOV d$MAIN, AX
 
  
-MOV ECX, OFFSET integer99
-MOV EDX, OFFSET a$MAIN
-MOV AX, [ECX]  
-MOV BX, [EDX] 
-MOV [a$MAIN], AX 
+MOV AX, integer2
+MOV e$MAIN, AX
 
  
-MOV ECX, OFFSET integer3
-MOV EDX, OFFSET b$MAIN
-MOV AX, [ECX]  
-MOV BX, [EDX] 
-MOV [b$MAIN], AX 
+MOV AX, integer2
+MOV f$MAIN, AX
 
  
-MOV ECX, OFFSET integer2
-MOV EDX, OFFSET c$MAIN
-MOV AX, [ECX]  
-MOV BX, [EDX] 
-MOV [c$MAIN], AX 
+MOV AX, integer2
+MOV g$MAIN, AX
 
  
-MOV ECX, OFFSET a$MAIN
-MOV EDX, OFFSET b$MAIN
-MOV AX, [ECX]  
-MOV BX, [EDX] 
-ADD AX, BX 
-CMP AX, [ECX + 2] 
-JL Subtipo_inferior 
-CMP AX, [ECX + 4] 
-JG Subtipo_superior 
-MOV [@aux1], AX
+MOV AX, integer2
+MOV h$MAIN, AX
+
  
-invoke printf, cfm$("%hi\n"), @aux1
+MOV AX, a$MAIN
+MOV BX, e$MAIN
+CMP AX,BX
  
-MOV ECX, OFFSET a$MAIN
-MOV EDX, OFFSET b$MAIN
-MOV AX, [ECX]  
-MOV BX, [EDX] 
-SUB AX, BX 
-CMP AX, [ECX + 2] 
-JL Subtipo_inferior 
-CMP AX, [ECX + 4] 
-JG Subtipo_superior 
-MOV [@aux2], AX
+JLE LABEL48
  
-invoke printf, cfm$("%hi\n"), @aux2
+MOV AX, b$MAIN
+MOV BX, f$MAIN
+CMP AX,BX
  
-MOV ECX, OFFSET a$MAIN
-MOV EDX, OFFSET c$MAIN
-MOV AX, [ECX]  
-MOV BX, [EDX] 
-IMUL BX 
-CMP AX, [ECX + 2] 
-JL Subtipo_inferior 
-CMP AX, [ECX + 4] 
-JG Subtipo_superior 
-MOV [@aux3], AX
+JLE LABEL48
  
-invoke printf, cfm$("%hi\n"), @aux3
+MOV AX, c$MAIN
+MOV BX, g$MAIN
+CMP AX,BX
  
-MOV ECX, OFFSET a$MAIN
-MOV EDX, OFFSET c$MAIN
-MOV AX, [ECX]  
-MOV BX, [EDX] 
-MOV DX, 0 
-CMP BX,0
-JE Divison_Por_Cero 
-IDIV BX 
-MOV [@aux4], AX
+JLE LABEL48
  
-invoke printf, cfm$("%hi\n"), @aux4
+MOV AX, d$MAIN
+MOV BX, h$MAIN
+CMP AX,BX
  
+JLE LABEL48
+ 
+invoke MessageBox, NULL, addr Entro, addr Entro, MB_OK 
+ 
+LABEL48: 
+LABEL49: 
 JMP fin 
  
 Divison_Por_Cero:

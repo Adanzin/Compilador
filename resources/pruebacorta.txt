@@ -1,18 +1,24 @@
 program
 begin  
-	TYPEDEF flotadito := integer {-100, 100};
-	flotadito a,b,c;
+	##TYPEDEF TRIPLE < integer > tripla;
 	
-	integer d;
-	d:=0;
+	##tripla a;
 	
-	a:=99;
-	b:=3;
-	c:=2;
+	##OUTF(a{1}+a{2});
 	
-	OUTF(a+b);
-	OUTF(a-b);
-	OUTF(a*c);
-	OUTF(a/c);
+	integer a,b,c,d,e,f,g,h;
 	
+	a:=3;
+	b:=1;
+	c:=3;
+	d:=3;
+	e:=2;
+	f:=2;
+	g:=2;
+	h:=2;
+	
+	
+	IF((a,b,c,d)>(e,f,g,h))THEN
+		OUTF([Entro]);
+	END_IF;
 End
