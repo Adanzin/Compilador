@@ -11,59 +11,106 @@ printf PROTO C : VARARG
 .data 
 Error_DivisionCero DB "Error: Division por cero", 10, 0 
 Error_Overflow DB "Error: Overflow en producto entre Enteros", 10, 0 
+Error_Subtipo_inferior DB "Error: Valor menor al rango inferior del subtipo ", 10, 0 
+Error_Subtipo_superior DB "Error: Valor mayor al limite superior del subtipo ", 10, 0 
 ESPERAR_ACCION_USUARIO DB "Haga click en ACEPTAR para cerrar el programa y la consola", 10, 0 
-int1 DW 1
-entro_a_IF db "entro a IF", 0 
+integer99 DW 99
+b$MAIN DW ?, -100, 100
 @ParametroRealInt DW ?
-int5 DW 5
-int6 DW 6
-a$MAIN DW ?
-@aux1 DW ?
-int10 DW 10
+@aux4 DW ?, -100, 100
 @ParametroRealFloat DQ ?
+integer0 DW 0
+integer100 DW 100
+integer-100 DW -100
+integer2 DW 2
+integer3 DW 3
+flotadito$MAIN DW ?, -100, 100
+c$MAIN DW ?, -100, 100
+a$MAIN DW ?, -100, 100
+d$MAIN DW ?
+@aux3 DW ?, -100, 100
+@aux2 DW ?, -100, 100
+@aux1 DW ?, -100, 100
 
 .code 
  
 start: 
-MOV AX, int5
-MOV a$MAIN, AX
+MOV AX, integer0
+MOV d$MAIN, AX
 
  
-LABEL3: 
-MOV AX, a$MAIN
-MOV BX, int10
-CMP AX,BX
- 
-JGE LABEL31
- 
-invoke printf, cfm$("%hi\n"), a$MAIN
- 
-MOV AX, a$MAIN
-MOV BX, int6
-CMP AX,BX
- 
-JNE LABEL22
- 
-invoke MessageBox, NULL, addr entro_a_IF, addr entro_a_IF, MB_OK 
- 
-JMP LABEL32
- 
-JMP LABEL25
- 
-LABEL22: 
-LABEL25: 
-MOV AX, a$MAIN
-ADD AX,int1
-MOV @aux1,AX
- 
-MOV AX, @aux1
-MOV a$MAIN, AX
+MOV ECX, OFFSET integer99
+MOV EDX, OFFSET a$MAIN
+MOV AX, [ECX]  
+MOV BX, [EDX] 
+MOV [a$MAIN], AX 
 
  
-JMP LABEL3
+MOV ECX, OFFSET integer3
+MOV EDX, OFFSET b$MAIN
+MOV AX, [ECX]  
+MOV BX, [EDX] 
+MOV [b$MAIN], AX 
+
  
-LABEL31: 
-LABEL32: 
+MOV ECX, OFFSET integer2
+MOV EDX, OFFSET c$MAIN
+MOV AX, [ECX]  
+MOV BX, [EDX] 
+MOV [c$MAIN], AX 
+
+ 
+MOV ECX, OFFSET a$MAIN
+MOV EDX, OFFSET b$MAIN
+MOV AX, [ECX]  
+MOV BX, [EDX] 
+ADD AX, BX 
+CMP AX, [ECX + 2] 
+JL Subtipo_inferior 
+CMP AX, [ECX + 4] 
+JG Subtipo_superior 
+MOV [@aux1], AX
+ 
+invoke printf, cfm$("%hi\n"), @aux1
+ 
+MOV ECX, OFFSET a$MAIN
+MOV EDX, OFFSET b$MAIN
+MOV AX, [ECX]  
+MOV BX, [EDX] 
+SUB AX, BX 
+CMP AX, [ECX + 2] 
+JL Subtipo_inferior 
+CMP AX, [ECX + 4] 
+JG Subtipo_superior 
+MOV [@aux2], AX
+ 
+invoke printf, cfm$("%hi\n"), @aux2
+ 
+MOV ECX, OFFSET a$MAIN
+MOV EDX, OFFSET c$MAIN
+MOV AX, [ECX]  
+MOV BX, [EDX] 
+IMUL BX 
+CMP AX, [ECX + 2] 
+JL Subtipo_inferior 
+CMP AX, [ECX + 4] 
+JG Subtipo_superior 
+MOV [@aux3], AX
+ 
+invoke printf, cfm$("%hi\n"), @aux3
+ 
+MOV ECX, OFFSET a$MAIN
+MOV EDX, OFFSET c$MAIN
+MOV AX, [ECX]  
+MOV BX, [EDX] 
+MOV DX, 0 
+CMP BX,0
+JE Divison_Por_Cero 
+IDIV BX 
+MOV [@aux4], AX
+ 
+invoke printf, cfm$("%hi\n"), @aux4
+ 
 JMP fin 
  
 Divison_Por_Cero:
@@ -72,6 +119,14 @@ JMP fin
 
 Overflow:
 invoke MessageBox, NULL, addr Error_Overflow, addr Error_Overflow, MB_OK 
+JMP fin
+
+Subtipo_inferior:
+invoke MessageBox, NULL, addr Error_Subtipo_inferior, addr Error_Subtipo_inferior, MB_OK 
+JMP fin
+
+Subtipo_superior:
+invoke MessageBox, NULL, addr Error_Subtipo_superior, addr Error_Subtipo_superior, MB_OK 
 JMP fin
 
 fin: 

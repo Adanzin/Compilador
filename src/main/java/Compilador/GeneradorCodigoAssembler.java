@@ -35,9 +35,13 @@ public class GeneradorCodigoAssembler {
 					ultimaOperacion = elemento;
 					operadorFuncion(codigo);
 					break;
-				case "BF","BI":
+				case "BF":
 					ultimaOperacion = elemento;
-					operadorSentenciasControl(elemento, codigo, polacaActual.get(i-2));
+					operadorSaltoCondicional(elemento, codigo, polacaActual.get(i-2));
+					break;
+				case "BI:":
+					ultimaOperacion = elemento;
+					operadorSaltoIncondicional(codigo);
 					break;
 				case "<",">","<=",">=","=", "!=":	
 					ultimaOperacion = elemento;
@@ -87,22 +91,31 @@ public class GeneradorCodigoAssembler {
 		operando1 = simbOperando1.getId();
 		operando2 = simbOperando2.getId();
 		if(simbOperando1.sonCompatibles(simbOperando2)) {
-			Tipo tipoOperando = simbOperando1.getTipo();
-			if (tipoOperando.getType()=="INTEGER" || tipoOperando.getType()=="OCTAL") {
+			Tipo tipoOperando = simbOperando2.getTipo();
+			
+			if(tipoOperando.esSubTipo()) {
 				operando1 = comprobarOperandoLiteral(operando1);
 				operando2 = comprobarOperandoLiteral(operando2);
-				operacionEnteroOctal(operando1, operando2, operacion, codigo, tipoOperando);
-			} else {
+				if (tipoOperando.getType().toString().contains("INTEGER")||tipoOperando.getType().toString().contains("OCTAL")) {
+					operacionSubtipoIntegerOctal(operando1, operando2, operacion, codigo, tipoOperando);
+				}else {
+					operacionSubtipoFloat(operando1, operando2, operacion, codigo, tipoOperando);
+				}
+			}else {
+				
 				operando1 = comprobarOperandoLiteral(operando1);
 				operando2 = comprobarOperandoLiteral(operando2);
-				operacionDouble(operando1, operando2, operacion, codigo, tipoOperando);
+				if (tipoOperando.getType()=="INTEGER" || tipoOperando.getType()=="OCTAL") {
+					operacionEnteroOctal(operando1, operando2, operacion, codigo, tipoOperando);
+				} else {
+					operacionDouble(operando1, operando2, operacion, codigo, tipoOperando);
+				}
 			}
-		}
+		} 
 		else {
 			try {
 				AnalizadorLexico.sintactico.flush();
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 			System.exit(1); //Termino la ejecución del compilador por error en etapa de compilacion
@@ -131,37 +144,34 @@ public class GeneradorCodigoAssembler {
 		pila.push(key); //Apilo el nombre de la variable que debera retornar la funcion		
 	}
 	
-	public static void operadorSentenciasControl(String elemento, StringBuilder codigo, String comparadorAnterior) {
+	public static void operadorSaltoCondicional(String elemento, StringBuilder codigo, String comparadorAnterior) {
+		String operador = pila.pop(); // Es la direccion a saltar
+		switch (comparadorAnterior) {
+		// Le paso el operador anterior al salto para saber que comparación era y así usar el jump adecuado
+			case ">":
+				codigo.append("JLE LABEL" + operador + "\n \n"); // Salto en el caso contrario al de la comparacion
+				break;
+			case "<":
+				codigo.append("JGE LABEL" + operador + "\n \n"); // Salto en el caso contrario al de la comparacion
+				break;
+			case ">=":
+				codigo.append("JL LABEL" + operador + "\n \n"); // Salto en el caso contrario al de la comparacion
+				break;
+			case "<=":
+				codigo.append("JG LABEL" + operador + "\n \n"); // Salto en el caso contrario al de la comparacion
+				break;
+			case "=":
+				codigo.append("JNE LABEL" + operador + "\n \n"); // Salto en el caso contrario al de la comparacion
+				break;
+			case "!=":
+				codigo.append("JE LABEL" + operador + "\n \n"); // Salto en el caso contrario al de la comparacion
+				break;
+			}
+	}
+	
+	public static void operadorSaltoIncondicional(StringBuilder codigo) {
 		String operador = pila.pop(); //Es la direccion a saltar
-		switch(elemento) {
-			case "BF":
-				switch (comparadorAnterior) {
-				//Le paso el operador anterior al salto para saber que comparación era y así usar el jump adecuado
-					case ">":
-						codigo.append("JLE LABEL" + operador + "\n \n"); //Salto en el caso contrario al de la comparacion
-						break;
-					case "<":
-						codigo.append("JGE LABEL" + operador + "\n \n"); //Salto en el caso contrario al de la comparacion
-						break;
-					case ">=":
-						codigo.append("JL LABEL" + operador + "\n \n"); //Salto en el caso contrario al de la comparacion
-						break;
-					case "<=":
-						codigo.append("JG LABEL" + operador + "\n \n"); //Salto en el caso contrario al de la comparacion
-						break;
-					case "=":
-						codigo.append("JNE LABEL" + operador + "\n \n"); //Salto en el caso contrario al de la comparacion
-						break;
-					case "!=":
-						codigo.append("JE LABEL" + operador + "\n \n"); //Salto en el caso contrario al de la comparacion
-						break;
-				}
-				break;
-			case "BI":
-				codigo.append("JMP LABEL" + operador + "\n \n"); //Salto sí o sí a la etiqueta
-				break;
-		}
-		
+		codigo.append("JMP LABEL" + operador + "\n \n"); //Salto sí o sí a la etiqueta
 	}
 	
 	public static void operacionEnteroOctal(String operando1, String operando2, String operacion, StringBuilder codigo, Tipo tipoOperando) {
@@ -278,7 +288,6 @@ public class GeneradorCodigoAssembler {
 					try {
 						AnalizadorLexico.sintactico.flush();
 					} catch (IOException e) {
-						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
 					System.exit(1); //Termino la ejecución del compilador por error en etapa de compilacion
@@ -356,6 +365,77 @@ public class GeneradorCodigoAssembler {
 			codigo.append("FSTP " + operando + "\n \n"); //Primero apilo el valor del ParametroRealFloat en ST cuando hago el CALL
 		}
 	}
+	
+	public static void operacionSubtipoIntegerOctal(String operando1, String operando2, String operacion, StringBuilder codigo, Tipo tipoOperando) {
+		codigo.append("MOV ECX, OFFSET " + operando1 + "\n"); //Guardo la posicion inicial del primer elemento del operando1 (valor) 
+		codigo.append("MOV EDX, OFFSET " + operando2 + "\n"); //Guardo la posicion inicial del primer elemento del operando1 (valor)
+		codigo.append("MOV AX, [ECX]  \n"); //Guardo en AX el valor del primer elemento del operando1
+		codigo.append("MOV BX, [EDX] \n"); //Guardo en BX el valor del primer elemento del operando2
+		switch (operacion) {
+			case "+":
+				codigo.append("ADD AX, BX \n");
+				codigo.append("CMP AX, [ECX + 2] \n"); //Me desplazo al segundo elemento (rango inferior) y comparo con el resultado
+				codigo.append("JL Subtipo_inferior \n"); //Si es menor al mínimo entonces salta a la etiqueta correspondiente
+				codigo.append("CMP AX, [ECX + 4] \n"); //Me desplazo al tercero elemento (rango superior) y comparo con el resultado
+				codigo.append("JG Subtipo_superior \n"); //Si es mayor al máximo entonces salta a la etiqueta correspondiente
+				break;
+			case "-":
+				codigo.append("SUB AX, BX \n"); 
+				codigo.append("CMP AX, [ECX + 2] \n"); //Me desplazo al segundo elemento (rango inferior) y comparo con el resultado
+				codigo.append("JL Subtipo_inferior \n"); //Si es menor al mínimo entonces salta a la etiqueta correspondiente
+				codigo.append("CMP AX, [ECX + 4] \n"); //Me desplazo al tercero elemento (rango superior) y comparo con el resultado
+				codigo.append("JG Subtipo_superior \n"); //Si es mayor al máximo entonces salta a la etiqueta correspondiente
+				break;
+			case "*":
+				codigo.append("IMUL BX \n");
+				codigo.append("CMP AX, [ECX + 2] \n"); //Me desplazo al segundo elemento (rango inferior) y comparo con el resultado
+				codigo.append("JL Subtipo_inferior \n"); //Si es menor al mínimo entonces salta a la etiqueta correspondiente
+				codigo.append("CMP AX, [ECX + 4] \n"); //Me desplazo al tercero elemento (rango superior) y comparo con el resultado
+				codigo.append("JG Subtipo_superior \n"); //Si es mayor al máximo entonces salta a la etiqueta correspondiente
+				break;
+			case "/":
+				codigo.append("MOV DX, 0 \n"); //Reseteo el valor de DX para evitar conflictos al hacer IDIV (DX:AX)
+				codigo.append("CMP BX" + ",0" + "\n");
+				codigo.append("JE Divison_Por_Cero \n"); //JZ salta si la comparacion del operando2 con el cero es TRUE
+				//Continua el flujo normal en caso de no saltar
+				codigo.append("IDIV BX \n");
+				
+				//Creo que en la division nunca va a existir el caso que por operar te vayas de rango en enteros
+				/*
+				codigo.append("CMP AX, [ECX + 2] \n"); //Me desplazo al segundo elemento (rango inferior) y comparo con el resultado
+				codigo.append("JL Subtipo_inferior \n"); //Si es menor al mínimo entonces salta a la etiqueta correspondiente
+				codigo.append("CMP AX, [ECX + 4] \n"); //Me desplazo al tercero elemento (rango superior) y comparo con el resultado
+				codigo.append("JG Subtipo_superior \n"); //Si es mayor al máximo entonces salta a la etiqueta correspondiente
+				*/
+				break;
+			case ":=":
+				//Uso los registros al reves por la particularidad de los operandos en la asignación
+				codigo.append("MOV [" + operando2 + "], AX \n"); //Guardo en la primera posicion (valor) el valor del operando
+				break;
+			default:
+				//Después veré pero acá no debería entrar nada
+				break;
+		}
+		if(operacion!= ":=") {
+			codigo.append("MOV [@aux" + numAuxiliares + "], AX");
+			pila.push(crearAuxiliarSubtipo(tipoOperando));
+		}
+		codigo.append("\n \n");
+	}
+	
+	public static void operacionTriplaIntegerOctal(String operando1, String operando2, String operacion, StringBuilder codigo, Tipo tipoOperando) {
+		
+	}
+	
+	public static void operacionSubtipoFloat(String operando1, String operando2, String operacion, StringBuilder codigo, Tipo tipoOperando) {
+		
+	}
+	
+	public static void operacionTriplaFloat(String operando1, String operando2, String operacion, StringBuilder codigo, Tipo tipoOperando) {
+		
+	}
+	
+	
 
 	
 	
@@ -404,6 +484,22 @@ public class GeneradorCodigoAssembler {
 		codigo.append("JMP fin" + "\n");
 		return codigo;
 	}
+	
+	public static StringBuilder crearErrorSubtipoInferior() {
+		StringBuilder codigo = new StringBuilder();
+		codigo.append("Subtipo_inferior:" + "\n");
+		codigo.append("invoke MessageBox, NULL, addr Error_Subtipo_inferior, addr Error_Subtipo_inferior, MB_OK \n");
+		codigo.append("JMP fin" + "\n");
+		return codigo;
+	}
+	
+	public static StringBuilder crearErrorSubtipoSuperior() {
+		StringBuilder codigo = new StringBuilder();
+		codigo.append("Subtipo_superior:" + "\n");
+		codigo.append("invoke MessageBox, NULL, addr Error_Subtipo_superior, addr Error_Subtipo_superior, MB_OK \n");
+		codigo.append("JMP fin" + "\n");
+		return codigo;
+	}
 
 	public static String crearAuxiliar(Tipo tipo) {
 		Simbolo simb = new Simbolo();
@@ -448,16 +544,15 @@ public class GeneradorCodigoAssembler {
 	}
 	
 	public static String convertirOperandoLiteral(String operando) {
-		switch(AnalizadorLexico.TablaDeSimbolos.get(operando).getTipo().toString()) {
-		case "INTEGER", "integer", "Integer":
-			operando="int"+operando;
-			return operando;
-		case "OCTAL", "octal", "Octal":
-			operando="octi"+operando;
-			return operando;
-		case "DOUBLE", "double", "Double":
-			operando="float"+operando;
-			return operando;
+		String tipoString = AnalizadorLexico.TablaDeSimbolos.get(operando).getTipo().toString();
+		if (tipoString.contains("INTEGER")) {
+			operando = "integer" + operando;
+		}
+		if (tipoString.contains("OCTAL")) {
+			operando = "octi" + operando;
+		}
+		if (tipoString.contains("DOUBLE")) {
+			operando = "float" + operando;
 		}
 		return operando;
 	}
@@ -485,6 +580,25 @@ public class GeneradorCodigoAssembler {
 		return resultado.toString(); //Devuelvo el toString.
 	}
 	
+	public static String crearAuxiliarSubtipo(Tipo tipo) {
+		Simbolo simb = new Simbolo();
+		simb.setTipoVar(tipo);
+		simb.setId("@aux" + numAuxiliares);
+		simb.setUso("Var Aux");
+		AnalizadorLexico.TablaDeSimbolos.put("@aux"+numAuxiliares,simb); //Agrego la nueva auxiliar a la TS
+		numAuxiliares++;
+		return("@aux"+(numAuxiliares-1));
+	}
+	
+	public static String crearAuxiliarTripla(Tipo tipo) {
+		Simbolo simb = new Simbolo();
+		simb.setTipoVar(tipo);
+		simb.setId("@aux" + numAuxiliares);
+		simb.setUso("Var Aux");
+		AnalizadorLexico.TablaDeSimbolos.put("@aux"+numAuxiliares,simb); //Agrego la nueva auxiliar a la TS
+		numAuxiliares++;
+		return("@aux"+(numAuxiliares-1));
+	}
 	
 	
 	
@@ -503,6 +617,8 @@ public class GeneradorCodigoAssembler {
 		codigo.append(".data \n");
 		codigo.append("Error_DivisionCero DB \"Error: Division por cero\", 10, 0 \n");
 		codigo.append("Error_Overflow DB \"Error: Overflow en producto entre Enteros\", 10, 0 \n");
+		codigo.append("Error_Subtipo_inferior DB \"Error: Valor menor al rango inferior del subtipo \", 10, 0 \n");
+		codigo.append("Error_Subtipo_superior DB \"Error: Valor mayor al limite superior del subtipo \", 10, 0 \n");
 		codigo.append("ESPERAR_ACCION_USUARIO DB \"Haga click en ACEPTAR para cerrar el programa y la consola\", 10, 0 \n");
 		for (Map.Entry<String, Simbolo> iterador : AnalizadorLexico.TablaDeSimbolos.entrySet()) {
 			String lexema = iterador.getKey();
@@ -530,7 +646,7 @@ public class GeneradorCodigoAssembler {
 		String tipoDatoAssembler = null;
 		String prefijoNombre = null;
 		if (tipoString.contains("INTEGER")) {
-			prefijoNombre = "int";
+			prefijoNombre = "integer";
 			tipoDatoAssembler = "DW";
 		} else if (tipoString.contains("OCTAL")) {
 			prefijoNombre = "octi";
@@ -539,25 +655,28 @@ public class GeneradorCodigoAssembler {
 			prefijoNombre = "float";
 			tipoDatoAssembler = "DQ";
 		}
-		if(tipo.esSubTipo()) {
-			if (codigo.indexOf("subtype" + prefijoNombre + lexema + " " + tipoDatoAssembler) == -1) { // Me fijo si en el StringBuilder ya existe algun substring que sea intNumero DW. Si devuelve -1 entonces lo inserto
-				codigo.append("subtype" + prefijoNombre + lexema + " " + tipoDatoAssembler + " ?, " + (int)tipo.getRangoInferior() + ", " + (int)tipo.getRangoSuperior() + "\n"); //Declaro la variable como un arreglo de 3 donde el primer elemento es el valor y los otros los rangos
+		if(!tipo.esSubTipo()) { //Los subtipos no pueden ser literales
+			if(!tipo.esTripla()) { //Las triplas no pueden ser literales
+				if (simbolo.esLiteral()) { // Verifico primero si es una constante literal para saber si le cargo el valor o va el '?'
+					if (codigo.indexOf(prefijoNombre + lexema + " " + tipoDatoAssembler) == -1) { // Me fijo si en el StringBuilder ya existe algun substring que sea intNumero DW. Si devuelve -1 entonces lo inserto
+						codigo.append(prefijoNombre + lexema + " " + tipoDatoAssembler + " " + simbolo.getEntero() + "\n");
+					}
+				} 
+				else {
+					codigo.append(lexema + " " + tipoDatoAssembler + " ?" + "\n");
+				}
 			}
-		}
-		else if(tipo.esTripla()) {
-			if (codigo.indexOf("triple" + prefijoNombre + lexema + " " + tipoDatoAssembler) == -1) { // Me fijo si en el StringBuilder ya existe algun substring que sea intNumero DW. Si devuelve -1 entonces lo inserto
-				codigo.append("triple" + prefijoNombre + lexema + " " + tipoDatoAssembler + " ?, ?, ? " + "\n"); //Declaro la variable como un arreglo de 3 valores
+			else {
+				codigo.append(lexema + " " + tipoDatoAssembler + " ?, ?, ?" + "\n");
 			}
 		}
 		else {
-			if (simbolo.esLiteral()) { // Verifico primero si es una constante literal para saber si le cargo el valor o va el '?'
-				if (codigo.indexOf(prefijoNombre + lexema + " " + tipoDatoAssembler) == -1) { // Me fijo si en el StringBuilder ya existe algun substring que sea intNumero DW. Si devuelve -1 entonces lo inserto
-					codigo.append(prefijoNombre + lexema + " " + tipoDatoAssembler + " " + simbolo.getEntero() + "\n");
-				}
-			} 
-			else {
-				codigo.append(lexema + " " + tipoDatoAssembler + " ?" + "\n");
+			if (tipo.getType().contains("INTEGER")||tipo.getType().contains("OCTAL")) {
+				codigo.append(lexema + " " + tipoDatoAssembler + " ?, " + tipo.getRangInferiorInteger() + ", " + tipo.getRangSuperiorInteger() + "\n");
+			}else {
+				codigo.append(lexema + " " + tipoDatoAssembler + " ?, " + tipo.getRangInferiorDouble() + ", " + tipo.getRangSuperiorDouble() + "\n");
 			}
+			
 		}
 	}
 	
@@ -594,6 +713,8 @@ public class GeneradorCodigoAssembler {
 		codigo.append("JMP fin \n \n");
 		codigo.append(crearErrorDivisionPorCero() + "\n");
 		codigo.append(crearErrorOverflow() + "\n");
+		codigo.append(crearErrorSubtipoInferior() + "\n");
+		codigo.append(crearErrorSubtipoSuperior() + "\n");
 		codigo.append("fin: \n");
 		codigo.append("invoke MessageBox, NULL, addr ESPERAR_ACCION_USUARIO, addr ESPERAR_ACCION_USUARIO, MB_OK \n");
 		codigo.append("invoke ExitProcess, 0 \n");

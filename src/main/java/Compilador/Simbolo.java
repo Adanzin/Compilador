@@ -86,9 +86,15 @@ public class Simbolo {
     
     public Simbolo getCopiaNeg() {
     	if(this.esEntero()) {
-    		return new Simbolo(this.entero*-1,this.doub,this.base);
+    		Simbolo s = new Simbolo(this.entero*-1,this.doub,this.base);
+    		s.setTipoVar(this.tipoVar);
+    		s.setId(this.id);
+    		return s;
     	}
-    	return new Simbolo(this.entero,this.doub*-1.0,this.base);
+    	Simbolo s = new Simbolo(this.entero,this.doub*-1.0,this.base);
+    	s.setTipoVar(this.tipoVar);
+    	s.setId(this.id);
+    	return s;
     }
 
     public double getDoub() {

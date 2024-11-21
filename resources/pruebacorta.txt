@@ -1,19 +1,18 @@
 program
 begin  
+	TYPEDEF flotadito := integer {-100, 100};
+	flotadito a,b,c;
 	
-	integer a;
-	a:=5;
+	integer d;
+	d:=0;
 	
-	WHILE(a<10)BEGIN
-		OUTF(a);
-		IF(a=6)THEN BEGIN
-			OUTF([entro a IF]);
-			GOTO afuera@;
-			
-		END;
-		END_IF;
-		a:=a+1;
-	END;
-	afuera@;
+	a:=99;
+	b:=3;
+	c:=2;
+	
+	OUTF(a+b);
+	OUTF(a-b);
+	OUTF(a*c);
+	OUTF(a/c);
 	
 End

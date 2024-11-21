@@ -186,7 +186,7 @@ expresion_arit  : expresion_arit '+' termino {GeneradorCodigoIntermedio.addEleme
 				| error termino {cargarErrorEImprimirlo("Linea :" + AnalizadorLexico.saltoDeLinea +  " Error:  La expresion esta mal escrita, falta el operador");}
 ;
 
-termino : termino '' factor {GeneradorCodigoIntermedio.addElemento("");} 
+termino : termino '*' factor {GeneradorCodigoIntermedio.addElemento("*");} 
         | termino '/' factor {GeneradorCodigoIntermedio.addElemento("/");}
         | factor 
 		| error '*' error{cargarErrorEImprimirlo("Linea :" + AnalizadorLexico.saltoDeLinea +  " Error:  La expresion esta mal escrita");}
@@ -444,15 +444,20 @@ private static Tipo getTipoDef(String id){
 }
 
 private static Tipo cargarSubtipo(String name, Tipo t,  String min, String max){
-	
 	if(t.esSubTipo()){
 		cargarErrorEImprimirlo( "Linea :" +" No se puede declarar un subTipo de un tipo definido por el usuario ");
 	}else if(t.esTripla()){
 		cargarErrorEImprimirlo( "Linea :" +" No se puede declarar un subTipo de un tipo definido por el usuario ");
 	}else{
-		double mini = Double.valueOf(min);
-		double maxi = Double.valueOf(max);
-		tipos.put(name,new Tipo(t.getType(),mini,maxi));
+		if(min.contains(".") && max.contains(".")){
+			double mini = Double.valueOf(min);
+			double maxi = Double.valueOf(max);
+			tipos.put(name,new Tipo(t.getType(),mini,maxi));
+		}else{
+			int mini=Integer.valueOf(min);
+			int maxi = Integer.valueOf(max);
+			tipos.put(name,new Tipo(t.getType(),mini,maxi));
+		}
 	}
 	return tipos.get(name);
 }
