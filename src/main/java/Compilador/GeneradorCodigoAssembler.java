@@ -7,12 +7,14 @@ import java.util.Map;
 
 public class GeneradorCodigoAssembler {
 	
-	public static Stack<String> pila = new Stack<String>();
+	private static Stack<String> pila = new Stack<String>();
 	
-	public static int numAuxiliares = 1;
+	private static int numAuxiliares = 1;
 	
 	private static String ultimaFuncion = null;
-	public static String ultimaOperacion = null; //Se usa para debuggear nomas
+	private static String ultimaOperacion = null; //Se usa para debuggear nomas
+	private static String ultimaTripla = null;
+	private static int ultimoIndice = 0;
 		
 	public GeneradorCodigoAssembler() {
 	}
@@ -57,6 +59,7 @@ public class GeneradorCodigoAssembler {
 					break;
 				case "INDEX":
 					ultimaOperacion = elemento;
+					operadorIndiceTripla(codigo);
 					break;
 				default: //Entra si es un operando o si es un LABEL+N° que no puedo chequear en el CASE
 					if(elemento.startsWith("LABEL")) { //Es una etiqueta
@@ -93,24 +96,46 @@ public class GeneradorCodigoAssembler {
 		Simbolo simbOperando2 = Parser.getVariableFueraDeAmbito(operando2);
 		operando1 = simbOperando1.getId();
 		operando2 = simbOperando2.getId();
-		if(simbOperando1.sonCompatibles(simbOperando2)) {
-			Tipo tipoOperando = simbOperando2.getTipo();
+		if (simbOperando1.sonCompatibles(simbOperando2)) {
+			Tipo tipoOperando2 = simbOperando2.getTipo();
+			Tipo tipoOperando1 = simbOperando1.getTipo();
 			
-			if(tipoOperando.esSubTipo()) {
-				operando1 = comprobarOperandoLiteral(operando1);
-				operando2 = comprobarOperandoLiteral(operando2);
-				if (tipoOperando.getType().toString().contains("INTEGER")||tipoOperando.getType().toString().contains("OCTAL")) {
-					operacionSubtipoIntegerOctal(operando1, operando2, operacion, codigo, tipoOperando);
-				}else {
-					operacionSubtipoFloat(operando1, operando2, operacion, codigo, tipoOperando);
+			//CASO ASIGNACION ENTRE TRIPLAS
+			if (tipoOperando2.esTripla()) {
+				if (operacion == ":=") {
+					if (tipoOperando2.getType().toString().contains("INTEGER") || tipoOperando2.getType().toString().contains("OCTAL")) {
+						// Solo debe permitirse la asignacion y llamo al metodo para asignar a cada elemento el del indice correspondiente
+						operacionEntreTriplasInteger(operando1, operando2, operacion, codigo, tipoOperando1,tipoOperando2);
+					} else {
+						operacionEntreTriplasFloat(operando1, operando2, operacion, codigo, tipoOperando1, tipoOperando2);
+					}
+				} 
+				else {
+					Parser.cargarErrorEImprimirlo("Error: Operacion incorrecta con triplas \n");
 				}
-			}else {	
+			}
+			
+			//CASO ASIGNACION DE TIPO PRIMITIVO A UNA POSICION DE LA TRIPLA
+			else if(!ultimaTripla.isBlank() && operacion==":=") { //Reviso que lo ultimo que se haya operado haya sido una tripla para ser asignada y que se trate de una asignacion
+				operando1 = comprobarOperandoLiteral(operando1);
+				if (tipoOperando2.getType().toString().contains("INTEGER") || tipoOperando2.getType().toString().contains("OCTAL")) {
+					operacionAsignacionElementoTriplaInteger(operando1, codigo);
+					ultimaTripla = "";
+				}else {
+					operacionAsignacionElementoTriplaFloat(operando1, codigo);
+					ultimaTripla = "";
+				}
+			}
+			
+			//CASO OPERACION TIPOS PRIMITIVOS / SUBTIPOS
+			else {
 				operando1 = comprobarOperandoLiteral(operando1);
 				operando2 = comprobarOperandoLiteral(operando2);
-				if (tipoOperando.getType()=="INTEGER" || tipoOperando.getType()=="OCTAL") {
-					operacionEnteroOctal(operando1, operando2, operacion, codigo, tipoOperando);
-				} else {
-					operacionDouble(operando1, operando2, operacion, codigo, tipoOperando);
+				if (tipoOperando2.getType() == "INTEGER" || tipoOperando2.getType() == "OCTAL") {
+					operacionEnteroOctal(operando1, operando2, operacion, codigo, tipoOperando2);
+				} 
+				else {
+					operacionDouble(operando1, operando2, operacion, codigo, tipoOperando2);
 				}
 			}
 		} 
@@ -120,7 +145,7 @@ public class GeneradorCodigoAssembler {
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-			System.exit(1); //Termino la ejecución del compilador por error en etapa de compilacion
+			System.exit(1); // Termino la ejecución del compilador por error en etapa de compilacion
 		}
 	}
 	
@@ -184,6 +209,7 @@ public class GeneradorCodigoAssembler {
 		switch (operacion) {
 			case "+":
 				codigo.append("ADD AX," + operando2 + "\n");
+				
 				break;
 			case "-":
 				codigo.append("SUB AX," + operando2 + "\n"); 
@@ -221,6 +247,7 @@ public class GeneradorCodigoAssembler {
 	public static void operacionDouble(String operando1, String operando2, String operacion, StringBuilder codigo, Tipo tipoOperando) {
 		operando1 = convertirLexemaFlotante(operando1);
 		operando2 = convertirLexemaFlotante(operando2);
+		
 		codigo.append("FLD " + operando2 + "\n"); //Apilo el operando2
 		codigo.append("FLD " + operando1 + "\n"); //Apilo el operando1
 		String aux = crearAuxiliar(tipoOperando);
@@ -425,69 +452,91 @@ public class GeneradorCodigoAssembler {
 		codigo.append("\n \n");
 	}
 	
-	public static void operacionTriplaIntegerOctal(String operando1, String operando2, String operacion, StringBuilder codigo, Tipo tipoOperando) {
+	public static void operacionEntreTriplasInteger(String operando1, String operando2, String operacion, StringBuilder codigo, Tipo tipoOperando1, Tipo tipoOperando2) {
 		codigo.append("MOV ECX, OFFSET " + operando1 + "\n"); //Guardo la posicion inicial del primer elemento del operando1 (valor) 
-		codigo.append("MOV EDX, OFFSET " + operando2 + "\n"); //Guardo la posicion inicial del primer elemento del operando1 (valor)
+		codigo.append("MOV EDX, OFFSET " + operando2 + "\n"); //Guardo la posicion inicial del primer elemento del operando2 (valor)
 		codigo.append("MOV AX, [ECX]  \n"); //Guardo en AX el valor del primer elemento del operando1
 		codigo.append("MOV BX, [EDX] \n"); //Guardo en BX el valor del primer elemento del operando2
-		switch (operacion) {
-			case "+":
-				codigo.append("ADD AX, BX \n");
-				codigo.append("CMP AX, [ECX + 2] \n"); //Me desplazo al segundo elemento (rango inferior) y comparo con el resultado
-				codigo.append("JL Subtipo_inferior \n"); //Si es menor al mínimo entonces salta a la etiqueta correspondiente
-				codigo.append("CMP AX, [ECX + 4] \n"); //Me desplazo al tercero elemento (rango superior) y comparo con el resultado
-				codigo.append("JG Subtipo_superior \n"); //Si es mayor al máximo entonces salta a la etiqueta correspondiente
-				break;
-			case "-":
-				codigo.append("SUB AX, BX \n"); 
-				codigo.append("CMP AX, [ECX + 2] \n"); //Me desplazo al segundo elemento (rango inferior) y comparo con el resultado
-				codigo.append("JL Subtipo_inferior \n"); //Si es menor al mínimo entonces salta a la etiqueta correspondiente
-				codigo.append("CMP AX, [ECX + 4] \n"); //Me desplazo al tercero elemento (rango superior) y comparo con el resultado
-				codigo.append("JG Subtipo_superior \n"); //Si es mayor al máximo entonces salta a la etiqueta correspondiente
-				break;
-			case "*":
-				codigo.append("IMUL BX \n");
-				codigo.append("CMP AX, [ECX + 2] \n"); //Me desplazo al segundo elemento (rango inferior) y comparo con el resultado
-				codigo.append("JL Subtipo_inferior \n"); //Si es menor al mínimo entonces salta a la etiqueta correspondiente
-				codigo.append("CMP AX, [ECX + 4] \n"); //Me desplazo al tercero elemento (rango superior) y comparo con el resultado
-				codigo.append("JG Subtipo_superior \n"); //Si es mayor al máximo entonces salta a la etiqueta correspondiente
-				break;
-			case "/":
-				codigo.append("MOV DX, 0 \n"); //Reseteo el valor de DX para evitar conflictos al hacer IDIV (DX:AX)
-				codigo.append("CMP BX" + ",0" + "\n");
-				codigo.append("JE Divison_Por_Cero \n"); //JZ salta si la comparacion del operando2 con el cero es TRUE
-				//Continua el flujo normal en caso de no saltar
-				codigo.append("IDIV BX \n");
-				
-				//Creo que en la division nunca va a existir el caso que por operar te vayas de rango en enteros
-				/*
-				codigo.append("CMP AX, [ECX + 2] \n"); //Me desplazo al segundo elemento (rango inferior) y comparo con el resultado
-				codigo.append("JL Subtipo_inferior \n"); //Si es menor al mínimo entonces salta a la etiqueta correspondiente
-				codigo.append("CMP AX, [ECX + 4] \n"); //Me desplazo al tercero elemento (rango superior) y comparo con el resultado
-				codigo.append("JG Subtipo_superior \n"); //Si es mayor al máximo entonces salta a la etiqueta correspondiente
-				*/
-				break;
-			case ":=":
-				//Uso los registros al reves por la particularidad de los operandos en la asignación
-				codigo.append("MOV [" + operando2 + "], AX \n"); //Guardo en la primera posicion (valor) el valor del operando
-				break;
-			default:
-				//Después veré pero acá no debería entrar nada
-				break;
-		}
-		if(operacion!= ":=") {
-			codigo.append("MOV [@aux" + numAuxiliares + "], AX");
-			pila.push(crearAuxiliarSubtipo(tipoOperando));
-		}
+		
+		codigo.append("MOV [" + operando2 + "], AX \n"); //Guardo la primera pos de operando1 en operando2
+		
+		codigo.append("MOV AX, [ECX + 2]  \n"); //Desplazo a la segunda pos
+		codigo.append("MOV [" + operando2 + "+ 2], AX \n"); //Guardo en la segunda pos
+		
+		codigo.append("MOV AX, [ECX + 4]  \n"); //Desplazo a la tercera pos
+		codigo.append("MOV [" + operando2 + "+ 4], AX \n"); //Guardo en la tercera pos
+		
 		codigo.append("\n \n");
 	}
+
 	
 	public static void operacionSubtipoFloat(String operando1, String operando2, String operacion, StringBuilder codigo, Tipo tipoOperando) {
 		
 	}
 	
-	public static void operacionTriplaFloat(String operando1, String operando2, String operacion, StringBuilder codigo, Tipo tipoOperando) {
+	public static void operacionEntreTriplasFloat(String operando1, String operando2, String operacion, StringBuilder codigo, Tipo tipoOperando1, Tipo tipoOperando2) {
+		codigo.append("MOV ECX, OFFSET " + operando1 + "\n"); //Guardo la posicion inicial del primer elemento del operando1 (valor)
+		codigo.append("MOV EDX, OFFSET " + operando2 + "\n"); //Guardo la posicion inicial del primer elemento del operando2 (valor)
 		
+		codigo.append("FLD QWORD PTR [ECX] \n"); //Cargo en la pila el primer valor del operando a asignar
+		codigo.append("FSTP QWORD PTR [EDX] \n"); //Guardo en el primer valor del asignado
+		
+		codigo.append("FLD QWORD PTR [ECX + 8] \n"); //Cargo en la pila el segundo valor del operando a asignar
+		codigo.append("FSTP QWORD PTR [EDX + 8] \n"); //Guardo en el segundo valor del asignado
+		
+		codigo.append("FLD QWORD PTR [ECX + 16] \n"); //Cargo en la pila el tercer valor del operando a asignar
+		codigo.append("FSTP QWORD PTR [EDX + 16] \n"); //Guardo en el tercer valor del asignado
+		
+		codigo.append("\n \n");
+	}
+	
+	public static void operadorIndiceTripla(StringBuilder codigo) {
+		String operando1 = pila.pop(); //Es el indice a acceder
+		String operando2 = pila.pop(); //Es la variable
+		
+		Simbolo simbOperando2 = Parser.getVariableFueraDeAmbito(operando2);
+		operando2 = simbOperando2.getId();
+		int indice = 0;
+		
+		if(simbOperando2.getTipo().getType().equals("INTEGER")||simbOperando2.getTipo().getType().equals("OCTAL")) {
+			if (operando1.equals("2")) {
+				indice = 2;
+			}
+			if (operando1.equals("3")) {
+				indice = 4;
+			}
+			codigo.append("MOV ECX, OFFSET " + operando2 + "\n");
+			codigo.append("MOV AX, [ECX + " + indice + "] \n");
+			codigo.append("MOV @aux" + numAuxiliares + ", AX \n \n");
+		}else {
+			operando2 = convertirLexemaFlotante(operando2);
+			if (operando1.equals("2")) {
+				indice = 8;
+			}
+			if (operando1.equals("3")) {
+				indice = 16;
+			}
+			codigo.append("MOV ECX, OFFSET " + operando2 + "\n");
+			codigo.append("FLD QWORD PTR [ECX + " + indice + "] \n");
+			codigo.append("FSTP QWORD PTR @aux" + numAuxiliares +  "\n \n");
+			
+		}
+		pila.push(crearAuxiliar(Parser.tipos.get(simbOperando2.getTipo().getType())));
+		ultimaTripla = operando2; //Guardo el nombre de la variable triple para el caso de asignaciones futuras
+		ultimoIndice = indice; //Guardo el indice para lo mismo
+	}
+	
+	public static void operacionAsignacionElementoTriplaInteger(String operando1, StringBuilder codigo) {
+		codigo.append("MOV ECX, OFFSET " + ultimaTripla + "\n"); //Guardo la posicion de inicio de la tripla a ser asignada
+		codigo.append("MOV AX, " + operando1 + "\n");
+		codigo.append("MOV [ECX + " + ultimoIndice + "], AX \n \n"); //Almaceno el valor del operando1 en la posicion adecuada
+	}
+	
+	public static void operacionAsignacionElementoTriplaFloat(String operando1, StringBuilder codigo) {
+		operando1 = convertirLexemaFlotante(operando1);
+		codigo.append("MOV ECX, OFFSET " + ultimaTripla + "\n");
+		codigo.append("FLD QWORD PTR " + operando1 + "\n");
+		codigo.append("FSTP QWORD PTR [ECX + " + ultimoIndice + "] \n \n");
 	}
 	
 	
@@ -515,7 +564,7 @@ public class GeneradorCodigoAssembler {
 		}
 		else if(simbOperando.getTipo().toString().contains("DOUBLE")) { //Tengo en cuenta primitivos y subtipos
 			operando = simbOperando.getId();
-			codigo.append("invoke printf, cfm$(\"%.20Lf\\n\"), " + operando + "\n \n" ); //Copio el invoke de _floati del archivo de moodle
+			codigo.append("invoke printf, cfm$(\"%f\\n\"), " + operando + "\n \n" ); //Copio el invoke de _floati del archivo de moodle
 		}
 		else if(simbOperando.getTipo().toString()==Parser.tipos.get("CADENAMULTILINEA").toString()) {
 			operando = convertirLexemaCadena(operando);
@@ -639,21 +688,23 @@ public class GeneradorCodigoAssembler {
 		Simbolo simb = new Simbolo();
 		simb.setTipoVar(tipo);
 		simb.setId("@aux" + numAuxiliares);
-		simb.setUso("Var Aux");
-		AnalizadorLexico.TablaDeSimbolos.put("@aux"+numAuxiliares,simb); //Agrego la nueva auxiliar a la TS
+		simb.setUso("Var Aux Subtipo");
+		AnalizadorLexico.TablaDeSimbolos.put("@auxSubtipo"+numAuxiliares,simb); //Agrego la nueva auxiliar a la TS
 		numAuxiliares++;
-		return("@aux"+(numAuxiliares-1));
+		return("@auxSubtipo"+(numAuxiliares-1));
 	}
 	
 	public static String crearAuxiliarTripla(Tipo tipo) {
 		Simbolo simb = new Simbolo();
 		simb.setTipoVar(tipo);
-		simb.setId("@aux" + numAuxiliares);
-		simb.setUso("Var Aux");
-		AnalizadorLexico.TablaDeSimbolos.put("@aux"+numAuxiliares,simb); //Agrego la nueva auxiliar a la TS
+		simb.setId("@auxTripla" + numAuxiliares);
+		simb.setUso("Var Aux Tripla");
+		AnalizadorLexico.TablaDeSimbolos.put("@auxTripla"+numAuxiliares,simb); //Agrego la nueva auxiliar a la TS
 		numAuxiliares++;
-		return("@aux"+(numAuxiliares-1));
+		return("@auxTripla"+(numAuxiliares-1));
 	}
+	
+	
 	
 	
 	
@@ -710,28 +761,21 @@ public class GeneradorCodigoAssembler {
 			prefijoNombre = "float";
 			tipoDatoAssembler = "DQ";
 		}
-		if(!tipo.esSubTipo()) { //Los subtipos no pueden ser literales
-			if(!tipo.esTripla()) { //Las triplas no pueden ser literales
-				if (simbolo.esLiteral()) { // Verifico primero si es una constante literal para saber si le cargo el valor o va el '?'
-					if (codigo.indexOf(prefijoNombre + lexema + " " + tipoDatoAssembler) == -1) { // Me fijo si en el StringBuilder ya existe algun substring que sea intNumero DW. Si devuelve -1 entonces lo inserto
+		if (!tipo.esTripla()) { // Las triplas no pueden ser literales
+			if (simbolo.esLiteral()) { // Verifico primero si es una constante literal para saber si le cargo el valor o va el '?'
+				if (codigo.indexOf(prefijoNombre + lexema + " " + tipoDatoAssembler) == -1) { // Me fijo si en el StringBuilder ya existe algun substring que sea intNumero DW. Si devuelve -1 entonces lo inserto
+					
+					if (tipoString.contains("DOUBLE")) {
+						codigo.append(convertirLexemaFlotante(prefijoNombre + lexema) + " " + tipoDatoAssembler + " " + simbolo.getDoub() + "\n");
+					}else {
 						codigo.append(prefijoNombre + lexema + " " + tipoDatoAssembler + " " + simbolo.getEntero() + "\n");
 					}
-				} 
-				else {
-					codigo.append(lexema + " " + tipoDatoAssembler + " ?" + "\n");
 				}
+			} else {
+				codigo.append(lexema + " " + tipoDatoAssembler + " ?" + "\n");
 			}
-			else {
-				codigo.append(lexema + " " + tipoDatoAssembler + " ?, ?, ?" + "\n");
-			}
-		}
-		else {
-			if (tipo.getType().contains("INTEGER")||tipo.getType().contains("OCTAL")) {
-				codigo.append(lexema + " " + tipoDatoAssembler + " ?, " + tipo.getRangInferiorInteger() + ", " + tipo.getRangSuperiorInteger() + "\n");
-			}else {
-				codigo.append(lexema + " " + tipoDatoAssembler + " ?, " + tipo.getRangInferiorDouble() + ", " + tipo.getRangSuperiorDouble() + "\n");
-			}
-			
+		} else {
+			codigo.append(lexema + " " + tipoDatoAssembler + " ?, ?, ?" + "\n");
 		}
 	}
 	

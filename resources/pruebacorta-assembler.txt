@@ -14,84 +14,217 @@ Error_Overflow DB "Error: Overflow en producto entre Enteros", 10, 0
 Error_Subtipo_inferior DB "Error: Valor menor al rango inferior del subtipo ", 10, 0 
 Error_Subtipo_superior DB "Error: Valor mayor al limite superior del subtipo ", 10, 0 
 ESPERAR_ACCION_USUARIO DB "Haga click en ACEPTAR para cerrar el programa y la consola", 10, 0 
-e$MAIN DW ?
-b$MAIN DW ?
-h$MAIN DW ?
-@ParametroRealInt DW ?
-Entro db "Entro", 0 
+@aux7 DQ ?
+@aux22 DQ ?
+@aux6 DQ ?
+@aux23 DQ ?
+@aux5 DQ ?
+@aux24 DQ ?
+@aux4 DQ ?
+@aux25 DQ ?
+@aux9 DQ ?
+@aux20 DQ ?
+@aux8 DQ ?
+@aux21 DQ ?
 @ParametroRealFloat DQ ?
+float20@5 DQ 20.5
+c$MAIN DQ ?
+@aux3 DQ ?
+@aux2 DQ ?
+@aux1 DQ ?
+float300@5 DQ 300.5
+@aux11 DQ ?
+b$MAIN DQ ?, ?, ?
+@aux12 DQ ?
+@aux13 DQ ?
+@ParametroRealInt DW ?
+@aux14 DQ ?
+@aux10 DQ ?
+@aux19 DQ ?
+@aux15 DQ ?
+@aux16 DQ ?
+float200@5 DQ 200.5
+@aux17 DQ ?
+@aux18 DQ ?
 integer1 DW 1
+float10@5 DQ 10.5
+float100@5 DQ 100.5
 integer2 DW 2
+tripla$MAIN DQ ?, ?, ?
 integer3 DW 3
-g$MAIN DW ?
-c$MAIN DW ?
-a$MAIN DW ?
-d$MAIN DW ?
-f$MAIN DW ?
+float30@5 DQ 30.5
+a$MAIN DQ ?, ?, ?
+d$MAIN DQ ?
 
 .code 
  
 start: 
-MOV AX, integer3
-MOV a$MAIN, AX
+MOV ECX, OFFSET a$MAIN
+FLD QWORD PTR [ECX + 0] 
+FSTP QWORD PTR @aux1
+ 
+MOV ECX, OFFSET a$MAIN
+FLD QWORD PTR float10@5
+FSTP QWORD PTR [ECX + 0] 
+ 
+MOV ECX, OFFSET a$MAIN
+FLD QWORD PTR [ECX + 8] 
+FSTP QWORD PTR @aux2
+ 
+MOV ECX, OFFSET a$MAIN
+FLD QWORD PTR float20@5
+FSTP QWORD PTR [ECX + 8] 
+ 
+MOV ECX, OFFSET a$MAIN
+FLD QWORD PTR [ECX + 16] 
+FSTP QWORD PTR @aux3
+ 
+MOV ECX, OFFSET a$MAIN
+FLD QWORD PTR float30@5
+FSTP QWORD PTR [ECX + 16] 
+ 
+MOV ECX, OFFSET b$MAIN
+FLD QWORD PTR [ECX + 0] 
+FSTP QWORD PTR @aux4
+ 
+MOV ECX, OFFSET b$MAIN
+FLD QWORD PTR float100@5
+FSTP QWORD PTR [ECX + 0] 
+ 
+MOV ECX, OFFSET b$MAIN
+FLD QWORD PTR [ECX + 8] 
+FSTP QWORD PTR @aux5
+ 
+MOV ECX, OFFSET b$MAIN
+FLD QWORD PTR float200@5
+FSTP QWORD PTR [ECX + 8] 
+ 
+MOV ECX, OFFSET b$MAIN
+FLD QWORD PTR [ECX + 16] 
+FSTP QWORD PTR @aux6
+ 
+MOV ECX, OFFSET b$MAIN
+FLD QWORD PTR float300@5
+FSTP QWORD PTR [ECX + 16] 
+ 
+MOV ECX, OFFSET b$MAIN
+MOV EDX, OFFSET a$MAIN
+FLD QWORD PTR [ECX] 
+FSTP QWORD PTR [EDX] 
+FLD QWORD PTR [ECX + 8] 
+FSTP QWORD PTR [EDX + 8] 
+FLD QWORD PTR [ECX + 16] 
+FSTP QWORD PTR [EDX + 16] 
 
  
-MOV AX, integer1
-MOV b$MAIN, AX
-
+MOV ECX, OFFSET a$MAIN
+FLD QWORD PTR [ECX + 0] 
+FSTP QWORD PTR @aux7
  
-MOV AX, integer3
-MOV c$MAIN, AX
-
+MOV ECX, OFFSET b$MAIN
+FLD QWORD PTR [ECX + 0] 
+FSTP QWORD PTR @aux8
  
-MOV AX, integer3
-MOV d$MAIN, AX
-
+FLD @aux8
+FLD @aux7
+FADD
+FSTP @aux9
  
-MOV AX, integer2
-MOV e$MAIN, AX
-
+invoke printf, cfm$("%f\n"), @aux9
  
-MOV AX, integer2
-MOV f$MAIN, AX
-
+MOV ECX, OFFSET a$MAIN
+FLD QWORD PTR [ECX + 0] 
+FSTP QWORD PTR @aux10
  
-MOV AX, integer2
-MOV g$MAIN, AX
-
+MOV ECX, OFFSET b$MAIN
+FLD QWORD PTR [ECX + 0] 
+FSTP QWORD PTR @aux11
  
-MOV AX, integer2
-MOV h$MAIN, AX
-
+FLD @aux11
+FLD @aux10
+FSUB
+FSTP @aux12
  
-MOV AX, a$MAIN
-MOV BX, e$MAIN
-CMP AX,BX
+invoke printf, cfm$("%f\n"), @aux12
  
-JLE LABEL48
+MOV ECX, OFFSET a$MAIN
+FLD QWORD PTR [ECX + 0] 
+FSTP QWORD PTR @aux13
  
-MOV AX, b$MAIN
-MOV BX, f$MAIN
-CMP AX,BX
+MOV ECX, OFFSET b$MAIN
+FLD QWORD PTR [ECX + 0] 
+FSTP QWORD PTR @aux14
  
-JLE LABEL48
+FLD @aux14
+FLD @aux13
+FMUL
+FSTP @aux15
  
-MOV AX, c$MAIN
-MOV BX, g$MAIN
-CMP AX,BX
+invoke printf, cfm$("%f\n"), @aux15
  
-JLE LABEL48
+MOV ECX, OFFSET a$MAIN
+FLD QWORD PTR [ECX + 0] 
+FSTP QWORD PTR @aux16
  
-MOV AX, d$MAIN
-MOV BX, h$MAIN
-CMP AX,BX
+MOV ECX, OFFSET b$MAIN
+FLD QWORD PTR [ECX + 0] 
+FSTP QWORD PTR @aux17
  
-JLE LABEL48
+FLD @aux17
+FLD @aux16
+FXCH 
+FTST
+FSTSW AX
+SAHF 
+JZ Divison_Por_Cero 
+FXCH 
+FDIV
+FSTP @aux18
  
-invoke MessageBox, NULL, addr Entro, addr Entro, MB_OK 
+invoke printf, cfm$("%f\n"), @aux18
  
-LABEL48: 
-LABEL49: 
+MOV ECX, OFFSET a$MAIN
+FLD QWORD PTR [ECX + 16] 
+FSTP QWORD PTR @aux19
+ 
+MOV ECX, OFFSET b$MAIN
+FLD QWORD PTR [ECX + 16] 
+FSTP QWORD PTR @aux20
+ 
+FLD @aux20
+FLD @aux19
+FSUB
+FSTP @aux21
+ 
+MOV ECX, OFFSET a$MAIN
+FLD QWORD PTR [ECX + 16] 
+FSTP QWORD PTR @aux22
+ 
+MOV ECX, OFFSET a$MAIN
+FLD QWORD PTR @aux21
+FSTP QWORD PTR [ECX + 16] 
+ 
+MOV ECX, OFFSET b$MAIN
+FLD QWORD PTR [ECX + 16] 
+FSTP QWORD PTR @aux23
+ 
+MOV ECX, OFFSET a$MAIN
+FLD QWORD PTR [ECX + 16] 
+FSTP QWORD PTR @aux24
+ 
+FLD @aux24
+FLD @aux23
+FXCH 
+FTST
+FSTSW AX
+SAHF 
+JZ Divison_Por_Cero 
+FXCH 
+FDIV
+FSTP @aux25
+ 
+invoke printf, cfm$("%f\n"), @aux25
+ 
 JMP fin 
  
 Divison_Por_Cero:

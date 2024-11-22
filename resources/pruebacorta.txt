@@ -1,24 +1,26 @@
 program
 begin  
-	##TYPEDEF TRIPLE < integer > tripla;
+	TYPEDEF TRIPLE < double > tripla;
 	
-	##tripla a;
+	tripla a,b;
 	
-	##OUTF(a{1}+a{2});
+	double c,d;
 	
-	integer a,b,c,d,e,f,g,h;
+	a{1}:=10.5;
+	a{2}:=20.5;
+	a{3}:=30.5;
 	
-	a:=3;
-	b:=1;
-	c:=3;
-	d:=3;
-	e:=2;
-	f:=2;
-	g:=2;
-	h:=2;
+	b{1}:=100.5;
+	b{2}:=200.5;
+	b{3}:=300.5;
 	
+	a:=b;
 	
-	IF((a,b,c,d)>(e,f,g,h))THEN
-		OUTF([Entro]);
-	END_IF;
+	OUTF(a{1}+b{1});
+	OUTF(a{1}-b{1});
+	OUTF(a{1}*b{1});
+	OUTF(a{1}/b{1});
+	a{3}:=a{3}-b{3};
+	OUTF(b{3}/a{3});
+	
 End

@@ -64,7 +64,7 @@ public class Tipo {
 		}else if(!this.esSubTipo() && t.esSubTipo()) {
 			return t.getType().contains(this.getType());
 		}
-		return this.getType()==t.getType();
+		return this.toString().equals(t.toString());
 	}
 	public double getRangSuperiorDouble() {
 		return rangSuperiorDouble;

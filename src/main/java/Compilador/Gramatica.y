@@ -186,7 +186,7 @@ expresion_arit  : expresion_arit '+' termino {GeneradorCodigoIntermedio.addEleme
 				| error termino {cargarErrorEImprimirlo("Linea :" + AnalizadorLexico.saltoDeLinea +  " Error:  La expresion esta mal escrita, falta el operador");}
 ;
 
-termino : termino '' factor {GeneradorCodigoIntermedio.addElemento("");} 
+termino : termino '*' factor {GeneradorCodigoIntermedio.addElemento("*");} 
         | termino '/' factor {GeneradorCodigoIntermedio.addElemento("/");}
         | factor 
 		| error '*' error{cargarErrorEImprimirlo("Linea :" + AnalizadorLexico.saltoDeLinea +  " Error:  La expresion esta mal escrita");}
