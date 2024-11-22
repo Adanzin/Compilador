@@ -8,7 +8,7 @@ public class Simbolo {
     private String uso;
     private String tipoParFormal=" ";
     private String tipoRetorno=" ";
-    private String ambitoVar="";
+    public static String ambitoVar="@MAIN";
     private int base;  // Base del numero (8 = octal, 10 = decimal, 16 = hexadecimal)
     private int contadorDeReferencias;
     private boolean defPorUser;
@@ -126,8 +126,8 @@ public class Simbolo {
     public String getAmbitoVar() {
 		return ambitoVar;
 	}
-	public void setAmbitoVar(String ambitoVar) {
-		this.ambitoVar = ambitoVar;
+	public static void setAmbitoVar(String ambitoV) {
+		ambitoVar = ambitoV;
 	}
 	
 	public Simbolo(String id, int entero, double doub, Tipo tipoVar, String uso, int base, int contadorDeReferencias,
@@ -245,7 +245,7 @@ public class Simbolo {
 	}
 
 	public boolean sonCompatibles(Simbolo simb2) {
-		//System.out.println("Se estan comparando "+ this + " con un "+ simb2);
+		System.out.println("Se estan comparando "+ this + " con un "+ simb2);
 		if(this.tipoVar.sonCompatibles(simb2.getTipo())) {
 			return true;
 		}

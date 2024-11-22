@@ -1,26 +1,12 @@
 program
 begin  
-	TYPEDEF TRIPLE < double > tripla;
-	
-	tripla a,b;
-	
-	double c,d;
-	
-	a{1}:=10.5;
-	a{2}:=20.5;
-	a{3}:=30.5;
-	
-	b{1}:=100.5;
-	b{2}:=200.5;
-	b{3}:=300.5;
-	
-	a:=b;
-	
-	OUTF(a{1}+b{1});
-	OUTF(a{1}-b{1});
-	OUTF(a{1}*b{1});
-	OUTF(a{1}/b{1});
-	a{3}:=a{3}-b{3};
-	OUTF(b{3}/a{3});
-	
+	integer c;
+	c:=2;
+	integer FUN juancito ( integer a ) BEGIN 
+		goto adan@;
+		c:=juancito(c);
+	    RET (a);
+	END;
+	adan@;
+	goto adan@;
 End

@@ -9,8 +9,11 @@ public class GeneradorCodigoIntermedio {
 	public static Map<String, ArrayList<String>> polacaFuncional = new HashMap<>();
 	public static Map<String,Stack<Integer>> Pilas = new HashMap<>();
 	public static Map<String,Integer> pos = new HashMap<>();
-    public static Map<String,Stack<Integer>> BaulDeGoto = new HashMap<>();  
-    static {
+    public static ArrayList<String> Etiquetas = new ArrayList<>();
+    public static ArrayList<String[]> BaulDeGotos = new ArrayList<>();  
+
+
+	static {
         polacaFuncional.put("$MAIN", new ArrayList<String>());
         Pilas.put("$MAIN", new Stack<Integer>());
         pos.put("$MAIN", 0);
@@ -21,6 +24,7 @@ public class GeneradorCodigoIntermedio {
 	}
 	public static ArrayList<String> getPolacaConAmbito(String amb) {
 		return polacaFuncional.get(amb);
+		
 	}
 
 
@@ -61,6 +65,10 @@ public class GeneradorCodigoIntermedio {
 	}
 	public static void addElemento(String elm, int posi) {
 		polacaFuncional.get(Parser.AMBITO.toString()).add(posi, elm);
+	}
+	public static void reemplazarElm(String elm, int posi,String amb) {
+		System.out.println(elm+" "+posi+" "+amb);
+		polacaFuncional.get(amb).set(posi, elm);
 	}
 	public static void reemplazarElm(String elm, int posi) {
 		polacaFuncional.get(Parser.AMBITO.toString()).set(posi,elm);
@@ -103,24 +111,32 @@ public class GeneradorCodigoIntermedio {
 		polacaFuncional.get(Parser.AMBITO.toString()).add("BI");
 		pos.put(Parser.AMBITO.toString(),pos.get(Parser.AMBITO.toString())+1); //pos++;
 	}
-	public static void BifurcarAGoto(String id) {
-		addGoto(id);
+	public static void BifurcarAGoto() {
+		
 		polacaFuncional.get(Parser.AMBITO.toString()).add(" ");
 		pos.put(Parser.AMBITO.toString(),pos.get(Parser.AMBITO.toString())+1); //pos++;
 		polacaFuncional.get(Parser.AMBITO.toString()).add("BI");
 		pos.put(Parser.AMBITO.toString(),pos.get(Parser.AMBITO.toString())+1); //pos++;
 	}
-	public static void addGoto(String id) {
-		if(BaulDeGoto.get(id)==null) {
-			BaulDeGoto.put(id,new Stack<Integer>());	
+	public static void addEtiqueta(String id) {
+		if(!Etiquetas.contains(id)) {	
+			Etiquetas.add(id);
 		}
-		BaulDeGoto.get(id).push(pos.get(Parser.AMBITO.toString()));
 	}
-	public static int getGoto(String id) {
-		if(BaulDeGoto.get(id).isEmpty()) {
-			return -1;
-		}
-		return BaulDeGoto.get(id).pop();
+	public static ArrayList<String> getGoto(String id) {
+		return Etiquetas;
+	}
+    
+    public static ArrayList<String[]> getBaulDeGotos() {
+		return BaulDeGotos;
+	}
+	public static void addBaulDeGotos(String got){
+		String[] g = Parser.getVariables(got,"/");
+		BaulDeGotos.add(g);
+		polacaFuncional.get(Parser.AMBITO.toString()).add(" ");
+		pos.put(Parser.AMBITO.toString(),pos.get(Parser.AMBITO.toString())+1); //pos++;
+		polacaFuncional.get(Parser.AMBITO.toString()).add("BI");
+		pos.put(Parser.AMBITO.toString(),pos.get(Parser.AMBITO.toString())+1); //pos++;
 	}
 	
 	/*public static void bifurcarFaux(ArrayList<String> aux, int posAux) {
@@ -134,35 +150,44 @@ public class GeneradorCodigoIntermedio {
 	// y se vuelven a cargar en la polaca. 
 	public static void addOperadorEnPattMatch(String operador,int cantOP) {
 		int n = pos.get(Parser.AMBITO.toString())-1; // posicion en la que inicia el patter
-		pos.put(Parser.AMBITO.toString(),pos.get(Parser.AMBITO.toString())-1);
+		// Resto 1 a la posicion para pararme en el ultimo elemento cargado
+		pos.put(Parser.AMBITO.toString(),pos.get(Parser.AMBITO.toString())-1); 
+		//agarro la ultima expresion aritmetica cargada
 		String expArit = polacaFuncional.get(Parser.AMBITO.toString()).get(n);
 		Stack<String> pilaIzq= new Stack<String>();
 		Stack<String> pilaDer = new Stack<String>();
+		// en esta cuenta las ',', hay una por cada elemento. 
 		int contadorComas=0;
-		while (expArit!=":=" && !expArit.contains("LABEL")) {
+		while (contadorComas<=cantOP*2-1) {
+			//elimino el ultimo elemento cargado
 			polacaFuncional.get(Parser.AMBITO.toString()).remove(n);
 			if(expArit==",") {
 				contadorComas++;
 			}
+			// Guardo las expresiones de la derecha en una pila y las de la izquierad en otra
 			if(contadorComas<=cantOP) {
 				pilaDer.add(expArit);
 			}else {
 				pilaIzq.add(expArit);
 			}
 			n--;
+			//Tomo el siguiente elemento de la polaca
 			pos.put(Parser.AMBITO.toString(),pos.get(Parser.AMBITO.toString())-1);
 			expArit = polacaFuncional.get(Parser.AMBITO.toString()).get(n);
 		}
+		//incremento 1 la posicion para empezar a cargar en la posicion correcta.
 		pos.put(Parser.AMBITO.toString(),pos.get(Parser.AMBITO.toString())+1);
 		contadorComas = 0;
 		String var;
 		while(contadorComas<=cantOP*2-1) {
+			// Saco de la pila izq primero y la coloco en la polaca
 			var=pilaIzq.pop();
 			while((var!=",")) {
 				addElemento(var);
 				var=pilaIzq.pop();
 				System.out.println(var);
 			}
+			// Saco de la pila derecha para cargarlo en orden
 			contadorComas++;
 			var=pilaDer.pop();
 			while((var!=",")) {
@@ -172,6 +197,7 @@ public class GeneradorCodigoIntermedio {
 			}
 			contadorComas++;
 			addElemento(operador);
+			// Agrego la Bifurcacion por Falso despues de cada comparacion
 			apilar(pos.get(Parser.AMBITO.toString()));
 			addElemento(" ");
 			addElemento("BF");

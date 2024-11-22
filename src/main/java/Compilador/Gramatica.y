@@ -12,7 +12,7 @@ import java.io.IOException;
 %% /* Gramatica */
 									/* PROGRAMA */
 																		
-programa	: ID_simple BEGIN sentencias END {if(!GeneradorCodigoIntermedio.BaulDeGoto.isEmpty()){cargarErrorEImprimirlo(" Error: No se cargo la direccion de salto a un GOTO. ");}}
+programa	: ID_simple BEGIN sentencias END {cargarGotos();}
 			| ID_simple BEGIN END 
 			| BEGIN sentencias END {cargarErrorEImprimirlo("\u2718"+"Linea " + AnalizadorLexico.saltoDeLinea + " Error: Falta el nombre del programa ");}
 			| ID_simple BEGIN sentencias {cargarErrorEImprimirlo("\u2718"+"Linea " + AnalizadorLexico.saltoDeLinea + " Error: Falta el delimitador END ");}
@@ -82,7 +82,7 @@ declaracion_funciones     : encabezado_funcion parametros_parentesis BEGIN cuerp
 								}                  
 ;
 
-encabezado_funcion 	: tipo FUN ID {$$.sval=$3.sval;cargarVariables($3.sval,(Tipo)$1.obj," nombre de funcion ");;agregarAmbito($3.sval);DENTRODELAMBITO.push($3.sval);GeneradorCodigoIntermedio.addNuevaPolaca();}
+encabezado_funcion 	: tipo FUN ID {$$.sval=$3.sval;cargarVariables($3.sval,(Tipo)$1.obj," nombre de funcion ");agregarAmbito($3.sval);Simbolo.setAmbitoVar(AMBITO.toString());DENTRODELAMBITO.push($3.sval);GeneradorCodigoIntermedio.addNuevaPolaca();}
 					| tipo FUN {cargarErrorEImprimirlo("Linea " + AnalizadorLexico.saltoDeLinea + ": Error: Faltan el nombre en la funcion ");}
 ;
 
@@ -111,7 +111,7 @@ sentencia_ejecutable	: asignacion
 						| sentencia_IF {if($1.sval=="RET"){$$.sval="RET";}}
 						| sentencia_WHILE
 						| sentencia_goto
-						| ETIQUETA {if(fueDeclarado($1.sval)){completarBifurcacionAGoto($1.sval);GeneradorCodigoIntermedio.BaulDeGoto.remove($1.sval);}else{cargarErrorEImprimirlo("Linea :" + AnalizadorLexico.saltoDeLinea +  " Error : La ETIQUETA que se pretende bifurcar no existe.  ");}}
+						| ETIQUETA {if(fueDeclarado($1.sval+AMBITO.toString())){cargarErrorEImprimirlo("Linea :" + AnalizadorLexico.saltoDeLinea +  " Error : La ETIQUETA "+$1.sval+" ya existe  ");}else{cargarVariables($1.sval,tipos.get("ETIQUETA"),"ETIQUETA");}GeneradorCodigoIntermedio.addEtiqueta($1.sval+AMBITO.toString());GeneradorCodigoIntermedio.addElemento("LABEL"+$1.sval+AMBITO.toString());}
 						| outf_rule
 						| retorno {$$.sval="RET";}
 ;
@@ -145,19 +145,18 @@ asignacion	: variable_simple ASIGNACION expresion_arit {if(fueDeclarado($1.sval)
 invocacion	: ID_simple '(' expresion_arit ')' {if(!fueDeclarado($1.sval)){
 													cargarErrorEImprimirlo("Linea :" + AnalizadorLexico.saltoDeLinea +  " Error:  se invoc  una funcion no declarada ");}
 													else{	
-														if(AnalizadorLexico.TablaDeSimbolos.get($1.sval+AMBITO.toString()).getTipoParFormal()==AnalizadorLexico.TablaDeSimbolos.get($3.sval+AMBITO.toString()).getTipo().getType()){
+														if(Parser.getVariableFueraDeAmbito(invertirAmbito(AnalizadorLexico.TablaDeSimbolos.get($1.sval).getAmbitoVar()).getTipoParFormal()==Parser.getVariableFueraDeAmbito($3.sval+AMBITO.toString()).getTipo().getType()){
 															GeneradorCodigoIntermedio.invocar($1.sval+AMBITO.toString());
 														}else{
 															cargarErrorEImprimirlo("Linea :" + AnalizadorLexico.saltoDeLinea +  " Error: Tipos incompatibles entre  "
-															 + AnalizadorLexico.TablaDeSimbolos.get($1.sval+AMBITO.toString()).getTipoParFormal()
-															  + " y " +AnalizadorLexico.TablaDeSimbolos.get($3.sval+AMBITO.toString()).getTipo().getType());
+															 + AnalizadorLexico.TablaDeSimbolos.get(val_peek(3).sval).getAmbitoVar()  + " y " +$3.sval+AMBITO.toString());
 														}																																																		
 												}}
 			| ID_simple '(' tipo_primitivo '(' expresion_arit ')' ')' 
 												{if(!fueDeclarado($1.sval)){
 													cargarErrorEImprimirlo("Linea :" + AnalizadorLexico.saltoDeLinea +  " Error:  se invoc  una funcion no declarada ");}
 													else{
-														if(AnalizadorLexico.TablaDeSimbolos.get($1.sval+AMBITO.toString()).getTipoParFormal()==((Tipo)$3.obj).getType()){
+														if(Parser.getVariableFueraDeAmbito($1.sval+AMBITO.toString()).getTipoParFormal()==((Tipo)$3.obj).getType()){
 															GeneradorCodigoIntermedio.invocar($1.sval+AMBITO.toString());
 														}else{
 															cargarErrorEImprimirlo("Linea :" + AnalizadorLexico.saltoDeLinea +  " Error: Tipos incompatibles entre  "
@@ -322,8 +321,7 @@ encabezado_WHILE : WHILE {GeneradorCodigoIntermedio.apilar(GeneradorCodigoInterm
 ;
 
 /* Tema 23: goto */
-sentencia_goto	: GOTO ETIQUETA {cargarVariables($2.sval,tipos.get("ETIQUETA"),"ETIQUETA");
-								GeneradorCodigoIntermedio.BifurcarAGoto($2.sval);}
+sentencia_goto	: GOTO ETIQUETA {GeneradorCodigoIntermedio.addBaulDeGotos($2.sval+AMBITO.toString()+"/"+AMBITO.toString()+"/"+String.valueOf(GeneradorCodigoIntermedio.getPos()));}
 				| GOTO error  {cargarErrorEImprimirlo("Linea :" + AnalizadorLexico.saltoDeLinea + " Error: Falta la etiqueta en GOTO ");}
 ;
 /* Tema 19: Pattern Matching*/
@@ -355,6 +353,48 @@ public static void cargarErrorEImprimirlo(String salida) {
 		}
 }
 
+private static void cargarGotos(){
+	    while (!GeneradorCodigoIntermedio.BaulDeGotos.isEmpty()) {
+	        // Obtenemos el primer elemento
+	        String[] elemento = GeneradorCodigoIntermedio.BaulDeGotos.get(0);
+	        String key = elemento[0];
+	        boolean terminoWhile = false;
+	        boolean noHayEtiqueta = false;
+
+	        // Bucle para reducir el key si no se encuentra directamente
+	        while (!terminoWhile) {
+	            System.out.println("Entra el while con key: " + key);
+	            if (GeneradorCodigoIntermedio.Etiquetas.contains(key)) {
+	                System.out.println("Antes de remove " + key);
+	                int pos = Integer.valueOf(elemento[2]);
+	                System.out.println("Key " + key + " pos " + pos + " ambito " + elemento[1]);
+	                GeneradorCodigoIntermedio.reemplazarElm(key, pos, elemento[1]); // Reemplaza el elemento con el método adecuado
+	                GeneradorCodigoIntermedio.BaulDeGotos.remove(0); // Eliminamos el primer elemento
+	                System.out.println("Post remove " + key);
+	                noHayEtiqueta = false;
+	                terminoWhile = true; // Terminamos el ciclo si encontramos la etiqueta
+	            } else {
+	                noHayEtiqueta = true;
+	            }
+
+	            // Reducimos el ámbito: eliminamos el último '$NIVEL'
+	            int pos = key.lastIndexOf("$");
+	            if (pos == -1) {
+	                terminoWhile = true; // Si no hay más ámbitos, salimos del ciclo
+	            } else {
+	                key = key.substring(0, pos); // Reducimos el ámbito actual
+	            }
+	        }
+
+	        // Si no se encontró etiqueta, avanzamos al siguiente elemento (ya manejado por el while principal)
+	        if (noHayEtiqueta) {
+	        	GeneradorCodigoIntermedio.BaulDeGotos.remove(0); // Eliminamos el elemento para evitar ciclos infinitos
+	            cargarErrorEImprimirlo("No se encontró la etiqueta llamada: " + key);
+	        }	  
+	}
+}
+
+
 private static void cargarCadenaMultilinea(String cadena){
 	Tipo t = new Tipo("CADENAMULTILINEA");
 	tipos.put("CADENAMULTILINEA",t);
@@ -371,15 +411,8 @@ private static void opCondicion(String operador){
 	GeneradorCodigoIntermedio.bifurcarF();
 };
 
-private static void completarBifurcacionAGoto(String id){
-	int pos = GeneradorCodigoIntermedio.getGoto(id);
-	String elm = String.valueOf(GeneradorCodigoIntermedio.getPos());
-	while (pos!=-1){
-		GeneradorCodigoIntermedio.reemplazarElm(elm,pos);
-		pos = GeneradorCodigoIntermedio.getGoto(id);
-	}
-	GeneradorCodigoIntermedio.addElemento("LABEL"+elm);
-} 
+
+
 
 private static void operacionesWhile(){
 	int aux=0;
@@ -454,11 +487,11 @@ private static Tipo cargarSubtipo(String name, Tipo t,  String min, String max){
 		if(min.contains(".") && max.contains(".")){
 			double mini = Double.valueOf(min);
 			double maxi = Double.valueOf(max);
-			tipos.put(name,new Tipo(t.getType(),mini,maxi));
+			tipos.put(name,new Tipo(t.getType(),mini,maxi,name+AMBITO.toString()));
 		}else{
 			int mini=Integer.valueOf(min);
 			int maxi = Integer.valueOf(max);
-			tipos.put(name,new Tipo(t.getType(),mini,maxi));
+			tipos.put(name,new Tipo(t.getType(),mini,maxi,name+AMBITO.toString()));
 		}
 	}
 	return tipos.get(name);
@@ -488,7 +521,7 @@ private static boolean fueDeclarado(String id){
             return AnalizadorLexico.TablaDeSimbolos.get(key).estaDeclarada(); // Si la clave existe, devolvemos el valor
         }
 
-        // Reducimos el  mbito: eliminamos el  ltimo ':NIVEL'
+        // Reducimos el ambito: eliminamos el ultimo ':NIVEL'
         int pos = ambitoActual.lastIndexOf("$");
         if (pos == -1) {
             break; // Si ya no hay m s  mbitos, salimos del ciclo
@@ -498,8 +531,7 @@ private static boolean fueDeclarado(String id){
         ambitoActual = ambitoActual.substring(0, pos);
     }
 
-    // Si no se encuentra en ning n  mbito, lanzamos un error o devolvemos null
-    throw new RuntimeException( "Linea :" + AnalizadorLexico.saltoDeLinea +"Error: ID '" + id + "' no encontrado en ning n  mbito.");
+   return false;
 }
 
 public static Simbolo getVariableFueraDeAmbito(String id){
@@ -538,7 +570,7 @@ private static boolean existeEnEsteAmbito(String id){
 private static void cargarVariables(String variables, Tipo tipo, String uso){
 	String[] var = getVariables(variables,"/");
 	for (String v : var) {
-		if(tipo.getType() != "ETIQUETA"){
+		if(tipo.getType()!="ETIQUETA"){
 			if(!existeEnEsteAmbito(v)){
 			if(tipo.getType()=="CADENAMULTILINEA"){
 				addTipo(v,tipo);
@@ -555,11 +587,12 @@ private static void cargarVariables(String variables, Tipo tipo, String uso){
 			cargarErrorEImprimirlo("Linea :" + AnalizadorLexico.saltoDeLinea +"  La variable  " + v + " ya fue declarada.");
 			}
 		}else{
-			addTipo(v,tipo);
-			addUso(v,uso);
-			declarar(v);
+				addAmbitoID(v);
+				AnalizadorLexico.TablaDeSimbolos.get(v+AMBITO.toString()).setAmbitoVar(AMBITO.toString()+"$"+v);
+				addTipo(v+AMBITO.toString(),tipo);
+				addUso(v+AMBITO.toString(),uso);
+				declarar(v+AMBITO.toString());
 		}
-
     }
 
 }
@@ -570,7 +603,7 @@ private static void addUso(String id,String uso){
 	AnalizadorLexico.TablaDeSimbolos.get(id).setUso(uso);
 };
 
-private static String[] getVariables(String var, String separador) {
+public static String[] getVariables(String var, String separador) {
     // Verifica si el string contiene '/'
     if (!var.contains(separador)) {
         // Retorna un arreglo vac o o el string completo como  nico elemento

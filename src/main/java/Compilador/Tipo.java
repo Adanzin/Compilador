@@ -3,6 +3,7 @@ package main.java.Compilador;
 public class Tipo {
     private String type=null; 
     private boolean subTipo=false;
+    private String nomSubTipo="";
     private double rangInferiorDouble=Double.MIN_VALUE;
     private double rangSuperiorDouble=Double.MAX_VALUE;
     private int rangInferiorInteger=Integer.MAX_VALUE;
@@ -12,15 +13,17 @@ public class Tipo {
 	public Tipo(String t) {
 		this.type=t;
     }
-	public Tipo(String t, double rangInferior, double rangSuperior) {
+	public Tipo(String t, double rangInferior, double rangSuperior, String NT) {
         this.type=t;
         this.subTipo=true;
+        this.nomSubTipo=NT;
         this.rangInferiorDouble=rangInferior;
         this.rangSuperiorDouble=rangSuperior;
     }
-	public Tipo(String t, int rangInferior, int rangSuperior) {
+	public Tipo(String t, int rangInferior, int rangSuperior, String NT) {
         this.type=t;
         this.subTipo=true;
+        this.nomSubTipo=NT;
         this.rangInferiorInteger=rangInferior;
         this.rangSuperiorInteger=rangSuperior;
     }
@@ -34,6 +37,10 @@ public class Tipo {
 	}
 	public boolean esTripla() {
 		return triple;
+	}
+	
+	public String getNombreSubtipo() {
+		return this.nomSubTipo;
 	}
 	
 	@Override
