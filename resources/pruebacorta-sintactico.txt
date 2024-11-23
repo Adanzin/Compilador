@@ -1,2 +1,0 @@
-
- Linea :7 Error: Tipos incompatibles entre  $MAIN$juancito$a y c$MAIN$juancito 

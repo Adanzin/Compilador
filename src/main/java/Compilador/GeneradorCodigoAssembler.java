@@ -217,7 +217,6 @@ public class GeneradorCodigoAssembler {
 			codigo.append("MOV AX, " + operando1 + "\n"); 
 		}
 		if(tipoOperando.esSubTipo()) {
-			System.out.println(operando2);
 			crearAuxiliarSubtipoInferior(AnalizadorLexico.TablaDeSimbolos.get(operando2).getTipo(), AnalizadorLexico.TablaDeSimbolos.get(operando2).getTipo().getNombreSubtipo());
 			crearAuxiliarSubtipoSuperior(AnalizadorLexico.TablaDeSimbolos.get(operando2).getTipo(), AnalizadorLexico.TablaDeSimbolos.get(operando2).getTipo().getNombreSubtipo());
 			chequeoSubtipo.append("CMP AX, @auxSubtipoInferior" + AnalizadorLexico.TablaDeSimbolos.get(operando2).getTipo().getNombreSubtipo() + "\n"); 
@@ -302,8 +301,6 @@ public class GeneradorCodigoAssembler {
 				codigo.append("FSUB" + "\n"); //ST(0) = ST(1) - ST(0)
 				codigo.append("FSTP " + aux + "\n"); //Guardo el resultado en una auxiliar
 				if(tipoOperando.esSubTipo()) {
-					System.out.println(operando1);
-					
 					codigo.append(chequearRangosSubtipoDouble(operando1, aux));
 				}
 				pila.push(aux);
@@ -358,11 +355,15 @@ public class GeneradorCodigoAssembler {
 				operadorConversion(operando, elemento, codigo, tipoOperando);
 				break;
 			case "RET":
-				System.out.println(nombrePolaca);
 				if(retorno.sonCompatibles(simbOperando)) {
-					System.out.println("nombre polaca: " + nombrePolaca);
-					codigo.append("MOV AX, " + operando + "\n"); //Guardo la variable que quiero retornar en AX
-					codigo.append("MOV @RET" + nombrePolaca + ", AX" + "\n");
+					if(retorno.getTipo().getType().contains("INTEGER")||retorno.getTipo().getType().contains("OCTAL")) {
+						codigo.append("MOV AX, " + operando + "\n"); //Guardo la variable que quiero retornar en AX
+						codigo.append("MOV @RET" + nombrePolaca + ", AX" + "\n");
+					}else {
+						codigo.append("FLD operando \n");
+						codigo.append("FSTP @RET" + nombrePolaca + "\n");
+					}
+					
 					codigo.append("POP ESI \n");
 					codigo.append("POP EDI \n");
 					codigo.append("MOV ESP, EBP \n");
@@ -468,11 +469,6 @@ public class GeneradorCodigoAssembler {
 		codigo.append("MOV [" + operando2 + "+ 4], AX \n"); //Guardo en la tercera pos
 		
 		codigo.append("\n \n");
-	}
-
-	
-	public static void operacionSubtipoFloat(String operando1, String operando2, String operacion, StringBuilder codigo, Tipo tipoOperando) {
-		
 	}
 	
 	public static void operacionEntreTriplasFloat(String operando1, String operando2, String operacion, StringBuilder codigo, Tipo tipoOperando1, Tipo tipoOperando2) {
@@ -684,30 +680,20 @@ public class GeneradorCodigoAssembler {
 	public static String invertirAmbito(String operando) {
 	    // Divide la cadena por el símbolo '$'
 	    String[] ambitos = operando.split("\\$");
-
 	    // Si hay menos de dos elementos, devolver el operando sin cambios
 	    if (ambitos.length < 2) {
 	        return operando;
 	    }
-
-	    // Toma el último elemento
 	    String ultimoElemento = ambitos[ambitos.length - 1];
-
-	    // Construye el resultado empezando con el último elemento
 	    StringBuilder resultado = new StringBuilder(ultimoElemento);
-
 	    // Agrega el resto de los elementos, precedidos por '$'
 	    for (int i = 0; i < ambitos.length - 1; i++) {
 	        if (!ambitos[i].isEmpty()) { // Evitar dobles $
 	            resultado.append("$").append(ambitos[i]);
 	        }
 	    }
-	    System.out.println(operando);
-	    System.out.println(resultado.toString());
-	    return resultado.toString(); // Devuelve el resultado final
+	    return resultado.toString();
 	}
-
-
 	
 	public static String crearAuxiliarSubtipoInferior(Tipo tipo, String operando) {
 		Simbolo simb = new Simbolo();

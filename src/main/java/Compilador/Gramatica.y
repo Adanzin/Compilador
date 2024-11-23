@@ -145,23 +145,29 @@ asignacion	: variable_simple ASIGNACION expresion_arit {if(fueDeclarado($1.sval)
 invocacion	: ID_simple '(' expresion_arit ')' {if(!fueDeclarado($1.sval)){
 													cargarErrorEImprimirlo("Linea :" + AnalizadorLexico.saltoDeLinea +  " Error:  se invoc  una funcion no declarada ");}
 													else{	
-														if(Parser.getVariableFueraDeAmbito(invertirAmbito(AnalizadorLexico.TablaDeSimbolos.get($1.sval).getAmbitoVar()).getTipoParFormal()==Parser.getVariableFueraDeAmbito($3.sval+AMBITO.toString()).getTipo().getType()){
+														Simbolo simb = getVariableFueraDeAmbito($1.sval+AMBITO.toString());
+														Simbolo simb2 = getVariableFueraDeAmbito($3.sval+AMBITO.toString());
+														System.out.println("SIMB" +simb);
+														if(simb.getTipoParFormal()==simb2.getTipo().getType()){
 															GeneradorCodigoIntermedio.invocar($1.sval+AMBITO.toString());
 														}else{
 															cargarErrorEImprimirlo("Linea :" + AnalizadorLexico.saltoDeLinea +  " Error: Tipos incompatibles entre  "
-															 + AnalizadorLexico.TablaDeSimbolos.get(val_peek(3).sval).getAmbitoVar()  + " y " +$3.sval+AMBITO.toString());
+															 + simb.getTipoParFormal()
+															  + " y " +simb2.getTipo().getType());
 														}																																																		
 												}}
 			| ID_simple '(' tipo_primitivo '(' expresion_arit ')' ')' 
 												{if(!fueDeclarado($1.sval)){
 													cargarErrorEImprimirlo("Linea :" + AnalizadorLexico.saltoDeLinea +  " Error:  se invoc  una funcion no declarada ");}
 													else{
-														if(Parser.getVariableFueraDeAmbito($1.sval+AMBITO.toString()).getTipoParFormal()==((Tipo)$3.obj).getType()){
+														Simbolo simb = getVariableFueraDeAmbito($1.sval+AMBITO.toString());
+														if(simb.getTipoParFormal()==((Tipo)$3.obj).getType()){
 															GeneradorCodigoIntermedio.invocar($1.sval+AMBITO.toString());
 														}else{
-															cargarErrorEImprimirlo("Linea :" + AnalizadorLexico.saltoDeLinea +  " Error: Tipos incompatibles entre  "
-															 + AnalizadorLexico.TablaDeSimbolos.get($1.sval+AMBITO.toString()).getTipoParFormal()
-															  + " y " +((Tipo)$3.obj).getType());
+															cargarErrorEImprimirlo("Linea :" + AnalizadorLexico.saltoDeLinea +  " Error: Tipos incompatibles entre Parametro formal "
+																 + simb.getTipoParFormal()
+																  + " y el tipo de conversion " +((Tipo)$3.obj).getType());
+
 														}
 												}}
 			| ID_simple '(' ')' {cargarErrorEImprimirlo("Linea :" + AnalizadorLexico.saltoDeLinea +  " Error:  faltan los parametros reales en la invocacion");}

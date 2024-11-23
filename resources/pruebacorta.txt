@@ -1,12 +1,10 @@
 program
-begin  
-	integer c;
-	c:=2;
-	integer FUN juancito ( integer a ) BEGIN 
-		goto adan@;
-		c:=juancito(c);
-	    RET (a);
+begin 
+	integer b;
+	b:=9; 
+	integer FUN juancito(integer a)BEGIN
+		a:=6;
+		RET(a);
 	END;
-	adan@;
-	goto adan@;
+	OUTF(juancito(b));
 End

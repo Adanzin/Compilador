@@ -1,0 +1,81 @@
+.586 
+option casemap :none 
+include \masm32\include\masm32rt.inc 
+includelib \masm32\lib\kernel32.lib 
+includelib \masm32\lib\user32.lib 
+includelib \masm32\lib\masm32.lib 
+
+dll_dllcrt0 PROTO C
+printf PROTO C : VARARG 
+
+.data 
+Error_DivisionCero DB "Error: Division por cero", 10, 0 
+Error_Overflow DB "Error: Overflow en producto entre Enteros", 10, 0 
+Error_Subtipo_inferior DB "Error: Valor menor al rango inferior del subtipo ", 10, 0 
+Error_Subtipo_superior DB "Error: Valor mayor al limite superior del subtipo ", 10, 0 
+ESPERAR_ACCION_USUARIO DB "Haga click en ACEPTAR para cerrar el programa y la consola", 10, 0 
+b$MAIN DW ?
+juancito$MAIN DW ?
+@ParametroRealInt DW ?
+@RET$MAIN$juancito$a DW ?
+a$MAIN$juancito DW ?
+integer6 DW 6
+integer9 DW 9
+@ParametroRealFloat DQ ?
+
+.code 
+ 
+$MAIN$juancito: 
+PUSH EBP 
+MOV EBP, ESP 
+SUB ESP, 4 
+PUSH EDI 
+PUSH ESI 
+MOV AX, @ParametroRealInt 
+MOV a$MAIN$juancito, AX 
+ 
+MOV AX, integer6
+MOV a$MAIN$juancito, AX
+
+ 
+MOV AX, a$MAIN$juancito
+MOV @RET$MAIN$juancito, AX
+POP ESI 
+POP EDI 
+MOV ESP, EBP 
+POP EBP 
+RET
+ 
+
+start: 
+MOV AX, integer9
+MOV b$MAIN, AX
+
+ 
+MOV AX, b$MAIN
+MOV @ParametroRealInt, AX 
+CALL $MAIN$juancito$a
+invoke printf, cfm$("%hi\n"), @RET$MAIN$juancito$a
+ 
+JMP fin 
+ 
+Divison_Por_Cero:
+invoke MessageBox, NULL, addr Error_DivisionCero, addr Error_DivisionCero, MB_OK 
+JMP fin
+
+Overflow:
+invoke MessageBox, NULL, addr Error_Overflow, addr Error_Overflow, MB_OK 
+JMP fin
+
+Subtipo_inferior:
+invoke MessageBox, NULL, addr Error_Subtipo_inferior, addr Error_Subtipo_inferior, MB_OK 
+JMP fin
+
+Subtipo_superior:
+invoke MessageBox, NULL, addr Error_Subtipo_superior, addr Error_Subtipo_superior, MB_OK 
+JMP fin
+
+fin: 
+invoke MessageBox, NULL, addr ESPERAR_ACCION_USUARIO, addr ESPERAR_ACCION_USUARIO, MB_OK 
+invoke ExitProcess, 0 
+end start

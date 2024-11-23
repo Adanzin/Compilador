@@ -245,7 +245,7 @@ public class Simbolo {
 	}
 
 	public boolean sonCompatibles(Simbolo simb2) {
-		System.out.println("Se estan comparando "+ this + " con un "+ simb2);
+		//System.out.println("Se estan comparando "+ this + " con un "+ simb2);
 		if(this.tipoVar.sonCompatibles(simb2.getTipo())) {
 			return true;
 		}
