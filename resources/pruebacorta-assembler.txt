@@ -58,7 +58,15 @@ MOV ECX, OFFSET d$MAIN
 MOV AX, integer30
 MOV [ECX + 4], AX 
  
-invoke printf, addr $_$mensajeEntero$_$, DWORD PTR [d$MAIN], DWORD PTR [d$MAIN + 2], DWORD PTR [d$MAIN + 4] 
+MOVZX EAX, WORD PTR [d$MAIN + 4] 
+PUSH EAX 
+MOVZX EAX, WORD PTR [d$MAIN + 2] 
+PUSH EAX 
+MOVZX EAX, WORD PTR [d$MAIN + 0] 
+PUSH EAX 
+PUSH OFFSET $_$mensajeEntero$_$ 
+CALL printf 
+ADD ESP, 16 
  
 JMP fin 
  

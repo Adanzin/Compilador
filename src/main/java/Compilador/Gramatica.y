@@ -147,7 +147,6 @@ invocacion	: ID_simple '(' expresion_arit ')' {if(!fueDeclarado($1.sval)){
 													else{	
 														Simbolo simb = getVariableFueraDeAmbito($1.sval+AMBITO.toString());
 														Simbolo simb2 = getVariableFueraDeAmbito($3.sval+AMBITO.toString());
-														System.out.println("SIMB" +simb);
 														if(simb.getTipoParFormal()==simb2.getTipo().getType()){
 															GeneradorCodigoIntermedio.invocar($1.sval+AMBITO.toString());
 														}else{
@@ -369,14 +368,10 @@ private static void cargarGotos(){
 
 	        // Bucle para reducir el key si no se encuentra directamente
 	        while (!terminoWhile) {
-	            System.out.println("Entra el while con key: " + key);
 	            if (GeneradorCodigoIntermedio.Etiquetas.contains(key)) {
-	                System.out.println("Antes de remove " + key);
 	                int pos = Integer.valueOf(elemento[2]);
-	                System.out.println("Key " + key + " pos " + pos + " ambito " + elemento[1]);
 	                GeneradorCodigoIntermedio.reemplazarElm(key, pos, elemento[1]); // Reemplaza el elemento con el método adecuado
 	                GeneradorCodigoIntermedio.BaulDeGotos.remove(0); // Eliminamos el primer elemento
-	                System.out.println("Post remove " + key);
 	                noHayEtiqueta = false;
 	                terminoWhile = true; // Terminamos el ciclo si encontramos la etiqueta
 	            } else {
@@ -408,7 +403,6 @@ private static void cargarCadenaMultilinea(String cadena){
 }
 
 private static void modificarPolacaPM(String operador, int cantDeOp){
-	System.out.println(" Pattern Matching ");
 	GeneradorCodigoIntermedio.addOperadorEnPattMatch(operador,cantDeOp);
 }
 
@@ -423,7 +417,6 @@ private static void opCondicion(String operador){
 private static void operacionesWhile(){
 	int aux=0;
 	while(aux<cantDeOperandos){
-		System.out.println(" SE BIFURCA POR F ");
 		completarBifurcacionF();
 		aux++;
 	}
@@ -444,7 +437,6 @@ private static void operacionesIF(){
 	String elm = String.valueOf(GeneradorCodigoIntermedio.getPos()+2);
 	int aux=0;
 	while(aux<cantDeOperandos){
-		System.out.println(" SE BIFURCA POR F ");
 		completarBifurcacionF();
 		aux++;
 	}
