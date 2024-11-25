@@ -1030,7 +1030,7 @@ private static boolean fueDeclarado(String id){
 }
 
 public static Simbolo getVariableFueraDeAmbito(String id){
-    String ambitoActual = AMBITO.toString(); // Convertimos AMBITO (StringBuilder) a String
+   // String ambitoActual = AMBITO.toString(); // Convertimos AMBITO (StringBuilder) a String
     String key = id;
     while (true) {
         // Construimos la clave: id +  mbito actual

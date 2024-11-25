@@ -16,63 +16,49 @@ Error_Subtipo_superior DB "Error: Valor mayor al limite superior del subtipo ", 
 ESPERAR_ACCION_USUARIO DB "Haga click en ACEPTAR para cerrar el programa y la consola", 10, 0 
 $_$mensajeEntero$_$ DB "%d, %d, %d", 10, 0 
 $_$mensajeFloat$_$ DB "%f, %f, %f", 10, 0 
-e$MAIN DQ ?, ?, ?
+e$MAIN DW ?, ?, ?
 @ParametroRealInt DW ?
 @ParametroRealFloat DQ ?
 integer1 DW 1
 integer2 DW 2
 integer3 DW 3
-float10@1 DQ 10.1
-float20@2 DQ 20.2
-float30@3 DQ 30.3
-d$MAIN DQ ?, ?, ?
-@aux3 DQ ?
-@aux2 DQ ?
-tint$MAIN DQ ?, ?, ?
-@aux1 DQ ?
+d$MAIN DW ?, ?, ?
+@aux3 DW ?
+integer30 DW 30
+@aux2 DW ?
+tint$MAIN DW ?, ?, ?
+integer20 DW 20
+@aux1 DW ?
+integer10 DW 10
 
 .code 
  
 start: 
 MOV ECX, OFFSET d$MAIN
-FLD QWORD PTR [ECX + 0] 
-FSTP QWORD PTR @aux1
+MOV AX, [ECX + 0] 
+MOV @aux1, AX 
  
 MOV ECX, OFFSET d$MAIN
-FLD QWORD PTR float10@1
-FSTP QWORD PTR [ECX + 0] 
-FINIT 
+MOV AX, integer10
+MOV [ECX + 0], AX 
  
 MOV ECX, OFFSET d$MAIN
-FLD QWORD PTR [ECX + 8] 
-FSTP QWORD PTR @aux2
+MOV AX, [ECX + 2] 
+MOV @aux2, AX 
  
 MOV ECX, OFFSET d$MAIN
-FLD QWORD PTR float20@2
-FSTP QWORD PTR [ECX + 8] 
-FINIT 
+MOV AX, integer20
+MOV [ECX + 2], AX 
  
 MOV ECX, OFFSET d$MAIN
-FLD QWORD PTR [ECX + 16] 
-FSTP QWORD PTR @aux3
+MOV AX, [ECX + 4] 
+MOV @aux3, AX 
  
 MOV ECX, OFFSET d$MAIN
-FLD QWORD PTR float30@3
-FSTP QWORD PTR [ECX + 16] 
-FINIT 
+MOV AX, integer30
+MOV [ECX + 4], AX 
  
-FLD QWORD PTR [d$MAIN + 16] 
-SUB ESP, 8 
-FSTP QWORD PTR [ESP] 
-FLD QWORD PTR [d$MAIN + 8] 
-SUB ESP, 8 
-FSTP QWORD PTR [ESP] 
-FLD QWORD PTR [d$MAIN + 0] 
-SUB ESP, 8 
-FSTP QWORD PTR [ESP] 
-PUSH OFFSET $_$mensajeFloat$_$ 
-CALL printf 
-ADD ESP, 24 
+invoke printf, addr $_$mensajeEntero$_$, DWORD PTR [d$MAIN], DWORD PTR [d$MAIN + 2], DWORD PTR [d$MAIN + 4] 
  
 JMP fin 
  

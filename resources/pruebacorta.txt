@@ -11,14 +11,14 @@ begin
 	##OUTF(a*b);
 	##OUTF(b/a);
 	
-	TYPEDEF TRIPLE < double > tint;
+	TYPEDEF TRIPLE < integer > tint;
 	tint d,e;
 	
-	d{1}:=10.1;
-	d{2}:=20.2;
+	d{1}:=10;
+	d{2}:=20;
 	##e{1}:=d{3};
 	##OUTF(e{1});
-	d{3}:=30.3;
+	d{3}:=30;
 	OUTF(d);
 	
 	##e:=d;

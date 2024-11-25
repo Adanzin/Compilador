@@ -581,8 +581,10 @@ public class GeneradorCodigoAssembler {
 				codigo.append("PUSH OFFSET $_$mensajeEntero$_$ \n");
 				codigo.append("CALL printf \n");
 				codigo.append("ADD ESP, 16 \n \n");
+				//codigo.append("invoke printf, addr $_$mensajeEntero$_$, DWORD PTR [" + operando + "], DWORD PTR ["+ operando + " + 2], DWORD PTR [" + operando + " + 4] \n \n");
 			} 
 			else if(simbOperando.getTipo().toString().contains("DOUBLE")) {
+				/*
 				codigo.append("FLD QWORD PTR [" + operando + " + 16] \n");
 				codigo.append("SUB ESP, 8 \n");
 				codigo.append("FSTP QWORD PTR [ESP] \n");
@@ -594,7 +596,10 @@ public class GeneradorCodigoAssembler {
 				codigo.append("FSTP QWORD PTR [ESP] \n");
 				codigo.append("PUSH OFFSET $_$mensajeFloat$_$ \n");
 				codigo.append("CALL printf \n");
-				codigo.append("ADD ESP, 24 \n \n");
+				codigo.append("ADD ESP, 24 \n \n");*/
+				codigo.append("invoke printf, addr $_$mensajeFloat$_$, QWORD PTR [" + operando + "], QWORD PTR ["+ operando + " + 8], "
+						+ "QWORD PTR [" + operando + " + 16] \n \n");
+
 			}
 		}
 		else if (simbOperando.getTipo().toString().contains("INTEGER") ||simbOperando.getTipo().toString().contains("OCTAL")) { //Tengo en cuenta primitivos y subtipos
