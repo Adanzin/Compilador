@@ -14,48 +14,65 @@ Error_Overflow DB "Error: Overflow en producto entre Enteros", 10, 0
 Error_Subtipo_inferior DB "Error: Valor menor al rango inferior del subtipo ", 10, 0 
 Error_Subtipo_superior DB "Error: Valor mayor al limite superior del subtipo ", 10, 0 
 ESPERAR_ACCION_USUARIO DB "Haga click en ACEPTAR para cerrar el programa y la consola", 10, 0 
-b$MAIN DW ?
-juancito$MAIN DW ?
+$_$mensajeEntero$_$ DB "%d, %d, %d", 10, 0 
+$_$mensajeFloat$_$ DB "%f, %f, %f", 10, 0 
+e$MAIN DQ ?, ?, ?
 @ParametroRealInt DW ?
-@RET$MAIN$juancito$a DW ?
-a$MAIN$juancito DW ?
-integer6 DW 6
-integer9 DW 9
 @ParametroRealFloat DQ ?
+integer1 DW 1
+integer2 DW 2
+integer3 DW 3
+float10@1 DQ 10.1
+float20@2 DQ 20.2
+float30@3 DQ 30.3
+d$MAIN DQ ?, ?, ?
+@aux3 DQ ?
+@aux2 DQ ?
+tint$MAIN DQ ?, ?, ?
+@aux1 DQ ?
 
 .code 
  
-$MAIN$juancito: 
-PUSH EBP 
-MOV EBP, ESP 
-SUB ESP, 4 
-PUSH EDI 
-PUSH ESI 
-MOV AX, @ParametroRealInt 
-MOV a$MAIN$juancito, AX 
- 
-MOV AX, integer6
-MOV a$MAIN$juancito, AX
-
- 
-MOV AX, a$MAIN$juancito
-MOV @RET$MAIN$juancito, AX
-POP ESI 
-POP EDI 
-MOV ESP, EBP 
-POP EBP 
-RET
- 
-
 start: 
-MOV AX, integer9
-MOV b$MAIN, AX
-
+MOV ECX, OFFSET d$MAIN
+FLD QWORD PTR [ECX + 0] 
+FSTP QWORD PTR @aux1
  
-MOV AX, b$MAIN
-MOV @ParametroRealInt, AX 
-CALL $MAIN$juancito$a
-invoke printf, cfm$("%hi\n"), @RET$MAIN$juancito$a
+MOV ECX, OFFSET d$MAIN
+FLD QWORD PTR float10@1
+FSTP QWORD PTR [ECX + 0] 
+FINIT 
+ 
+MOV ECX, OFFSET d$MAIN
+FLD QWORD PTR [ECX + 8] 
+FSTP QWORD PTR @aux2
+ 
+MOV ECX, OFFSET d$MAIN
+FLD QWORD PTR float20@2
+FSTP QWORD PTR [ECX + 8] 
+FINIT 
+ 
+MOV ECX, OFFSET d$MAIN
+FLD QWORD PTR [ECX + 16] 
+FSTP QWORD PTR @aux3
+ 
+MOV ECX, OFFSET d$MAIN
+FLD QWORD PTR float30@3
+FSTP QWORD PTR [ECX + 16] 
+FINIT 
+ 
+FLD QWORD PTR [d$MAIN + 16] 
+SUB ESP, 8 
+FSTP QWORD PTR [ESP] 
+FLD QWORD PTR [d$MAIN + 8] 
+SUB ESP, 8 
+FSTP QWORD PTR [ESP] 
+FLD QWORD PTR [d$MAIN + 0] 
+SUB ESP, 8 
+FSTP QWORD PTR [ESP] 
+PUSH OFFSET $_$mensajeFloat$_$ 
+CALL printf 
+ADD ESP, 24 
  
 JMP fin 
  

@@ -1,0 +1,30 @@
+
+ Linea :3 Error:  La expresion esta mal escrita, falta el operador 
+ Linea :3 Error:  se invoc  una variable no declarada  
+ Linea :4 Error:  La expresion esta mal escrita, falta el operando de la derecha 
+ Linea :4 Error:  se invoc  una variable no declarada  
+ Linea :5 Error:  La expresion esta mal escrita, falta alguno de los operandos o ambos 
+ Linea :5 Error:  se invoc  una variable no declarada  
+ Linea 7 Error: Faltan ambos '{' '}' en el rango  
+ Linea 8 Error: Falta rango superior  
+ Linea 9 Error: Falta rango inferior  
+ Linea 10 Error: Faltan ambos rangos  
+ Linea 11 Error: Falta de nombre en el tipo definido  
+ Linea 12: Error: Falta el tipo base en la declaracion de subtipo  
+ Linea :13 Error:  se invoc  una variable no declarada  
+ Linea :13 Error:  se invoc  una variable no declarada  
+ Linea 13Error : Faltan los parentesis en la condicion  
+ Linea :13 Error:  se invoc  una variable no declarada  
+ Linea :14 Error:  se invoc  una variable no declarada  
+ Linea :14 Error:  se invoc  una variable no declarada  
+ Linea 14Error : Falta el ')' en la condicion  
+ Linea :14 Error:  se invoc  una variable no declarada  
+ Linea :15 Error:  se invoc  una variable no declarada  
+ Linea :15 Error:  se invoc  una variable no declarada  
+ Linea 15Error : Falta el '(' en la condicion  
+ Linea :15 Error:  se invoc  una variable no declarada  
+ Linea 16 Error: Falta de la palabra reservada TRIPLE  
+ Linea 17 Error: Faltan ambos '<>' en TRIPLE 
+ Linea 18 Error: Falta identificador al final de la declaracion 
+ Linea :19 Error: Falta la etiqueta en GOTO  
+ ?Linea 20 Error: Falta el delimitador BEGIN  

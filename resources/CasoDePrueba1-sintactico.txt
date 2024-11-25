@@ -1,0 +1,5 @@
+
+ Linea 3 Error: faltan las sentencias antes del ';'   
+ Linea :3 Error:  se invoc  una variable no declarada  
+ Linea :3 Error:  se invoc  una variable no declarada  
+ ?Linea 3 Error: Falta el delimitador BEGIN  

@@ -1,0 +1,21 @@
+program
+begin  
+	double c;
+	integer d;
+	integer FUN juancito ( integer a ) BEGIN 
+		goto adan@;
+			integer FUN juancito2 ( integer a ) BEGIN 
+				integer FUN juancito3( integer a ) BEGIN 
+					goto adan@;
+	   				RET (a);
+				END;
+				goto adan@;
+	    		RET (a);
+			END;
+			c:=juancito2(c);
+			c:=juancito2(double(d));
+	    RET (a);
+	END;
+	adan@;
+	goto adan@;
+End

@@ -96,6 +96,7 @@ public class GeneradorCodigoAssembler {
 		Simbolo simbOperando2 = Parser.getVariableFueraDeAmbito(operando2);
 		operando1 = simbOperando1.getId();
 		operando2 = simbOperando2.getId();
+		
 		if (simbOperando1.sonCompatibles(simbOperando2)) {
 			Tipo tipoOperando2 = simbOperando2.getTipo();
 			Tipo tipoOperando1 = simbOperando1.getTipo();
@@ -106,9 +107,11 @@ public class GeneradorCodigoAssembler {
 					if (tipoOperando2.getType().toString().contains("INTEGER") || tipoOperando2.getType().toString().contains("OCTAL")) {
 						// Solo debe permitirse la asignacion y llamo al metodo para asignar a cada elemento el del indice correspondiente
 						operacionEntreTriplasInteger(operando1, operando2, operacion, codigo, tipoOperando1,tipoOperando2);
+						ultimaTripla = "";
 					} else {
 						operacionEntreTriplasFloat(operando1, operando2, operacion, codigo, tipoOperando1, tipoOperando2);
 						codigo.append("FINIT \n \n"); //Siempre vacio la pila al finalizar para evitar errores de ejecucion
+						ultimaTripla = "";
 					}
 				} 
 				else {
@@ -141,10 +144,12 @@ public class GeneradorCodigoAssembler {
 				operando2 = comprobarOperandoLiteral(operando2);
 				if (tipoOperando2.getType() == "INTEGER" || tipoOperando2.getType() == "OCTAL") {
 					operacionEnteroOctal(operando1, operando2, operacion, codigo, tipoOperando2);
+					ultimaTripla = "";
 				} 
 				else {
 					operacionDouble(operando1, operando2, operacion, codigo, tipoOperando2);
 					codigo.append("FINIT \n \n"); //Siempre vacio la pila al finalizar para evitar errores de ejecucion
+					ultimaTripla = "";
 				}
 			}
 		} 
@@ -224,7 +229,6 @@ public class GeneradorCodigoAssembler {
 			chequeoSubtipo.append("CMP AX, @auxSubtipoSuperior" + AnalizadorLexico.TablaDeSimbolos.get(operando2).getTipo().getNombreSubtipo() + "\n"); 
 			chequeoSubtipo.append("JG Subtipo_superior \n");
 		}
-		
 		
 		switch (operacion) {
 			case "+":
@@ -491,6 +495,7 @@ public class GeneradorCodigoAssembler {
 		String operando1 = pila.pop(); //Es el indice a acceder
 		String operando2 = pila.pop(); //Es la variable
 		
+		
 		Simbolo simbOperando2 = Parser.getVariableFueraDeAmbito(operando2);
 		operando2 = simbOperando2.getId();
 		int indice = 0;
@@ -564,7 +569,35 @@ public class GeneradorCodigoAssembler {
 		String operando = pila.pop();
 		Simbolo simbOperando = Parser.getVariableFueraDeAmbito(operando);
 		
-		if (simbOperando.getTipo().toString().contains("INTEGER") ||simbOperando.getTipo().toString().contains("OCTAL")) { //Tengo en cuenta primitivos y subtipos
+		if (simbOperando.getTipo().esTripla()) {
+			operando = simbOperando.getId();
+			if (simbOperando.getTipo().toString().contains("INTEGER") ||simbOperando.getTipo().toString().contains("OCTAL")) {
+				codigo.append("MOVZX EAX, WORD PTR [" + operando + " + 4] \n");
+				codigo.append("PUSH EAX \n");
+				codigo.append("MOVZX EAX, WORD PTR [" + operando + " + 2] \n");
+				codigo.append("PUSH EAX \n");
+				codigo.append("MOVZX EAX, WORD PTR [" + operando + " + 0] \n");
+				codigo.append("PUSH EAX \n");
+				codigo.append("PUSH OFFSET $_$mensajeEntero$_$ \n");
+				codigo.append("CALL printf \n");
+				codigo.append("ADD ESP, 16 \n \n");
+			} 
+			else if(simbOperando.getTipo().toString().contains("DOUBLE")) {
+				codigo.append("FLD QWORD PTR [" + operando + " + 16] \n");
+				codigo.append("SUB ESP, 8 \n");
+				codigo.append("FSTP QWORD PTR [ESP] \n");
+				codigo.append("FLD QWORD PTR [" + operando + " + 8] \n");
+				codigo.append("SUB ESP, 8 \n");
+				codigo.append("FSTP QWORD PTR [ESP] \n");
+				codigo.append("FLD QWORD PTR [" + operando + " + 0] \n");
+				codigo.append("SUB ESP, 8 \n");
+				codigo.append("FSTP QWORD PTR [ESP] \n");
+				codigo.append("PUSH OFFSET $_$mensajeFloat$_$ \n");
+				codigo.append("CALL printf \n");
+				codigo.append("ADD ESP, 24 \n \n");
+			}
+		}
+		else if (simbOperando.getTipo().toString().contains("INTEGER") ||simbOperando.getTipo().toString().contains("OCTAL")) { //Tengo en cuenta primitivos y subtipos
 			operando = simbOperando.getId();
 			codigo.append("invoke printf, cfm$(\"%hi\\n\"), " + operando + "\n \n" ); //Copio el invoke de _inti del archivo de moodle
 		}
@@ -769,6 +802,8 @@ public class GeneradorCodigoAssembler {
 		codigo.append("Error_Subtipo_inferior DB \"Error: Valor menor al rango inferior del subtipo \", 10, 0 \n");
 		codigo.append("Error_Subtipo_superior DB \"Error: Valor mayor al limite superior del subtipo \", 10, 0 \n");
 		codigo.append("ESPERAR_ACCION_USUARIO DB \"Haga click en ACEPTAR para cerrar el programa y la consola\", 10, 0 \n");
+		codigo.append("$_$mensajeEntero$_$ DB \"%d, %d, %d\", 10, 0 \n");
+		codigo.append("$_$mensajeFloat$_$ DB \"%f, %f, %f\", 10, 0 \n");
 		for (Map.Entry<String, Simbolo> iterador : AnalizadorLexico.TablaDeSimbolos.entrySet()) {
 			String lexema = iterador.getKey();
 			Simbolo simbolo = iterador.getValue();

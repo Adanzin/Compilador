@@ -127,7 +127,7 @@ asignacion	: variable_simple ASIGNACION expresion_arit {if(fueDeclarado($1.sval)
 															GeneradorCodigoIntermedio.addElemento($1.sval+Parser.AMBITO.toString());
 															GeneradorCodigoIntermedio.addElemento(":="); 
 															}else{
-																cargarErrorEImprimirlo("Linea :" + AnalizadorLexico.saltoDeLinea +  " Error:  se invoc  una variable no declarada ");}
+																cargarErrorEImprimirlo("Linea :" + AnalizadorLexico.saltoDeLinea +  " Error:  La variable '" + $1.sval + "' no fue declarada");}
 															}
 			| variable_simple '{' CTE '}' ASIGNACION expresion_arit  {if(fueDeclarado($1.sval)){
 																		if(Integer.valueOf($3.sval) <= 3){
@@ -138,12 +138,12 @@ asignacion	: variable_simple ASIGNACION expresion_arit {if(fueDeclarado($1.sval)
 																			GeneradorCodigoIntermedio.addElemento(":="); 
 																			}else{cargarErrorEImprimirlo("Linea :" + AnalizadorLexico.saltoDeLinea +  " Error:  Tripla fuera de rango ");}														
 																	}else{
-																		cargarErrorEImprimirlo("Linea :" + AnalizadorLexico.saltoDeLinea +  " Error:  se invoc  una variable no declarada ");}}
+																		cargarErrorEImprimirlo("Linea :" + AnalizadorLexico.saltoDeLinea +  " Error:  La variable '" + $1.sval + "' no fue declarada");}}
 			| variable_simple '{' '-' CTE '}' ASIGNACION expresion_arit {cargarErrorEImprimirlo("Linea " + AnalizadorLexico.saltoDeLinea + " Error: no se puede acceder a una posicion negativa de un arreglo ");}
 ;
 
 invocacion	: ID_simple '(' expresion_arit ')' {if(!fueDeclarado($1.sval)){
-													cargarErrorEImprimirlo("Linea :" + AnalizadorLexico.saltoDeLinea +  " Error:  se invoc  una funcion no declarada ");}
+													cargarErrorEImprimirlo("Linea :" + AnalizadorLexico.saltoDeLinea +  " Error:  La funcion '" + $1.sval + "' no fue declarada");}
 													else{	
 														Simbolo simb = getVariableFueraDeAmbito($1.sval+AMBITO.toString());
 														Simbolo simb2 = getVariableFueraDeAmbito($3.sval+AMBITO.toString());
@@ -158,7 +158,7 @@ invocacion	: ID_simple '(' expresion_arit ')' {if(!fueDeclarado($1.sval)){
 												}}
 			| ID_simple '(' tipo_primitivo '(' expresion_arit ')' ')' 
 												{if(!fueDeclarado($1.sval)){
-													cargarErrorEImprimirlo("Linea :" + AnalizadorLexico.saltoDeLinea +  " Error:  se invoc  una funcion no declarada ");}
+													cargarErrorEImprimirlo("Linea :" + AnalizadorLexico.saltoDeLinea +  " Error:  La funcion '" + $1.sval + "' no fue declarada");}
 													else{
 														Simbolo simb = getVariableFueraDeAmbito($1.sval+AMBITO.toString());
 														if(simb.getTipoParFormal()==((Tipo)$3.obj).getType()){
@@ -200,7 +200,7 @@ termino : termino '*' factor {GeneradorCodigoIntermedio.addElemento("*");}
 		| termino '/' error {cargarErrorEImprimirlo("Linea :" + AnalizadorLexico.saltoDeLinea +  " Error:  La expresion esta mal escrita");}
 ;
 
-factor 	: variable_simple {if(fueDeclarado($1.sval)){GeneradorCodigoIntermedio.addElemento($1.sval+Parser.AMBITO.toString());AnalizadorLexico.TablaDeSimbolos.get($1.sval).incrementarContDeRef(); $$.sval = $1.sval;}else{cargarErrorEImprimirlo("Linea :" + AnalizadorLexico.saltoDeLinea +  " Error:  se invoc  una variable no declarada ");};}
+factor 	: variable_simple {if(fueDeclarado($1.sval)){GeneradorCodigoIntermedio.addElemento($1.sval+Parser.AMBITO.toString());AnalizadorLexico.TablaDeSimbolos.get($1.sval).incrementarContDeRef(); $$.sval = $1.sval;}else{cargarErrorEImprimirlo("Linea :" + AnalizadorLexico.saltoDeLinea +  " Error: La variable '"+$1.sval+ "' no fue declarada");};}
 		| CTE_con_sig {GeneradorCodigoIntermedio.addElemento($1.sval);}
 		| invocacion 
 		| variable_simple '{' CTE '}' {if(fueDeclarado($1.sval)){ 
@@ -212,7 +212,7 @@ factor 	: variable_simple {if(fueDeclarado($1.sval)){GeneradorCodigoIntermedio.a
 											}else{
 												cargarErrorEImprimirlo("Linea :" + AnalizadorLexico.saltoDeLinea +  " Error:  Tripla fuera de rango ");
 											}
-										}else{cargarErrorEImprimirlo("Linea :" + AnalizadorLexico.saltoDeLinea +  " Error:  se invoc  una variable no declarada ");};}
+										}else{cargarErrorEImprimirlo("Linea :" + AnalizadorLexico.saltoDeLinea +  " Error: La variable '"+$1.sval+ "' no fue declarada");};}
 		| variable_simple '{' '-' CTE '}' {cargarErrorEImprimirlo("Linea " + AnalizadorLexico.saltoDeLinea + " Error: no se puede acceder a una posicion negativa de un arreglo ");}
 ;
 variables 	: variables ',' variable_simple { $$.sval = $1.sval + "/"+$3.sval;} 

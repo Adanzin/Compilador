@@ -164,7 +164,7 @@ AS_Octal
 AS_Octal
 AS_Int
 AS_Octal
-AS_ERROR
+AS_Concatenas
 AS_ERROR
 AS_Concatenas
 AS_Concatenas

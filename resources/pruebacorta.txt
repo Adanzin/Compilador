@@ -1,10 +1,33 @@
 program
 begin 
-	integer b;
-	b:=9; 
-	integer FUN juancito(integer a)BEGIN
-		a:=6;
-		RET(a);
-	END;
-	OUTF(juancito(b));
+	
+	
+	##integer a,b,c;
+	##a:=10;
+	##b:=20;
+	
+	##OUTF(a+b);
+	##OUTF(a-b);
+	##OUTF(a*b);
+	##OUTF(b/a);
+	
+	TYPEDEF TRIPLE < double > tint;
+	tint d,e;
+	
+	d{1}:=10.1;
+	d{2}:=20.2;
+	##e{1}:=d{3};
+	##OUTF(e{1});
+	d{3}:=30.3;
+	OUTF(d);
+	
+	##e:=d;
+	
+	##TYPEDEF flotadito := double {-100.0, 100.0};
+	##flotadito x,y;
+	
+	##y:=2.0*5.0;
+	##x:=0.4;
+	##OUTF(y);
+	##OUTF(x);
 End

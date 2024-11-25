@@ -1554,7 +1554,7 @@ case 63:
 															GeneradorCodigoIntermedio.addElemento(val_peek(2).sval+Parser.AMBITO.toString());
 															GeneradorCodigoIntermedio.addElemento(":="); 
 															}else{
-																cargarErrorEImprimirlo("Linea :" + AnalizadorLexico.saltoDeLinea +  " Error:  se invoc  una variable no declarada ");}
+																cargarErrorEImprimirlo("Linea :" + AnalizadorLexico.saltoDeLinea +  " Error:  La variable '" + val_peek(2).sval + "' no fue declarada");}
 															}
 break;
 case 64:
@@ -1568,7 +1568,7 @@ case 64:
 																			GeneradorCodigoIntermedio.addElemento(":="); 
 																			}else{cargarErrorEImprimirlo("Linea :" + AnalizadorLexico.saltoDeLinea +  " Error:  Tripla fuera de rango ");}														
 																	}else{
-																		cargarErrorEImprimirlo("Linea :" + AnalizadorLexico.saltoDeLinea +  " Error:  se invoc  una variable no declarada ");}}
+																		cargarErrorEImprimirlo("Linea :" + AnalizadorLexico.saltoDeLinea +  " Error:  La variable '" + val_peek(5).sval + "' no fue declarada");}}
 break;
 case 65:
 //#line 142 "gramatica.y"
@@ -1577,7 +1577,7 @@ break;
 case 66:
 //#line 145 "gramatica.y"
 {if(!fueDeclarado(val_peek(3).sval)){
-													cargarErrorEImprimirlo("Linea :" + AnalizadorLexico.saltoDeLinea +  " Error:  se invoc  una funcion no declarada ");}
+													cargarErrorEImprimirlo("Linea :" + AnalizadorLexico.saltoDeLinea +  " Error:  La funcion '" + val_peek(3).sval + "' no fue declarada");}
 													else{	
 														Simbolo simb = getVariableFueraDeAmbito(val_peek(3).sval+AMBITO.toString());
 														Simbolo simb2 = getVariableFueraDeAmbito(val_peek(1).sval+AMBITO.toString());
@@ -1594,7 +1594,7 @@ break;
 case 67:
 //#line 160 "gramatica.y"
 {if(!fueDeclarado(val_peek(6).sval)){
-													cargarErrorEImprimirlo("Linea :" + AnalizadorLexico.saltoDeLinea +  " Error:  se invoc  una funcion no declarada ");}
+													cargarErrorEImprimirlo("Linea :" + AnalizadorLexico.saltoDeLinea +  " Error:  La funcion '" + val_peek(6).sval + "' no fue declarada");}
 													else{
 														Simbolo simb = getVariableFueraDeAmbito(val_peek(6).sval+AMBITO.toString());
 														if(simb.getTipoParFormal()==((Tipo)val_peek(4).obj).getType()){
@@ -1685,7 +1685,7 @@ case 88:
 break;
 case 89:
 //#line 203 "gramatica.y"
-{if(fueDeclarado(val_peek(0).sval)){GeneradorCodigoIntermedio.addElemento(val_peek(0).sval+Parser.AMBITO.toString());AnalizadorLexico.TablaDeSimbolos.get(val_peek(0).sval).incrementarContDeRef(); yyval.sval = val_peek(0).sval;}else{cargarErrorEImprimirlo("Linea :" + AnalizadorLexico.saltoDeLinea +  " Error:  se invoc  una variable no declarada ");};}
+{if(fueDeclarado(val_peek(0).sval)){GeneradorCodigoIntermedio.addElemento(val_peek(0).sval+Parser.AMBITO.toString());AnalizadorLexico.TablaDeSimbolos.get(val_peek(0).sval).incrementarContDeRef(); yyval.sval = val_peek(0).sval;}else{cargarErrorEImprimirlo("Linea :" + AnalizadorLexico.saltoDeLinea +  " Error: La variable '"+val_peek(0).sval+ "' no fue declarada");};}
 break;
 case 90:
 //#line 204 "gramatica.y"
@@ -1702,7 +1702,7 @@ case 92:
 											}else{
 												cargarErrorEImprimirlo("Linea :" + AnalizadorLexico.saltoDeLinea +  " Error:  Tripla fuera de rango ");
 											}
-										}else{cargarErrorEImprimirlo("Linea :" + AnalizadorLexico.saltoDeLinea +  " Error:  se invoc  una variable no declarada ");};}
+										}else{cargarErrorEImprimirlo("Linea :" + AnalizadorLexico.saltoDeLinea +  " Error: La variable '"+val_peek(3).sval+ "' no fue declarada");};}
 break;
 case 93:
 //#line 216 "gramatica.y"
