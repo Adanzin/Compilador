@@ -27,7 +27,7 @@ sentencias 	: sentencias sentencia  {if($1.sval=="RET" || $2.sval=="RET" ){$$.sv
 sentencia 	: sentencia_declarativa 
 			| error ';' {cargarErrorEImprimirlo("Linea " + AnalizadorLexico.saltoDeLinea + " Error: faltan las sentencias antes del ';'  ");}
             | sentencia_ejecutable ';' {if($1.sval=="RET"){$$.sval="RET";}}
-			| sentencia_ejecutable {cargarErrorEImprimirlo("Linea " + AnalizadorLexico.saltoDeLinea + " Error: Falta ';' al final de la sentencia ");}
+			| sentencia_ejecutable {if($1.sval=="RET"){$$.sval="RET";}; cargarErrorEImprimirlo("Linea " + AnalizadorLexico.saltoDeLinea + " Error: Falta ';' al final de la sentencia ");}
 ;			
 				
 									/* SENTENCIAS DECLARATIVAS */	
@@ -82,12 +82,15 @@ declaracion_funciones     : encabezado_funcion parametros_parentesis BEGIN cuerp
 								}                  
 ;
 
-encabezado_funcion 	: tipo FUN ID {$$.sval=$3.sval;cargarVariables($3.sval,(Tipo)$1.obj," nombre de funcion ");agregarAmbito($3.sval);Simbolo.setAmbitoVar(AMBITO.toString());DENTRODELAMBITO.push($3.sval);GeneradorCodigoIntermedio.addNuevaPolaca();}
+encabezado_funcion 	: tipo FUN ID {$$.sval=$3.sval;System.out.println(" Encabezado funcion ");cargarVariables($3.sval,(Tipo)$1.obj,"nombre de funcion");agregarAmbito($3.sval);DENTRODELAMBITO.push($3.sval);GeneradorCodigoIntermedio.addNuevaPolaca();}
 					| tipo FUN {cargarErrorEImprimirlo("Linea " + AnalizadorLexico.saltoDeLinea + ": Error: Faltan el nombre en la funcion ");}
 ;
 
 parametros_parentesis: '(' tipo_primitivo ID_simple ')' {$$.obj=$2.obj; GeneradorCodigoIntermedio.addElemento($3.sval + AMBITO.toString()); GeneradorCodigoIntermedio.addElemento("PF");cargarVariables($3.sval,(Tipo)$2.obj," nombre de parametro real ");}
-					| '(' tipo_primitivo ')' {cargarErrorEImprimirlo("Linea " + AnalizadorLexico.saltoDeLinea +" Error: Falta el nombre del parametro en la funcion ");} 
+					| '(' ID_simple ID_simple ')' {if(tipos.containsKey($2.sval))
+										{$$.obj = tipos.get($2.sval); GeneradorCodigoIntermedio.addElemento($3.sval + AMBITO.toString()); GeneradorCodigoIntermedio.addElemento("PF");cargarVariables($3.sval,tipos.get($2.sval)," nombre de parametro real ");
+										}else{cargarErrorEImprimirlo("Linea " + AnalizadorLexico.saltoDeLinea +" Se utilizo un tipo desconocido ");};}								
+					| '(' tipo_primitivo ')' {$$.obj=$2.obj;cargarErrorEImprimirlo("Linea " + AnalizadorLexico.saltoDeLinea +" Error: Falta el nombre del parametro en la funcion ");} 
 					| '(' ID_simple ')' {cargarErrorEImprimirlo("Linea " + AnalizadorLexico.saltoDeLinea +" Error: Falta el tipo del parametro en la funcion ");}
                     | '(' ')' {cargarErrorEImprimirlo("Linea " + AnalizadorLexico.saltoDeLinea +" Error: Falta el parametro en la funcion ");}
                     | '(' error ')' {cargarErrorEImprimirlo("Linea " + AnalizadorLexico.saltoDeLinea +" Error: Se excedio el numero de parametros (1). ");}
@@ -145,29 +148,13 @@ asignacion	: variable_simple ASIGNACION expresion_arit {if(fueDeclarado($1.sval)
 invocacion	: ID_simple '(' expresion_arit ')' {if(!fueDeclarado($1.sval)){
 													cargarErrorEImprimirlo("Linea :" + AnalizadorLexico.saltoDeLinea +  " Error:  La funcion '" + $1.sval + "' no fue declarada");}
 													else{	
-														Simbolo simb = getVariableFueraDeAmbito($1.sval+AMBITO.toString());
-														Simbolo simb2 = getVariableFueraDeAmbito($3.sval+AMBITO.toString());
-														if(simb.getTipoParFormal()==simb2.getTipo().getType()){
-															GeneradorCodigoIntermedio.invocar($1.sval+AMBITO.toString());
-														}else{
-															cargarErrorEImprimirlo("Linea :" + AnalizadorLexico.saltoDeLinea +  " Error: Tipos incompatibles entre  "
-															 + simb.getTipoParFormal()
-															  + " y " +simb2.getTipo().getType());
-														}																																																		
+														GeneradorCodigoIntermedio.invocar($1.sval+AMBITO.toString());																																																		
 												}}
 			| ID_simple '(' tipo_primitivo '(' expresion_arit ')' ')' 
 												{if(!fueDeclarado($1.sval)){
 													cargarErrorEImprimirlo("Linea :" + AnalizadorLexico.saltoDeLinea +  " Error:  La funcion '" + $1.sval + "' no fue declarada");}
 													else{
-														Simbolo simb = getVariableFueraDeAmbito($1.sval+AMBITO.toString());
-														if(simb.getTipoParFormal()==((Tipo)$3.obj).getType()){
-															GeneradorCodigoIntermedio.invocar($1.sval+AMBITO.toString());
-														}else{
-															cargarErrorEImprimirlo("Linea :" + AnalizadorLexico.saltoDeLinea +  " Error: Tipos incompatibles entre Parametro formal "
-																 + simb.getTipoParFormal()
-																  + " y el tipo de conversion " +((Tipo)$3.obj).getType());
-
-														}
+														GeneradorCodigoIntermedio.invocar($1.sval+AMBITO.toString(), ((Tipo)$3.obj).getType());
 												}}
 			| ID_simple '(' ')' {cargarErrorEImprimirlo("Linea :" + AnalizadorLexico.saltoDeLinea +  " Error:  faltan los parametros reales en la invocacion");}
 			| ID_simple '(' error ')' {cargarErrorEImprimirlo("Linea :" + AnalizadorLexico.saltoDeLinea +  " Error:  Se excedio el numero de parametros en la invocacion (1)");}
@@ -230,19 +217,19 @@ CTE_con_sig : CTE {if(estaRango($1.sval)) { $$.sval = $1.sval; } }
 			| '-' CTE { cambioCTENegativa($2.sval); $$.sval = "-" + $2.sval;}
 ;				
 
-sentencia_IF: IF condicion bloque_THEN ';' bloque_else ';' END_IF {if($4.sval=="RET" && $6.sval=="RET"){$$.sval="RET";};completarBifurcacionI();}
-            | IF condicion bloque_THEN ';' END_IF {$$.sval=$4.sval;completarBifurcacionISinElse();}
+sentencia_IF: IF condicion bloque_THEN ';' bloque_else ';' END_IF {if($3.sval=="RET" && $5.sval=="RET"){$$.sval="RET";};completarBifurcacionI();}
+            | IF condicion bloque_THEN ';' END_IF {$$.sval=$3.sval;completarBifurcacionISinElse();}
 			| IF condicion THEN END_IF {cargarErrorEImprimirlo("Linea :" + AnalizadorLexico.saltoDeLinea + " Error: Falta de contenido en bloque THEN.");}
 			| IF condicion bloque_THEN ';' ELSE END_IF {{cargarErrorEImprimirlo("Linea " + AnalizadorLexico.saltoDeLinea + " Error : falta cuerpo en el ELSE ");};}
 
 
-			| IF condicion bloque_THEN bloque_else ';' END_IF {cargarErrorEImprimirlo("Linea " + AnalizadorLexico.saltoDeLinea + " Error: Falta ';' al final de la sentencia del bloque del THEN ");}
-			| IF condicion bloque_THEN END_IF {cargarErrorEImprimirlo("Linea " + AnalizadorLexico.saltoDeLinea + " Error: Falta ';' al final de la sentencia del bloque del THEN  ");}
-			| IF condicion bloque_THEN ';' bloque_else END_IF {cargarErrorEImprimirlo("Linea " + AnalizadorLexico.saltoDeLinea + " Error: Falta ';' al final de la sentencia del bloque del ELSE  ");}
-			| IF condicion bloque_THEN bloque_else END_IF {cargarErrorEImprimirlo("Linea " + AnalizadorLexico.saltoDeLinea + " Error: Falta ';' al final de los bloques del IF ");}
+			| IF condicion bloque_THEN bloque_else ';' END_IF {if($3.sval=="RET" && $4.sval=="RET"){$$.sval="RET";};cargarErrorEImprimirlo("Linea " + AnalizadorLexico.saltoDeLinea + " Error: Falta ';' al final de la sentencia del bloque del THEN ");}
+			| IF condicion bloque_THEN END_IF {$$.sval=$3.sval;cargarErrorEImprimirlo("Linea " + AnalizadorLexico.saltoDeLinea + " Error: Falta ';' al final de la sentencia del bloque del THEN  ");}
+			| IF condicion bloque_THEN ';' bloque_else END_IF {if($3.sval=="RET" && $5.sval=="RET"){$$.sval="RET";};cargarErrorEImprimirlo("Linea " + AnalizadorLexico.saltoDeLinea + " Error: Falta ';' al final de la sentencia del bloque del ELSE  ");}
+			| IF condicion bloque_THEN bloque_else END_IF {if($3.sval=="RET" && $4.sval=="RET"){$$.sval="RET";};cargarErrorEImprimirlo("Linea " + AnalizadorLexico.saltoDeLinea + " Error: Falta ';' al final de los bloques del IF ");}
 			
-			| IF condicion bloque_THEN ';' error{cargarErrorEImprimirlo("Linea " + AnalizadorLexico.saltoDeLinea + ": Error : Falta el END_IF en IF  ");}
-			| IF condicion bloque_THEN ';' bloque_else ';' error{cargarErrorEImprimirlo("Linea " + AnalizadorLexico.saltoDeLinea + ": Error : Falta el END_IF en IF ");}
+			| IF condicion bloque_THEN ';' error{$$.sval=$3.sval;cargarErrorEImprimirlo("Linea " + AnalizadorLexico.saltoDeLinea + ": Error : Falta el END_IF en IF  ");}
+			| IF condicion bloque_THEN ';' bloque_else ';' error{if($3.sval=="RET" && $5.sval=="RET"){$$.sval="RET";};cargarErrorEImprimirlo("Linea " + AnalizadorLexico.saltoDeLinea + ": Error : Falta el END_IF en IF ");}
 ;
 
 condicion	: '(' '(' list_expre ')' comparador '(' list_expre ')' ')' {if($3.ival == $7.ival){cantDeOperandos=$3.ival;modificarPolacaPM($5.sval,$3.ival);}else{cargarErrorEImprimirlo("Linea " + AnalizadorLexico.saltoDeLinea + "Error : Cantidad de operandor incompatibles en la comparacion ");}}
@@ -274,7 +261,10 @@ bloque_else: bloque_else_simple {if($1.sval=="RET"){$$.sval="RET";};}
 ;
 
 bloque_else_multiple:	ELSE BEGIN bloque_sent_ejecutables ';' END {if($3.sval=="RET"){$$.sval="RET";};}
-					| ELSE BEGIN bloque_sent_ejecutables END {cargarErrorEImprimirlo("Linea " + AnalizadorLexico.saltoDeLinea + " Error: Falta ';' al final de la sentencia ");}
+					| ELSE BEGIN END {cargarErrorEImprimirlo("Linea " + AnalizadorLexico.saltoDeLinea +  " Error: falta el bloque de sentencias ");}
+					| ELSE BEGIN bloque_sent_ejecutables END {if($3.sval=="RET"){$$.sval="RET";};cargarErrorEImprimirlo("Linea " + AnalizadorLexico.saltoDeLinea + " Error: Falta ';' al final de la sentencia ");}
+					| ELSE BEGIN bloque_sent_ejecutables error {if($3.sval=="RET"){$$.sval="RET";};cargarErrorEImprimirlo("Linea " + AnalizadorLexico.saltoDeLinea + " Error: Falta el END al final de las sentencias del ELSE");}
+					
 ;
 
 bloque_else_simple:	ELSE bloque_sentencia_simple {if($2.sval=="RET"){$$.sval="RET";};}
@@ -285,7 +275,9 @@ bloque_THEN: bloque_THEN_simple {if($1.sval=="RET"){$$.sval="RET";};operacionesI
 ;
 
 bloque_THEN_multiple:	THEN BEGIN bloque_sent_ejecutables ';' END {if($3.sval=="RET"){$$.sval="RET";};}
-					| THEN BEGIN bloque_sent_ejecutables END {cargarErrorEImprimirlo("Linea " + AnalizadorLexico.saltoDeLinea + " Error: Falta ';' al final de la sentencia ");}
+					| THEN BEGIN END {cargarErrorEImprimirlo("Linea " + AnalizadorLexico.saltoDeLinea +  " Error: falta el bloque de sentencias ");}
+					| THEN BEGIN bloque_sent_ejecutables END {if($3.sval=="RET"){$$.sval="RET";};cargarErrorEImprimirlo("Linea " + AnalizadorLexico.saltoDeLinea + " Error: Falta ';' al final de la sentencia ");}
+					| THEN BEGIN bloque_sent_ejecutables error {if($3.sval=="RET"){$$.sval="RET";};cargarErrorEImprimirlo("Linea " + AnalizadorLexico.saltoDeLinea + " Error: Falta el END al final de las sentencias del THEN");}
 ;
 
 bloque_THEN_simple:	THEN bloque_sentencia_simple {if($2.sval=="RET"){$$.sval="RET";};}
@@ -299,7 +291,8 @@ bloque_unidad	: bloque_unidad_simple {if($1.sval=="RET"){$$.sval="RET";};}
 
 bloque_unidad_multiple  : BEGIN bloque_sent_ejecutables ';' END {if($2.sval=="RET"){$$.sval="RET";};}
 						| BEGIN END {cargarErrorEImprimirlo("Linea " + AnalizadorLexico.saltoDeLinea +  " Error: falta el bloque de sentencias ");}
-						| BEGIN bloque_sent_ejecutables END {cargarErrorEImprimirlo("Linea " + AnalizadorLexico.saltoDeLinea + " Error: Falta ';' al final de la sentencia ");}
+						| BEGIN bloque_sent_ejecutables END {if($2.sval=="RET"){$$.sval="RET";};cargarErrorEImprimirlo("Linea " + AnalizadorLexico.saltoDeLinea + " Error: Falta ';' al final de la sentencia ");}
+						| BEGIN bloque_sent_ejecutables error {if($2.sval=="RET"){$$.sval="RET";};cargarErrorEImprimirlo("Linea " + AnalizadorLexico.saltoDeLinea + " Error: Falta el END al final de las sentencias");}						
 ;				
 
 bloque_unidad_simple:  bloque_sentencia_simple {if($1.sval=="RET"){$$.sval="RET";}}
@@ -307,7 +300,7 @@ bloque_unidad_simple:  bloque_sentencia_simple {if($1.sval=="RET"){$$.sval="RET"
 
 bloque_sent_ejecutables	: bloque_sent_ejecutables ';' bloque_sentencia_simple {if($1.sval=="RET" || $3.sval=="RET"){$$.sval="RET";};}
 						| bloque_sentencia_simple {if($1.sval=="RET"){$$.sval="RET";};}
-						| bloque_sent_ejecutables bloque_sentencia_simple {cargarErrorEImprimirlo("Linea " + AnalizadorLexico.saltoDeLinea + " Error: Falta ';' al final de la sentencia ");}
+						| bloque_sent_ejecutables bloque_sentencia_simple {if($1.sval=="RET" || $2.sval=="RET"){$$.sval="RET";};cargarErrorEImprimirlo("Linea " + AnalizadorLexico.saltoDeLinea + " Error: Falta ';' al final de la sentencia ");}
 ;
 
 bloque_sentencia_simple: sentencia_ejecutable {if($1.sval=="RET"){$$.sval="RET";};}
@@ -327,6 +320,7 @@ encabezado_WHILE : WHILE {GeneradorCodigoIntermedio.apilar(GeneradorCodigoInterm
 
 /* Tema 23: goto */
 sentencia_goto	: GOTO ETIQUETA {GeneradorCodigoIntermedio.addBaulDeGotos($2.sval+AMBITO.toString()+"/"+AMBITO.toString()+"/"+String.valueOf(GeneradorCodigoIntermedio.getPos()));}
+				| GOTO ID_simple {cargarErrorEImprimirlo("Linea :" + AnalizadorLexico.saltoDeLinea + " Error: Falta el caracter '@' de la etiqueta. ");}
 				| GOTO error  {cargarErrorEImprimirlo("Linea :" + AnalizadorLexico.saltoDeLinea + " Error: Falta la etiqueta en GOTO ");}
 ;
 /* Tema 19: Pattern Matching*/
@@ -352,6 +346,7 @@ public static void cargarErrorEImprimirlo(String salida) {
 		try {
 			AnalizadorLexico.sintactico.newLine();  // Agregar un salto de l nea
 			AnalizadorLexico.sintactico.write(" "+salida+" ");
+			AnalizadorLexico.sintactico.flush();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -368,29 +363,33 @@ private static void cargarGotos(){
 
 	        // Bucle para reducir el key si no se encuentra directamente
 	        while (!terminoWhile) {
+	            System.out.println("Entra el while con key: " + key);
 	            if (GeneradorCodigoIntermedio.Etiquetas.contains(key)) {
+	                System.out.println("Antes de remove " + key);
 	                int pos = Integer.valueOf(elemento[2]);
-	                GeneradorCodigoIntermedio.reemplazarElm(key, pos, elemento[1]); // Reemplaza el elemento con el método adecuado
+	                System.out.println("Key " + key + " pos " + pos + " ambito " + elemento[1]);
+	                GeneradorCodigoIntermedio.reemplazarElm(key, pos, elemento[1]); // Reemplaza el elemento con el m todo adecuado
 	                GeneradorCodigoIntermedio.BaulDeGotos.remove(0); // Eliminamos el primer elemento
+	                System.out.println("Post remove " + key);
 	                noHayEtiqueta = false;
 	                terminoWhile = true; // Terminamos el ciclo si encontramos la etiqueta
 	            } else {
 	                noHayEtiqueta = true;
 	            }
 
-	            // Reducimos el ámbito: eliminamos el último '$NIVEL'
+	            // Reducimos el  mbito: eliminamos el  ltimo '$NIVEL'
 	            int pos = key.lastIndexOf("$");
 	            if (pos == -1) {
-	                terminoWhile = true; // Si no hay más ámbitos, salimos del ciclo
+	                terminoWhile = true; // Si no hay m s  mbitos, salimos del ciclo
 	            } else {
-	                key = key.substring(0, pos); // Reducimos el ámbito actual
+	                key = key.substring(0, pos); // Reducimos el  mbito actual
 	            }
 	        }
 
-	        // Si no se encontró etiqueta, avanzamos al siguiente elemento (ya manejado por el while principal)
+	        // Si no se encontr  etiqueta, avanzamos al siguiente elemento (ya manejado por el while principal)
 	        if (noHayEtiqueta) {
 	        	GeneradorCodigoIntermedio.BaulDeGotos.remove(0); // Eliminamos el elemento para evitar ciclos infinitos
-	            cargarErrorEImprimirlo("No se encontró la etiqueta llamada: " + key);
+	            cargarErrorEImprimirlo("No se encontr  la etiqueta llamada: " + key);
 	        }	  
 	}
 }
@@ -403,6 +402,7 @@ private static void cargarCadenaMultilinea(String cadena){
 }
 
 private static void modificarPolacaPM(String operador, int cantDeOp){
+	System.out.println(" Pattern Matching ");
 	GeneradorCodigoIntermedio.addOperadorEnPattMatch(operador,cantDeOp);
 }
 
@@ -417,6 +417,7 @@ private static void opCondicion(String operador){
 private static void operacionesWhile(){
 	int aux=0;
 	while(aux<cantDeOperandos){
+		System.out.println(" SE BIFURCA POR F ");
 		completarBifurcacionF();
 		aux++;
 	}
@@ -437,6 +438,7 @@ private static void operacionesIF(){
 	String elm = String.valueOf(GeneradorCodigoIntermedio.getPos()+2);
 	int aux=0;
 	while(aux<cantDeOperandos){
+		System.out.println(" SE BIFURCA POR F ");
 		completarBifurcacionF();
 		aux++;
 	}
@@ -461,7 +463,9 @@ private static void completarBifurcacionI(){
 }
 
 private static void cargarParametroFormal(String id,Tipo t){
-	AnalizadorLexico.TablaDeSimbolos.get(id+AMBITO.toString()).setTipoParFormal(t.getType());
+	if(t!=null){
+		AnalizadorLexico.TablaDeSimbolos.get(id+AMBITO.toString()).setTipoParFormal(t.getType());
+	}
 };
 
 private static boolean existeFuncion(){
@@ -568,31 +572,37 @@ private static boolean existeEnEsteAmbito(String id){
 private static void cargarVariables(String variables, Tipo tipo, String uso){
 	String[] var = getVariables(variables,"/");
 	for (String v : var) {
-		if(tipo.getType()!="ETIQUETA"){
-			if(!existeEnEsteAmbito(v)){
-			if(tipo.getType()=="CADENAMULTILINEA"){
-				addTipo(v,tipo);
-				addUso(v,uso);
-				declarar(v);
+		if(tipo!=null) {
+			if(tipo.getType()!="ETIQUETA"){
+				if(!existeEnEsteAmbito(v)){
+				if(tipo.getType()=="CADENAMULTILINEA"){
+					//Si es cadena multiline y tiene '/' a a separarse en 2 la key de la cadena por el metodo "getVariables()", por lo tanto usamos directamente variables
+					addTipo(variables,tipo);
+					addUso(variables,uso);
+					declarar(variables);
+				}else if(uso=="nombre de funcion"){
+					addAmbitoIDFUN(v);
+					addTipo(v+AMBITO.toString(),tipo);
+					addUso(v+AMBITO.toString(),uso);
+					declarar(v+AMBITO.toString());
+				}else{
+					addAmbitoID(v);
+					addTipo(v+AMBITO.toString(),tipo);
+					addUso(v+AMBITO.toString(),uso);
+					declarar(v+AMBITO.toString());
+				}
+				}else{
+				cargarErrorEImprimirlo("Linea :" + AnalizadorLexico.saltoDeLinea +"  La variable  " + v + " ya fue declarada.");
+				}
 			}else{
-				addAmbitoID(v);
-				AnalizadorLexico.TablaDeSimbolos.get(v+AMBITO.toString()).setAmbitoVar(AMBITO.toString()+"$"+v);
-				addTipo(v+AMBITO.toString(),tipo);
-				addUso(v+AMBITO.toString(),uso);
-				declarar(v+AMBITO.toString());
+					addAmbitoID(v);
+					AnalizadorLexico.TablaDeSimbolos.get(v+AMBITO.toString()).setAmbitoVar(AMBITO.toString()+"$"+v);
+					addTipo(v+AMBITO.toString(),tipo);
+					addUso(v+AMBITO.toString(),uso);
+					declarar(v+AMBITO.toString());
 			}
-			}else{
-			cargarErrorEImprimirlo("Linea :" + AnalizadorLexico.saltoDeLinea +"  La variable  " + v + " ya fue declarada.");
-			}
-		}else{
-				addAmbitoID(v);
-				AnalizadorLexico.TablaDeSimbolos.get(v+AMBITO.toString()).setAmbitoVar(AMBITO.toString()+"$"+v);
-				addTipo(v+AMBITO.toString(),tipo);
-				addUso(v+AMBITO.toString(),uso);
-				declarar(v+AMBITO.toString());
 		}
     }
-
 }
 private static void declarar(String id){
 	AnalizadorLexico.TablaDeSimbolos.get(id).fueDeclarada();
@@ -617,6 +627,7 @@ private static void addTipo(String id, Tipo tipo) {
 };
 
 private static void agregarAmbito(String amb) {
+	System.out.println(" Se agrego al ambito "+amb);
 	AMBITO.append("$").append(amb);
 }
 
@@ -628,7 +639,12 @@ private static void sacarAmbito() {
 }
 
 private static void addAmbitoID(String id) {
-	AnalizadorLexico.TablaDeSimbolos.get(id).agregarAmbito(AMBITO.toString());
+	AnalizadorLexico.TablaDeSimbolos.get(id).agregarAmbitoaVar(AMBITO.toString());
+}
+
+private static void addAmbitoIDFUN(String id) {
+	AnalizadorLexico.TablaDeSimbolos.get(id).agregarAmbitoaVar(AMBITO.toString());
+	AnalizadorLexico.TablaDeSimbolos.get(id+AMBITO.toString()).setAmbitoVar(AMBITO.toString()+"$"+id);
 }
 
 int yylex() {

@@ -1,0 +1,56 @@
+program
+BEGIN
+	integer varX, varZ;
+	varX:=9;
+	varZ:=20;
+	
+	double varY;
+	varY:=-5.0;
+	
+	integer FUN funcionUno(double a)BEGIN
+		integer b;
+		b := 10;
+		OUTF(a);
+		WHILE(b!=15)BEGIN
+			OUTF(b);
+			IF(a=13.0)THEN
+				RET(a);
+			END_IF;
+			b:=b+1;
+			RET(b);
+		END;
+	END;
+	
+	TYPEDEF TRIPLE <double> tripleDouble;
+	TYPEDEF flotadito := double{-100.5, 200.8};
+	tripleDouble triplaX, triplaY;
+	flotadito j,k;
+	
+	varX:= funcionUno(double (varX));	
+	OUTF(varX);
+	
+	triplaY{1}:=varY;
+	triplaY{2}:=varY/3.0;
+	triplaY{3}:=varY-4.0;
+	
+	triplaX:=triplaY;
+	OUTF(triplaY);
+	OUTF(triplaX);
+	
+	j:=triplaY{2}*6.2+1.4;
+	
+	IF((varX,varY)>(varZ,j))THEN
+		GOTO afuera1@;
+	ELSE
+		GOTO afuera2@;
+	END_IF;
+	
+	afuera1@;
+	OUTF([Se imprime luego de afuera1]);
+	GOTO finalCodigo@;
+	
+	afuera2@;
+	OUTF([Se imprime luego de afuera2]); 
+	
+	finalCodigo@;
+END

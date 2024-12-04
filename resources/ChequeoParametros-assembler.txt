@@ -1,0 +1,125 @@
+.586 
+option casemap :none 
+include \masm32\include\masm32rt.inc 
+includelib \masm32\lib\kernel32.lib 
+includelib \masm32\lib\user32.lib 
+includelib \masm32\lib\masm32.lib 
+
+dll_dllcrt0 PROTO C
+printf PROTO C : VARARG 
+
+.data 
+Error_DivisionCero DB "Error: Division por cero", 10, 0 
+Error_Overflow DB "Error: Overflow en producto entre Enteros", 10, 0 
+Error_Subtipo_inferior DB "Error: Valor menor al rango inferior del subtipo ", 10, 0 
+Error_Subtipo_superior DB "Error: Valor mayor al limite superior del subtipo ", 10, 0 
+ESPERAR_ACCION_USUARIO DB "Haga click en ACEPTAR para cerrar el programa y la consola", 10, 0 
+$_$mensajeEntero$_$ DB "%d, %d, %d", 10, 0 
+$_$mensajeFloat$_$ DB "%f, %f, %f", 10, 0 
+@ParametroRealInt DW ?
+a$MAIN$juancito$juancito2 DW ?
+a$MAIN$juancito DW ?
+juancito3$MAIN$juancito$juancito2 DW ?
+juancito2$MAIN$juancito DW ?
+@ParametroRealFloat DQ ?
+juancito$MAIN DW ?
+@RET$MAIN$juancito DW ?
+c$MAIN DQ ?
+d$MAIN DW ?
+a$MAIN$juancito$juancito2$juancito3 DW ?
+
+.code 
+ 
+$MAIN$juancito: 
+PUSH EBP 
+MOV EBP, ESP 
+SUB ESP, 4 
+PUSH EDI 
+PUSH ESI 
+MOV AX, @ParametroRealInt 
+MOV a$MAIN$juancito, AX 
+ 
+JMP LABELadan$MAIN
+ 
+MOV AX, d$MAIN$juancito
+MOV @ParametroRealInt, AX 
+CALL $MAIN$juancito
+MOV AX, @RET$MAIN$juancito
+MOV d$MAIN, AX
+
+ 
+MOV AX, a$MAIN$juancito
+MOV @RET$MAIN$juancito, AX
+POP ESI 
+POP EDI 
+MOV ESP, EBP 
+POP EBP 
+RET
+ 
+
+$MAIN$juancito$juancito2: 
+PUSH EBP 
+MOV EBP, ESP 
+SUB ESP, 4 
+PUSH EDI 
+PUSH ESI 
+MOV AX, @ParametroRealInt 
+MOV a$MAIN$juancito$juancito2, AX 
+ 
+JMP LABELadan$MAIN
+ 
+MOV AX, a$MAIN$juancito$juancito2
+MOV @RET$MAIN$juancito$juancito2, AX
+POP ESI 
+POP EDI 
+MOV ESP, EBP 
+POP EBP 
+RET
+ 
+
+$MAIN$juancito$juancito2$juancito3: 
+PUSH EBP 
+MOV EBP, ESP 
+SUB ESP, 4 
+PUSH EDI 
+PUSH ESI 
+MOV AX, @ParametroRealInt 
+MOV a$MAIN$juancito$juancito2$juancito3, AX 
+ 
+JMP LABELadan$MAIN
+ 
+MOV AX, a$MAIN$juancito$juancito2$juancito3
+MOV @RET$MAIN$juancito$juancito2$juancito3, AX
+POP ESI 
+POP EDI 
+MOV ESP, EBP 
+POP EBP 
+RET
+ 
+
+start: 
+LABELadan$MAIN: 
+JMP LABELadan$MAIN
+ 
+JMP fin 
+ 
+Divison_Por_Cero:
+invoke MessageBox, NULL, addr Error_DivisionCero, addr Error_DivisionCero, MB_OK 
+JMP fin
+
+Overflow:
+invoke MessageBox, NULL, addr Error_Overflow, addr Error_Overflow, MB_OK 
+JMP fin
+
+Subtipo_inferior:
+invoke MessageBox, NULL, addr Error_Subtipo_inferior, addr Error_Subtipo_inferior, MB_OK 
+JMP fin
+
+Subtipo_superior:
+invoke MessageBox, NULL, addr Error_Subtipo_superior, addr Error_Subtipo_superior, MB_OK 
+JMP fin
+
+fin: 
+invoke MessageBox, NULL, addr ESPERAR_ACCION_USUARIO, addr ESPERAR_ACCION_USUARIO, MB_OK 
+invoke ExitProcess, 0 
+end start

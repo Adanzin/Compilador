@@ -8,7 +8,7 @@ public class Simbolo {
     private String uso;
     private String tipoParFormal=" ";
     private String tipoRetorno=" ";
-    public static String ambitoVar="@MAIN";
+    private String ambitoVar="";
     private int base;  // Base del numero (8 = octal, 10 = decimal, 16 = hexadecimal)
     private int contadorDeReferencias;
     private boolean defPorUser;
@@ -113,9 +113,10 @@ public class Simbolo {
     }
 
     //amb va a venir del siguiente formato ".A.B"
-    public void agregarAmbito(String amb) {
+    public void agregarAmbitoaVar(String amb) {
         Simbolo simb = new Simbolo(this.id+amb,this.entero, this.doub,this.tipoVar,this.uso,this.base,this.contadorDeReferencias,
         		this.defPorUser,this.seDeclaro,amb);
+        System.out.println("A ->> " +this.id+amb+" SE LE ASIGNO EL AMBITO "+ amb);
         AnalizadorLexico.TablaDeSimbolos.put(this.id+amb, simb);
     }
     public String getAmbito() {
@@ -126,7 +127,8 @@ public class Simbolo {
     public String getAmbitoVar() {
 		return ambitoVar;
 	}
-	public static void setAmbitoVar(String ambitoV) {
+	public void setAmbitoVar(String ambitoV) {
+		System.out.println("Se le asigno " + this.id + " el amb "+ ambitoV );
 		ambitoVar = ambitoV;
 	}
 	
@@ -143,7 +145,6 @@ public class Simbolo {
 		this.defPorUser = esSubTipo;
 		this.seDeclaro = seDeclaro;
 		this.ambitoVar=amb;
-
 	}
 	@Override
     public String toString() {
@@ -191,7 +192,10 @@ public class Simbolo {
             sb.append(" El Retorno es : "+tipoParFormal);
             sb.append(" - ");
         }
-
+        
+        sb.append(this.ambitoVar);
+        sb.append(" - ");
+        
         // Si ningun valor fue inicializado
         if (sb.length() == 0) {
             return "Esta vacio";

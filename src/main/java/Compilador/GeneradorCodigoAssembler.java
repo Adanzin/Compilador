@@ -41,7 +41,7 @@ public class GeneradorCodigoAssembler {
 					ultimaOperacion = elemento;
 					operadorSaltoCondicional(elemento, codigo, polacaActual.get(i-2));
 					break;
-				case "BI:":
+				case "BI":
 					ultimaOperacion = elemento;
 					operadorSaltoIncondicional(codigo);
 					break;
@@ -166,21 +166,38 @@ public class GeneradorCodigoAssembler {
 	public static void operadorFuncion(StringBuilder codigo) {
 		String operando1 = pila.pop(); //Es el nombre de la funcion
 		String operando2 = pila.pop(); //Es el parametro real
+		
 		Simbolo simbOperando2 = Parser.getVariableFueraDeAmbito(operando2);
-		if(simbOperando2.getTipo().getType()=="INTEGER" || simbOperando2.getTipo().getType()=="OCTAL") {
-			codigo.append("MOV AX, " + operando2 + "\n");
-			codigo.append("MOV @ParametroRealInt, AX \n");
+		Simbolo simbOperando1 = Parser.getVariableFueraDeAmbito(operando1);
+		if(simbOperando1.getTipoParFormal()==simbOperando2.getTipo().getType()){
+			if(simbOperando2.getTipo().getType()=="INTEGER" || simbOperando2.getTipo().getType()=="OCTAL") {
+				codigo.append("MOV AX, " + operando2 + "\n");
+				codigo.append("MOV @ParametroRealInt, AX \n");
+			}
+			else if(simbOperando2.getTipo().getType()=="DOUBLE") {
+				codigo.append("FLD " + operando2 + "\n"); //Apilo el parametro real
+				codigo.append("FSTP @ParametroRealFloat \n");
+				
+				//-------------------------------------------------------------------
+				codigo.append("FINIT \n");
+				codigo.append("FLD @ParametroRealFloat \n"); //
+			}
+		}else {
+			Parser.cargarErrorEImprimirlo("Error: El parámetro real y formal tienen tipos incompatiables en la funcion " + operando1 + "\n");
+			try {
+				AnalizadorLexico.sintactico.flush();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			System.exit(1); //Termino la ejecución del compilador por error en etapa de compilacion
 		}
-		else if(simbOperando2.getTipo().getType()=="DOUBLE") {
-			codigo.append("FLD " + operando2 + "\n"); //Apilo el parametro real
-			codigo.append("FSTP @ParametroRealFloat \n");
-		}
-		codigo.append("CALL " + AnalizadorLexico.TablaDeSimbolos.get(operando1).getAmbitoVar() + "\n");
-		ultimaFuncion = AnalizadorLexico.TablaDeSimbolos.get(operando1).getAmbitoVar();
+				
+		codigo.append("CALL " + simbOperando1.getAmbitoVar() + "\n");
+		ultimaFuncion = simbOperando1.getAmbitoVar();
 		
 		String key="@RET"+ultimaFuncion;
 		if(!AnalizadorLexico.TablaDeSimbolos.containsKey("@RET"+ultimaFuncion)) {
-			key = crearAuxiliarRetornoFuncion(AnalizadorLexico.TablaDeSimbolos.get(operando1).getTipo());
+			key = crearAuxiliarRetornoFuncion(simbOperando1.getTipo());
 		}
 		pila.push(key); //Apilo el nombre de la variable que debera retornar la funcion		
 	}
@@ -193,7 +210,7 @@ public class GeneradorCodigoAssembler {
 				codigo.append("JLE LABEL" + operador + "\n \n"); // Salto en el caso contrario al de la comparacion
 				break;
 			case "<":
-				codigo.append("JGE LABEL" + operador + "\n \n"); // Salto en el caso contrario al de la comparacion
+				codigo.append("JAE LABEL" + operador + "\n \n"); // Salto en el caso contrario al de la comparacion
 				break;
 			case ">=":
 				codigo.append("JL LABEL" + operador + "\n \n"); // Salto en el caso contrario al de la comparacion
@@ -351,14 +368,26 @@ public class GeneradorCodigoAssembler {
 		operando = simbOperando.getId();
 		Tipo tipoOperando = AnalizadorLexico.TablaDeSimbolos.get(operando).getTipo();
 		operando = comprobarOperandoLiteral(operando);
-		//Lo siguiente que hago es invertir nombrePolaca que en realidad es el ambito para que 
-		//pase de ser, por ejemplo, $MAIN$nombrefun a nombrefun$MAIN$ y luego uso el metodo que lo busca en la TS por ambito
-		Simbolo retorno = Parser.getVariableFueraDeAmbito(invertirAmbito(nombrePolaca));
 		switch (elemento) {
 			case "INTEGER", "OCTAL", "DOUBLE":
 				operadorConversion(operando, elemento, codigo, tipoOperando);
 				break;
 			case "RET":
+				//Lo siguiente que hago es invertir nombrePolaca que en realidad es el ambito para que 
+				//pase de ser, por ejemplo, $MAIN$nombrefun a nombrefun$MAIN$ y luego uso el metodo que lo busca en la TS por ambito
+				Simbolo retorno = Parser.getVariableFueraDeAmbito(invertirAmbito(nombrePolaca));
+				
+				if(!AnalizadorLexico.TablaDeSimbolos.containsKey("@RET"+nombrePolaca)) {
+					Simbolo simb = new Simbolo();
+					simb.setId("@RET"+nombrePolaca);
+					simb.setUso("Var Aux Retorno Funcion");
+					simb.setTipoVar(simbOperando.getTipo());
+					String key = "@RET"+nombrePolaca;
+					AnalizadorLexico.TablaDeSimbolos.put(key,simb);
+				}
+				
+				System.out.println(simbOperando);
+				
 				if(retorno.sonCompatibles(simbOperando)) {
 					if(retorno.getTipo().getType().contains("INTEGER")||retorno.getTipo().getType().contains("OCTAL")) {
 						codigo.append("MOV AX, " + operando + "\n"); //Guardo la variable que quiero retornar en AX
@@ -375,7 +404,7 @@ public class GeneradorCodigoAssembler {
 					codigo.append("RET" + "\n \n");
 				}
 				else {
-					Parser.cargarErrorEImprimirlo("La variable del retorno de funcion debe ser " + retorno.getTipo().getType());
+					Parser.cargarErrorEImprimirlo("La variable del retorno de funcion debe ser " + retorno.getTipo());
 					try {
 						AnalizadorLexico.sintactico.flush();
 					} catch (IOException e) {
@@ -391,18 +420,22 @@ public class GeneradorCodigoAssembler {
 		operando = comprobarOperandoLiteral(operando);
 		switch (elemento) {
 			case "DOUBLE":
-				if (tipoOperando == Parser.tipos.get("INTEGER")||tipoOperando == Parser.tipos.get("OCTAL")) {
+				if (tipoOperando.getType().contains("INTEGER")||tipoOperando.getType().contains("OCTAL")) {
 					//Conversion de Entero/Octal a Double
-					codigo.append("FILD " + operando + "\n"); //Cargo el entero como double
-					codigo.append("FSTP @aux" + numAuxiliares + "\n \n"); //Almaceno el resultado en @aux
+					String aux = crearAuxiliar(Parser.tipos.get("DOUBLE"));
+					codigo.append("MOVZX EAX, WORD PTR " + operando + " \n");
+					codigo.append("PUSH EAX \n");
+					codigo.append("FILD DWORD PTR [ESP] \n"); //Cargo el entero como double
+					codigo.append("ADD ESP, 4 \n");
+					codigo.append("FSTP QWORD PTR [@aux" + numAuxiliares + "] \n \n"); //Almaceno el resultado en @aux
 					pila.push(crearAuxiliar(Parser.tipos.get("DOUBLE")));
 				}
 				break;
 			case "INTEGER":
-				if (tipoOperando == Parser.tipos.get("DOUBLE")) {
+				if (tipoOperando.getType().contains("DOUBLE")) {
 					//Conversion de Double a Entero
-					codigo.append("FLD " + operando + "\n"); //Apilo en ST
-					codigo.append("FISTP @aux" + numAuxiliares + "\n \n");
+					codigo.append("FLD QWORD PTR " + operando + " \n"); //Apilo en ST
+					codigo.append("FISTP WORD PTR @aux" + numAuxiliares + " \n \n");
 					pila.push(crearAuxiliar(Parser.tipos.get("INTEGER")));
 				}
 				break;
@@ -442,12 +475,14 @@ public class GeneradorCodigoAssembler {
 	}
 	
 	public static void operadorInicioFuncion(StringBuilder codigo) {
-		String operando = pila.pop();
+		String operando = pila.pop(); //Es el parametro formal
 		codigo.append("PUSH EBP \n");
 		codigo.append("MOV EBP, ESP \n");
 		codigo.append("SUB ESP, 4 \n");
 		codigo.append("PUSH EDI \n");
 		codigo.append("PUSH ESI \n");
+		//ParametroRealInt
+		//ParametroRealFloat
 		if (AnalizadorLexico.TablaDeSimbolos.get(operando).getTipo().getType()=="INTEGER" || 
 				AnalizadorLexico.TablaDeSimbolos.get(operando).getTipo().getType()=="OCTAL") {
 			codigo.append("MOV AX, @ParametroRealInt \n");
@@ -613,14 +648,14 @@ public class GeneradorCodigoAssembler {
 		else if(simbOperando.getTipo().toString()==Parser.tipos.get("CADENAMULTILINEA").toString()) {
 			operando = convertirLexemaCadena(operando);
 			codigo.append("");
-			codigo.append("invoke MessageBox, NULL, addr " + operando + ", addr " + operando + ", MB_OK \n \n" );
+			codigo.append("invoke printf, addr " + operando + " \n \n" );
 		}
 	}
 	
 	public static StringBuilder crearErrorDivisionPorCero() {
 		StringBuilder codigo = new StringBuilder();
 		codigo.append("Divison_Por_Cero:" + "\n");
-		codigo.append("invoke MessageBox, NULL, addr Error_DivisionCero, addr Error_DivisionCero, MB_OK \n");
+		codigo.append("invoke printf, addr Error_DivisionCero \n");
 		codigo.append("JMP fin" + "\n");
 		return codigo;
 	}
@@ -628,7 +663,7 @@ public class GeneradorCodigoAssembler {
 	public static StringBuilder crearErrorOverflow() {
 		StringBuilder codigo = new StringBuilder();
 		codigo.append("Overflow:" + "\n");
-		codigo.append("invoke MessageBox, NULL, addr Error_Overflow, addr Error_Overflow, MB_OK \n");
+		codigo.append("invoke printf, addr Error_Overflow \n");
 		codigo.append("JMP fin" + "\n");
 		return codigo;
 	}
@@ -636,7 +671,7 @@ public class GeneradorCodigoAssembler {
 	public static StringBuilder crearErrorSubtipoInferior() {
 		StringBuilder codigo = new StringBuilder();
 		codigo.append("Subtipo_inferior:" + "\n");
-		codigo.append("invoke MessageBox, NULL, addr Error_Subtipo_inferior, addr Error_Subtipo_inferior, MB_OK \n");
+		codigo.append("invoke printf, addr Error_Subtipo_inferior \n");
 		codigo.append("JMP fin" + "\n");
 		return codigo;
 	}
@@ -644,7 +679,7 @@ public class GeneradorCodigoAssembler {
 	public static StringBuilder crearErrorSubtipoSuperior() {
 		StringBuilder codigo = new StringBuilder();
 		codigo.append("Subtipo_superior:" + "\n");
-		codigo.append("invoke MessageBox, NULL, addr Error_Subtipo_superior, addr Error_Subtipo_superior, MB_OK \n");
+		codigo.append("invoke printf, addr Error_Subtipo_superior \n");
 		codigo.append("JMP fin" + "\n");
 		return codigo;
 	}
@@ -711,9 +746,34 @@ public class GeneradorCodigoAssembler {
 	}
 	
 	public static String convertirLexemaCadena(String operando) {
-		//Convierto los '.' en @ para que el assembler me los reconozca y también elimino el simbolo + que podria darme problemas y es redundante y reemplazo el '-' por el '_'
-		return operando.replace("\r", "").replace("\n", "_").replace('.', '@').replace("+", "").replace('-', '_').replace("[", "").replace("]", "").replaceAll("\\s+", "_");
+	    // Eliminar caracteres problemáticos y reemplazarlos por nombres descriptivos
+	    operando = operando
+	        .replace("\r", "")                  
+	        .replace("\n", "_")                 
+	        .replace(":", "DOSPUNTOS") 
+	        .replace("\"", "COMILLA") 
+	        .replace("<", "MENOR")              
+	        .replace(">", "MAYOR")              
+	        .replace("!", "DISTINTO")           
+	        .replace("=", "IGUAL")              
+	        .replace('.', '@')                  
+	        .replace("+", "SUMA")               
+	        .replace('-', '_')                  
+	        .replace("*", "MULTIPLICACION")     
+	        .replace("/", "DIVISION")           
+	        .replace("%", "MODULO")             
+	        .replace("[", "")                   
+	        .replace("]", "")                   
+	        .replace("(", "PARENIZQ")           
+	        .replace(")", "PARENDER")           
+	        .replace("{", "LLAVEIZQ")           
+	        .replace("}", "LLAVEDER")           
+	        .replaceAll("\\s+", "_");
+
+	    // Agregar un guion bajo al inicio para evitar errores con nombres que inician con un número
+	    return "_" + operando;
 	}
+
 	
 	public static String invertirAmbito(String operando) {
 	    // Divide la cadena por el símbolo '$'
@@ -806,7 +866,7 @@ public class GeneradorCodigoAssembler {
 		codigo.append("Error_Overflow DB \"Error: Overflow en producto entre Enteros\", 10, 0 \n");
 		codigo.append("Error_Subtipo_inferior DB \"Error: Valor menor al rango inferior del subtipo \", 10, 0 \n");
 		codigo.append("Error_Subtipo_superior DB \"Error: Valor mayor al limite superior del subtipo \", 10, 0 \n");
-		codigo.append("ESPERAR_ACCION_USUARIO DB \"Haga click en ACEPTAR para cerrar el programa y la consola\", 10, 0 \n");
+		codigo.append("$_FIN_DE_PROGRAMA_$ DB \"FIN DE LA EJECUCION DEL PROGRAMA \", 10, 0 \n");
 		codigo.append("$_$mensajeEntero$_$ DB \"%d, %d, %d\", 10, 0 \n");
 		codigo.append("$_$mensajeFloat$_$ DB \"%f, %f, %f\", 10, 0 \n");
 		for (Map.Entry<String, Simbolo> iterador : AnalizadorLexico.TablaDeSimbolos.entrySet()) {
@@ -817,10 +877,11 @@ public class GeneradorCodigoAssembler {
 				String tipoString = tipo.toString();
 				if (tipoString.contains("CADENAMULTILINEA")) {
 					String lexemaConvertido = convertirLexemaCadena(lexema);
-					if (codigo.indexOf(lexemaConvertido) == -1) {
+					if (codigo.indexOf(lexemaConvertido + " db") == -1) {
 						codigo.append(lexemaConvertido).append(" db \"").append(
-								lexema.replace("\n", " ").replace("[", "").replace("]", "").replaceAll("\\s+", " ").trim())
-								.append("\", 0 \n"); // Lo hago de esta manera para poder guardar el lexema entre comillas
+								//--------------------------------------------------------------------------------
+								lexema.replace("\"", "\", 22h, \"").replace("\n", " ").replace("[", "").replace("]", "").replaceAll("\\s+", " ").trim())
+								.append("\", 10, 0 \n"); // Lo hago de esta manera para poder guardar el lexema entre comillas
 					}
 				}else if (!tipoString.contains("ETIQUETA")) { //Si no es una cadena multilinea entonces modularizo
 					generarDataTipos(codigo, tipo, lexema, simbolo);
@@ -924,7 +985,8 @@ public class GeneradorCodigoAssembler {
 		codigo.append(crearErrorSubtipoInferior() + "\n");
 		codigo.append(crearErrorSubtipoSuperior() + "\n");
 		codigo.append("fin: \n");
-		codigo.append("invoke MessageBox, NULL, addr ESPERAR_ACCION_USUARIO, addr ESPERAR_ACCION_USUARIO, MB_OK \n");
+		codigo.append("invoke printf, addr $_FIN_DE_PROGRAMA_$ \n");
+		codigo.append("invoke crt_getchar \n");
 		codigo.append("invoke ExitProcess, 0 \n");
 		codigo.append("end start");
 		return codigo;

@@ -12,8 +12,7 @@ begin
 				goto adan@;
 	    		RET (a);
 			END;
-			c:=juancito2(c);
-			c:=juancito2(double(d));
+			d:=juancito(d);
 	    RET (a);
 	END;
 	adan@;

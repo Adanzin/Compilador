@@ -104,6 +104,17 @@ public class GeneradorCodigoIntermedio {
 		polacaFuncional.get(Parser.AMBITO.toString()).add("CALL");
 		pos.put(Parser.AMBITO.toString(),pos.get(Parser.AMBITO.toString())+1); //pos++;
 	}
+	
+	public static void invocar(String id, String conv) {
+		polacaFuncional.get(Parser.AMBITO.toString()).add(conv);
+		pos.put(Parser.AMBITO.toString(),pos.get(Parser.AMBITO.toString())+1); //pos++;
+		polacaFuncional.get(Parser.AMBITO.toString()).add(id);
+		pos.put(Parser.AMBITO.toString(),pos.get(Parser.AMBITO.toString())+1); //pos++;
+		polacaFuncional.get(Parser.AMBITO.toString()).add("CALL");
+		pos.put(Parser.AMBITO.toString(),pos.get(Parser.AMBITO.toString())+1); //pos++;
+		
+	}
+	
 	public static void bifurcarI() {
 		apilar(pos.get(Parser.AMBITO.toString()));
 		polacaFuncional.get(Parser.AMBITO.toString()).add(" ");

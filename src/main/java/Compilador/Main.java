@@ -40,6 +40,7 @@ public class Main {
             	
         } catch (IOException e) {
             System.out.println("Ocurrió un error al leer el archivo: " + e.getMessage());
+            System.exit(1);
         }
         
         System.out.println("       ");

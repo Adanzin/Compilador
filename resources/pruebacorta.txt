@@ -1,33 +1,517 @@
-program
-begin 
-	
-	
-	##integer a,b,c;
-	##a:=10;
-	##b:=20;
-	
-	##OUTF(a+b);
-	##OUTF(a-b);
-	##OUTF(a*b);
-	##OUTF(b/a);
-	
-	TYPEDEF TRIPLE < integer > tint;
-	tint d,e;
-	
-	d{1}:=10;
-	d{2}:=20;
-	##e{1}:=d{3};
-	##OUTF(e{1});
-	d{3}:=30;
-	OUTF(d);
-	
-	##e:=d;
-	
-	##TYPEDEF flotadito := double {-100.0, 100.0};
-	##flotadito x,y;
-	
-	##y:=2.0*5.0;
-	##x:=0.4;
-	##OUTF(y);
-	##OUTF(x);
-End
+lala begin
+
+ 
+
+     OUTF([ -- COMPARANDO doubles  --]);
+
+ 
+
+    double a, b, c, d;
+
+    a := 2.0;
+
+    b := 3.0;
+
+    c := 4.0;
+
+    d := 5.0;
+
+   
+
+    OUTF([ -- POR menor --]);
+
+ 
+
+    if ((a, b) < (c, d)) then
+
+        OUTF([Son menorcitos]);
+
+    else
+
+        OUTF([No son menorcitos]);
+
+    end_if;
+
+ 
+
+    if (a < c) then
+
+        OUTF([A es menor que C]);
+
+    else
+
+        OUTF([A no es menor que C]);
+
+    end_if;
+
+ 
+
+    if (b < d) then
+
+        OUTF([B es menor que D]);
+
+    else
+
+        OUTF([B no es menor que D]);
+
+    end_if;
+
+ 
+
+    OUTF([ -- POR menor igual --]);
+
+ 
+
+    if ((a, b) <= (c, d)) then
+
+        OUTF([Son menorcitos iguales]);
+
+    else
+
+        OUTF([No son menorcitos iguales]);
+
+    end_if;
+
+ 
+
+    if (a <= c) then
+
+        OUTF([A es menor o igual que C]);
+
+    else
+
+        OUTF([A no es menor o igual que C]);
+
+    end_if;
+
+ 
+
+    if (b <= d) then
+
+        OUTF([B es menor o igual que D]);
+
+    else
+
+        OUTF([B no es menor o igual que D]);
+
+    end_if;
+
+ 
+
+    OUTF([ -- POR mayor --]);
+
+ 
+
+    if ((a, b) > (c, d)) then
+
+        OUTF([Son mayorcitos]);
+
+    else
+
+        OUTF([No son mayorcitos]);
+
+    end_if;
+
+ 
+
+    if (a > c) then
+
+        OUTF([A es mayor que C]);
+
+    else
+
+        OUTF([A no es mayor que C]);
+
+    end_if;
+
+ 
+
+    if (b > d) then
+
+        OUTF([B es mayor que D]);
+
+    else
+
+        OUTF([B no es mayor que D]);
+
+    end_if;
+
+ 
+
+    OUTF([ -- POR mayor igual --]);
+
+ 
+
+    if ((a, b) >= (c, d)) then
+
+        OUTF([Son mayorcitos iguales]);
+
+    else
+
+        OUTF([No son mayorcitos iguales]);
+
+    end_if;
+
+ 
+
+    if (a >= c) then
+
+        OUTF([A es mayor o igual que C]);
+
+    else
+
+        OUTF([A no es mayor o igual que C]);
+
+    end_if;
+
+ 
+
+    if (b >= d) then
+
+        OUTF([B es mayor o igual que D]);
+
+    else
+
+        OUTF([B no es mayor o igual que D]);
+
+    end_if;
+
+ 
+
+    OUTF([ -- POR IGUAL --]);
+
+ 
+
+    if ((a, b) = (c, d)) then
+
+        OUTF([Son iguales]);
+
+    else
+
+        OUTF([No son iguales]);
+
+    end_if;
+
+ 
+
+    if (a = c) then
+
+        OUTF([A es igual que C]);
+
+    else
+
+        OUTF([A no es igual que C]);
+
+    end_if;
+
+ 
+
+    if (b = d) then
+
+        OUTF([B es igual que D]);
+
+    else
+
+        OUTF([B no es igual que D]);
+
+    end_if;
+
+ 
+
+    OUTF([ -- POR DISTINTO --]);
+
+ 
+
+    if ((a, b) != (c, d)) then
+
+        OUTF([Son distintos]);
+
+    else
+
+        OUTF([No son distintos]);
+
+    end_if;
+
+ 
+
+    if (a != c) then
+
+        OUTF([A es distinto que C]);
+
+    else
+
+        OUTF([A no es distinto que C]);
+
+    end_if;
+
+ 
+
+    if (b != d) then
+
+        OUTF([B es distinto que D]);
+
+    else
+
+        OUTF([B no es distinto que D]);
+
+    end_if;
+
+ 
+
+ 
+
+    OUTF([ -- COMPARANDO ENTEROS --]);
+
+ 
+
+    integer e, f, g, h;
+
+    e := 2;
+
+    f := 3;
+
+    g := 4;
+
+    h := 5;
+
+ 
+
+    OUTF([ -- POR menor --]);
+
+ 
+
+    if ((e, f) < (g, h)) then
+
+        OUTF([Son menorcitos]);
+
+    else
+
+        OUTF([No son menorcitos]);
+
+    end_if;
+
+ 
+
+    if (e < g) then
+
+        OUTF([A es menor que C]);
+
+    else
+
+        OUTF([A no es menor que C]);
+
+    end_if;
+
+ 
+
+    if (f < h) then
+
+        OUTF([B es menor que D]);
+
+    else
+
+        OUTF([B no es menor que D]);
+
+    end_if;
+
+ 
+
+    OUTF([ -- POR menor igual --]);
+
+ 
+
+    if ((e, f) <= (g, h)) then
+
+        OUTF([Son menorcitos iguales]);
+
+    else
+
+        OUTF([No son menorcitos iguales]);
+
+    end_if;
+
+ 
+
+    if (e <= g) then
+
+        OUTF([A es menor o igual que C]);
+
+    else
+
+        OUTF([A no es menor o igual que C]);
+
+    end_if;
+
+ 
+
+    if (f <= h) then
+
+        OUTF([B es menor o igual que D]);
+
+    else
+
+        OUTF([B no es menor o igual que D]);
+
+    end_if;
+
+ 
+
+    OUTF([ -- POR mayor --]);
+
+ 
+
+    if ((e, f) > (g, h)) then
+
+        OUTF([Son mayorcitos]);
+
+    else
+
+        OUTF([No son mayorcitos]);
+
+    end_if;
+
+ 
+
+    if (e > g) then
+
+        OUTF([A es mayor que C]);
+
+    else
+
+        OUTF([A no es mayor que C]);
+
+    end_if;
+
+ 
+
+    if (f > h) then
+
+        OUTF([B es mayor que D]);
+
+    else
+
+        OUTF([B no es mayor que D]);
+
+    end_if;
+
+ 
+
+    OUTF([ -- POR mayor igual --]);
+
+ 
+
+    if ((e, f) >= (g, h)) then
+
+        OUTF([Son mayorcitos iguales]);
+
+    else
+
+        OUTF([No son mayorcitos iguales]);
+
+    end_if;
+
+ 
+
+    if (e >= g) then
+
+        OUTF([A es mayor o igual que C]);
+
+    else
+
+        OUTF([A no es mayor o igual que C]);
+
+    end_if;
+
+ 
+
+    if (f >= h) then
+
+        OUTF([B es mayor o igual que D]);
+
+    else
+
+        OUTF([B no es mayor o igual que D]);
+
+    end_if;
+
+ 
+
+    OUTF([ -- POR IGUAL --]);
+
+ 
+
+    if ((e, f) = (g, h)) then
+
+        OUTF([Son iguales]);
+
+    else
+
+        OUTF([No son iguales]);
+
+    end_if;
+
+ 
+
+    if (e = g) then
+
+        OUTF([A es igual que C]);
+
+    else
+
+        OUTF([A no es igual que C]);
+
+    end_if;
+
+ 
+
+    if (f = h) then
+
+        OUTF([B es igual que D]);
+
+    else
+
+        OUTF([B no es igual que D]);
+
+    end_if;
+
+ 
+
+    OUTF([ -- POR DISTINTO --]);
+
+ 
+
+    if ((e, f) != (g, h)) then
+
+        OUTF([Son distintos]);
+
+    else
+
+        OUTF([No son distintos]);
+
+    end_if;
+
+ 
+
+    if (e != g) then
+
+        OUTF([A es distinto que C]);
+
+    Else
+
+        OUTF([A no es distinto que C]);
+
+    end_if;
+
+ 
+
+    if (f != h) then
+
+        OUTF([B es distinto que D]);
+
+    else
+
+        OUTF([B no es distinto que D]);
+
+    end_if;
+
+end
