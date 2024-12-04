@@ -37,12 +37,13 @@ public class GeneradorCodigoIntermedio {
 		    for (String key : polacaFuncional.keySet()) {
 		        ArrayList<String> polaca = polacaFuncional.get(key);
 
-		        // Imprimir el nombre de la función
+		        // Imprimir el nombre de la funciï¿½n
+		        System.out.println("");
 		        System.out.println("Polaca: " + key);
 		        int a=0;
-		        // Imprimir los elementos de la lista polaca con formato de 2 dígitos
+		        // Imprimir los elementos de la lista polaca con formato de 2 dï¿½gitos
 		        for (String elemento : polaca) {
-		        	 System.out.println("["+a+" | " + elemento);
+		        	System.out.println("["+a+"|"+elemento);
 		            a++;
 		        }
 		    }
@@ -67,7 +68,6 @@ public class GeneradorCodigoIntermedio {
 		polacaFuncional.get(Parser.AMBITO.toString()).add(posi, elm);
 	}
 	public static void reemplazarElm(String elm, int posi,String amb) {
-		System.out.println(elm+" "+posi+" "+amb);
 		polacaFuncional.get(amb).set(posi, elm);
 	}
 	public static void reemplazarElm(String elm, int posi) {
@@ -196,7 +196,6 @@ public class GeneradorCodigoIntermedio {
 			while((var!=",")) {
 				addElemento(var);
 				var=pilaIzq.pop();
-				System.out.println(var);
 			}
 			// Saco de la pila derecha para cargarlo en orden
 			contadorComas++;
@@ -204,7 +203,6 @@ public class GeneradorCodigoIntermedio {
 			while((var!=",")) {
 				addElemento(var);
 				var=pilaDer.pop();
-				System.out.println(var);
 			}
 			contadorComas++;
 			addElemento(operador);

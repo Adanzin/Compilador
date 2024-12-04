@@ -61,7 +61,7 @@ public class GeneradorCodigoAssembler {
 					ultimaOperacion = elemento;
 					operadorIndiceTripla(codigo);
 					break;
-				default: //Entra si es un operando o si es un LABEL+N° que no puedo chequear en el CASE
+				default: //Entra si es un operando o si es un LABEL+Nï¿½ que no puedo chequear en el CASE
 					if(elemento.startsWith("LABEL")) { //Es una etiqueta
 						ultimaOperacion = elemento;
 						codigo.append(elemento + ": \n");
@@ -115,13 +115,15 @@ public class GeneradorCodigoAssembler {
 					}
 				} 
 				else {
-					Parser.cargarErrorEImprimirlo("Error: Operacion incorrecta con triplas \n");
+					Parser.cargarErrorEImprimirloSemantico("Error: Operacion incorrecta con triplas \n");
 					try {
 						AnalizadorLexico.sintactico.flush();
 					} catch (IOException e) {
 						e.printStackTrace();
 					}
-					System.exit(1); //Termino la ejecución del compilador por error en etapa de compilacion
+					System.out.println("");
+					System.out.println(" > Se detectaron errores < ");
+					System.exit(1); //Termino la ejecuciï¿½n del compilador por error en etapa de compilacion
 				}
 			}
 			
@@ -159,7 +161,7 @@ public class GeneradorCodigoAssembler {
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-			System.exit(1); // Termino la ejecución del compilador por error en etapa de compilacion
+			System.exit(1); // Termino la ejecuciï¿½n del compilador por error en etapa de compilacion
 		}
 	}
 	
@@ -183,13 +185,15 @@ public class GeneradorCodigoAssembler {
 				codigo.append("FLD @ParametroRealFloat \n"); //
 			}
 		}else {
-			Parser.cargarErrorEImprimirlo("Error: El parámetro real y formal tienen tipos incompatiables en la funcion " + operando1 + "\n");
+			Parser.cargarErrorEImprimirloSemantico("Error: El parï¿½metro real y formal tienen tipos incompatiables en la funcion " + operando1 + "\n");
 			try {
 				AnalizadorLexico.sintactico.flush();
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-			System.exit(1); //Termino la ejecución del compilador por error en etapa de compilacion
+			System.out.println("");
+			System.out.println(" > Se detectaron errores < ");
+			System.exit(1); //Termino la ejecuciï¿½n del compilador por error en etapa de compilacion
 		}
 				
 		codigo.append("CALL " + simbOperando1.getAmbitoVar() + "\n");
@@ -205,7 +209,7 @@ public class GeneradorCodigoAssembler {
 	public static void operadorSaltoCondicional(String elemento, StringBuilder codigo, String comparadorAnterior) {
 		String operador = pila.pop(); // Es la direccion a saltar
 		switch (comparadorAnterior) {
-		// Le paso el operador anterior al salto para saber que comparación era y así usar el jump adecuado
+		// Le paso el operador anterior al salto para saber que comparaciï¿½n era y asï¿½ usar el jump adecuado
 			case ">":
 				codigo.append("JLE LABEL" + operador + "\n \n"); // Salto en el caso contrario al de la comparacion
 				break;
@@ -229,7 +233,7 @@ public class GeneradorCodigoAssembler {
 	
 	public static void operadorSaltoIncondicional(StringBuilder codigo) {
 		String operador = pila.pop(); //Es la direccion a saltar
-		codigo.append("JMP LABEL" + operador + "\n \n"); //Salto sí o sí a la etiqueta
+		codigo.append("JMP LABEL" + operador + "\n \n"); //Salto sï¿½ o sï¿½ a la etiqueta
 	}
 	
 	public static void operacionEnteroOctal(String operando1, String operando2, String operacion, StringBuilder codigo, Tipo tipoOperando) {
@@ -291,7 +295,7 @@ public class GeneradorCodigoAssembler {
 				codigo.append("MOV " + operando1 + ", AX" + "\n");
 				break;
 			default:
-				//Después veré pero acá no debería entrar nada
+				//Despuï¿½s verï¿½ pero acï¿½ no deberï¿½a entrar nada
 				break;
 		}
 		if(operacion!= ":=") {
@@ -348,7 +352,7 @@ public class GeneradorCodigoAssembler {
 				pila.push(aux);
 				break;
 			case ":=":
-				codigo.append("FXCH \n"); //Intercambio así realizo correctamente la operacion
+				codigo.append("FXCH \n"); //Intercambio asï¿½ realizo correctamente la operacion
 				codigo.append("FSTP " + operando2 + "\n"); //Guardo el valor de operando2 en operando1 pero por cuestiones de como esta hecha la polaca lo escribo al reves
 				
 				if(tipoOperando.esSubTipo()) {
@@ -357,7 +361,7 @@ public class GeneradorCodigoAssembler {
 				
 				break;
 			default:
-				//Acá no debería entrar nada
+				//Acï¿½ no deberï¿½a entrar nada
 				break;
 		}
 	}
@@ -386,7 +390,6 @@ public class GeneradorCodigoAssembler {
 					AnalizadorLexico.TablaDeSimbolos.put(key,simb);
 				}
 				
-				System.out.println(simbOperando);
 				
 				if(retorno.sonCompatibles(simbOperando)) {
 					if(retorno.getTipo().getType().contains("INTEGER")||retorno.getTipo().getType().contains("OCTAL")) {
@@ -404,13 +407,15 @@ public class GeneradorCodigoAssembler {
 					codigo.append("RET" + "\n \n");
 				}
 				else {
-					Parser.cargarErrorEImprimirlo("La variable del retorno de funcion debe ser " + retorno.getTipo());
+					Parser.cargarErrorEImprimirloSemantico("La variable del retorno de funcion debe ser " + retorno.getTipo());
 					try {
 						AnalizadorLexico.sintactico.flush();
 					} catch (IOException e) {
 						e.printStackTrace();
 					}
-					System.exit(1); //Termino la ejecución del compilador por error en etapa de compilacion
+					System.out.println("");
+					System.out.println(" > Se detectaron errores < ");
+					System.exit(1); //Termino la ejecuciï¿½n del compilador por error en etapa de compilacion
 				}
 				break;
 		}
@@ -543,13 +548,15 @@ public class GeneradorCodigoAssembler {
 			}else if (operando1.equals("3")) {
 				indice = 4;
 			}else {
-				Parser.cargarErrorEImprimirlo("SE INTENTO ACCEDER A UNA POSICION INCORRECTA DE LA TRIPLA");
+				Parser.cargarErrorEImprimirloSemantico("SE INTENTO ACCEDER A UNA POSICION INCORRECTA DE LA TRIPLA");
 				try {
 					AnalizadorLexico.sintactico.flush();
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
-				System.exit(1); //Termino la ejecución del compilador por error en etapa de compilacion
+				System.out.println("");
+				System.out.println(" > Se detectaron errores < ");
+				System.exit(1); //Termino la ejecuciï¿½n del compilador por error en etapa de compilacion
 			}
 			codigo.append("MOV ECX, OFFSET " + operando2 + "\n");
 			codigo.append("MOV AX, [ECX + " + indice + "] \n");
@@ -741,12 +748,12 @@ public class GeneradorCodigoAssembler {
 	}
 	
 	public static String convertirLexemaFlotante(String operando) {
-		//Convierto los '.' en @ para que el assembler me los reconozca y también elimino el simbolo + que podria darme problemas y es redundante y reemplazo el '-' por el '_'
+		//Convierto los '.' en @ para que el assembler me los reconozca y tambiï¿½n elimino el simbolo + que podria darme problemas y es redundante y reemplazo el '-' por el '_'
 		return operando.replace('.', '@').replace("+", "").replace('-', '_');
 	}
 	
 	public static String convertirLexemaCadena(String operando) {
-	    // Eliminar caracteres problemáticos y reemplazarlos por nombres descriptivos
+	    // Eliminar caracteres problemï¿½ticos y reemplazarlos por nombres descriptivos
 	    operando = operando
 	        .replace("\r", "")                  
 	        .replace("\n", "_")                 
@@ -770,13 +777,13 @@ public class GeneradorCodigoAssembler {
 	        .replace("}", "LLAVEDER")           
 	        .replaceAll("\\s+", "_");
 
-	    // Agregar un guion bajo al inicio para evitar errores con nombres que inician con un número
+	    // Agregar un guion bajo al inicio para evitar errores con nombres que inician con un nï¿½mero
 	    return "_" + operando;
 	}
 
 	
 	public static String invertirAmbito(String operando) {
-	    // Divide la cadena por el símbolo '$'
+	    // Divide la cadena por el sï¿½mbolo '$'
 	    String[] ambitos = operando.split("\\$");
 	    // Si hay menos de dos elementos, devolver el operando sin cambios
 	    if (ambitos.length < 2) {
@@ -910,7 +917,7 @@ public class GeneradorCodigoAssembler {
 			//Me fijo si se trata de un auxiliar de subtipo inferior
 			if(lexema.contains("@auxSubtipoInferior")) { //Me fijo si se trata de un auxiliar de subtipo inferior
 				String variable = lexema.substring(19); //Recorto la longitud del prefijo asi me quedo con el nombre de la variable a la que corresponde el auxiliar
-				Simbolo simbVariable = AnalizadorLexico.TablaDeSimbolos.get(variable); //Busco la variable en la TS así accedo al valor de los rangos
+				Simbolo simbVariable = AnalizadorLexico.TablaDeSimbolos.get(variable); //Busco la variable en la TS asï¿½ accedo al valor de los rangos
 				if (simbVariable.getTipo().getType().contains("INTEGER")||simbVariable.getTipo().getType().contains("OCTAL")) {
 					codigo.append(lexema + " " + tipoDatoAssembler + " " + simbVariable.getTipo().getRangInferiorInteger() + "\n");
 				}else {
@@ -921,7 +928,7 @@ public class GeneradorCodigoAssembler {
 			//Me fijo si se trata de un auxiliar de subtipo superior
 			else if(lexema.contains("@auxSubtipoSuperior")) {
 				String variable = lexema.substring(19); //Recorto la longitud del prefijo asi me quedo con el nombre de la variable a la que corresponde el auxiliar
-				Simbolo simbVariable = AnalizadorLexico.TablaDeSimbolos.get(variable); //Busco la variable en la TS así accedo al valor de los rangos
+				Simbolo simbVariable = AnalizadorLexico.TablaDeSimbolos.get(variable); //Busco la variable en la TS asï¿½ accedo al valor de los rangos
 				if (simbVariable.getTipo().getType().contains("INTEGER")||simbVariable.getTipo().getType().contains("OCTAL")) {
 					codigo.append(lexema + " " + tipoDatoAssembler + " " + simbVariable.getTipo().getRangSuperiorInteger() + "\n");
 				}else {
@@ -970,7 +977,7 @@ public class GeneradorCodigoAssembler {
 			String ambito = iterador.getKey();
 			ArrayList<String> polacaActual = iterador.getValue();
 			
-			if(ambito != "$MAIN") { //Genero el código de las polacas de funciones
+			if(ambito != "$MAIN") { //Genero el cï¿½digo de las polacas de funciones
 				codigo.append(ambito + ": \n");
 				
 				codigo.append(recorrerPolaca(polacaActual, ambito) + "\n");

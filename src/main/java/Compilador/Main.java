@@ -47,19 +47,31 @@ public class Main {
         System.out.println("       ");
         System.out.println("       >>>>>  TABLA DE SIMBOLOS <<<<<");
         getSimbolos();
-		if (CreacionDeSalidas.getOutputLexico().length()==0 && CreacionDeSalidas.getOutputSintactico().length()==0) {
-			// Si es null que se ejecute polaca y assembler
-			System.out.println("       ");
-			System.out.println("       >>>>>  TIPOS   <<<<<");
-			System.out.println("       ");
-			getTipos();
-			System.out.println("       ");
-			System.out.println("       >>>>>  POLACA   <<<<<");
-			GeneradorCodigoIntermedio.imprimirPolaca();
-			System.out.println("       ");
-			System.out.println("		>>>>>  ASSEMBLER   <<<<<");
-			GeneradorCodigoAssembler.generarPrograma();
-		}
+        if (CreacionDeSalidas.getOutputLexico().length()==0 && CreacionDeSalidas.getOutputSintactico().length()==0 
+        		&& CreacionDeSalidas.getOutputSemantico().length()==0) {
+        			// Generamos el assembler
+        			GeneradorCodigoAssembler.generarPrograma();
+        			// Antes de imprimir polaca verificamos que no existan errores semanticos
+        			if(CreacionDeSalidas.getOutputSemantico().length()==0) {
+        				System.out.println("       ");
+                		System.out.println(" > Se compilo correctamente < ");
+        				System.out.println("       ");
+        				System.out.println("       >>>>>  TIPOS   <<<<<");
+        				System.out.println("       ");
+        				getTipos();
+        				System.out.println("       ");
+        				System.out.println("       >>>>>  POLACA   <<<<<");
+        				GeneradorCodigoIntermedio.imprimirPolaca();
+        				
+        			}else {
+        				System.out.println("       ");
+                		System.out.println(" > Se detectaron errores Semanticos < ");
+                	}
+           }else {
+            	System.out.println("       ");
+            	System.out.println(" > Se detectaron errores < ");
+           }
+        
     }
 	
 	public static void getSimbolos() {

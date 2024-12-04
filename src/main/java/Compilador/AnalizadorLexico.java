@@ -30,6 +30,7 @@ public class AnalizadorLexico {
     public static final StringBuilder token_actual = new StringBuilder();
     public static BufferedWriter lexico; 
     public static BufferedWriter sintactico;
+    public static BufferedWriter semantico;
     public static Reader archivo_original;
     public static Map<String, Simbolo> TablaDeSimbolos = new HashMap<>();  
 	private static final TablaPalabrasReservadas PalabrasReservadas = new TablaPalabrasReservadas("/PalabrasReservadas.txt");

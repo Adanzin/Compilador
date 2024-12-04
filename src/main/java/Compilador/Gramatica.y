@@ -14,10 +14,10 @@ import java.io.IOException;
 																		
 programa	: ID_simple BEGIN sentencias END {cargarGotos();}
 			| ID_simple BEGIN END 
-			| BEGIN sentencias END {cargarErrorEImprimirlo("\u2718"+"Linea " + AnalizadorLexico.saltoDeLinea + " Error: Falta el nombre del programa ");}
-			| ID_simple BEGIN sentencias {cargarErrorEImprimirlo("\u2718"+"Linea " + AnalizadorLexico.saltoDeLinea + " Error: Falta el delimitador END ");}
-			| ID_simple sentencias END {cargarErrorEImprimirlo("\u2718"+"Linea " + AnalizadorLexico.saltoDeLinea + " Error: Falta el delimitador BEGIN ");}
-			| ID_simple sentencias {cargarErrorEImprimirlo("\u2718"+"Linea " + AnalizadorLexico.saltoDeLinea + " Error: Faltan los delimitadores del programa ");}
+			| BEGIN sentencias END {cargarErrorEImprimirloSintactico("\u2718"+"Linea " + AnalizadorLexico.saltoDeLinea + " Error: Falta el nombre del programa ");}
+			| ID_simple BEGIN sentencias {cargarErrorEImprimirloSintactico("\u2718"+"Linea " + AnalizadorLexico.saltoDeLinea + " Error: Falta el delimitador END ");}
+			| ID_simple sentencias END {cargarErrorEImprimirloSintactico("\u2718"+"Linea " + AnalizadorLexico.saltoDeLinea + " Error: Falta el delimitador BEGIN ");}
+			| ID_simple sentencias {cargarErrorEImprimirloSintactico("\u2718"+"Linea " + AnalizadorLexico.saltoDeLinea + " Error: Faltan los delimitadores del programa ");}
 ;
 	
 sentencias 	: sentencias sentencia  {if($1.sval=="RET" || $2.sval=="RET" ){$$.sval="RET";}}
@@ -25,9 +25,9 @@ sentencias 	: sentencias sentencia  {if($1.sval=="RET" || $2.sval=="RET" ){$$.sv
 ;
 
 sentencia 	: sentencia_declarativa 
-			| error ';' {cargarErrorEImprimirlo("Linea " + AnalizadorLexico.saltoDeLinea + " Error: faltan las sentencias antes del ';'  ");}
+			| error ';' {cargarErrorEImprimirloSintactico("Linea " + AnalizadorLexico.saltoDeLinea + " Error: faltan las sentencias antes del ';'  ");}
             | sentencia_ejecutable ';' {if($1.sval=="RET"){$$.sval="RET";}}
-			| sentencia_ejecutable {if($1.sval=="RET"){$$.sval="RET";}; cargarErrorEImprimirlo("Linea " + AnalizadorLexico.saltoDeLinea + " Error: Falta ';' al final de la sentencia ");}
+			| sentencia_ejecutable {if($1.sval=="RET"){$$.sval="RET";}; cargarErrorEImprimirloSintactico("Linea " + AnalizadorLexico.saltoDeLinea + " Error: Falta ';' al final de la sentencia ");}
 ;			
 				
 									/* SENTENCIAS DECLARATIVAS */	
@@ -35,16 +35,16 @@ sentencia 	: sentencia_declarativa
 sentencia_declarativa 	: declaracion_variable
 						| declaracion_funciones ';'
                         | declaracion_subtipo ';'
-						| declaracion_funciones {cargarErrorEImprimirlo("Linea " + AnalizadorLexico.saltoDeLinea + " Error: Falta ';' al final de la sentencia ");}
-						| declaracion_subtipo {cargarErrorEImprimirlo("Linea " + AnalizadorLexico.saltoDeLinea + " Error: Falta ';' al final de la sentencia ");}
+						| declaracion_funciones {cargarErrorEImprimirloSintactico("Linea " + AnalizadorLexico.saltoDeLinea + " Error: Falta ';' al final de la sentencia ");}
+						| declaracion_subtipo {cargarErrorEImprimirloSintactico("Linea " + AnalizadorLexico.saltoDeLinea + " Error: Falta ';' al final de la sentencia ");}
 ;
 
 declaracion_variable	: tipo variables ';' {cargarVariables($2.sval,(Tipo)$1.obj," nombre de variable "); }
-						| tipo variables error {cargarErrorEImprimirlo("Linea " + AnalizadorLexico.saltoDeLinea + " Error: Falta ';' al final de la sentencia ");}
+						| tipo variables error {cargarErrorEImprimirloSintactico("Linea " + AnalizadorLexico.saltoDeLinea + " Error: Falta ';' al final de la sentencia ");}
 ;
 
 tipo : ID_simple { if(tipos.containsKey($1.sval)){$$.obj = tipos.get($1.sval);
-					}else{cargarErrorEImprimirlo("Linea " + AnalizadorLexico.saltoDeLinea +" Se utilizo un tipo desconocido ");};}
+					}else{cargarErrorEImprimirloSemantico("Linea " + AnalizadorLexico.saltoDeLinea +" Se utilizo un tipo desconocido ");};}
 	 |tipo_primitivo { $$.obj = $1.obj;  }
 ;	
 
@@ -56,56 +56,56 @@ tipo_primitivo: INTEGER { if(!tipos.containsKey("INTEGER")){tipos.put("INTEGER",
 							$$.obj = tipos.get("OCTAL");}			
 ;
 
-declaracion_subtipo : TYPEDEF ID_simple ASIGNACION tipo '{' CTE_con_sig ',' CTE_con_sig '}' {if($4.obj != null){cargarVariables($2.sval,cargarSubtipo($2.sval,(Tipo)$4.obj,$6.sval,$8.sval)," nombre de SubTipo ");}else{cargarErrorEImprimirlo("Linea " + AnalizadorLexico.saltoDeLinea + " Error: No se puede crear una tripla de un tipo no declarado. ");}}
-                    | TYPEDEF ID_simple ASIGNACION tipo CTE_con_sig ',' CTE_con_sig '}' {cargarErrorEImprimirlo("Linea " + AnalizadorLexico.saltoDeLinea + " Error: Faltan el '{' en el rango ");}
-                    | TYPEDEF ID_simple ASIGNACION tipo '{' CTE_con_sig ',' CTE_con_sig {cargarErrorEImprimirlo("Linea " + AnalizadorLexico.saltoDeLinea + " Error: Faltan el '}' en el rango ");}
-                    | TYPEDEF ID_simple ASIGNACION tipo CTE_con_sig ',' CTE_con_sig {cargarErrorEImprimirlo("Linea " + AnalizadorLexico.saltoDeLinea + " Error: Faltan ambos '{' '}' en el rango ");}
-                    | TYPEDEF TRIPLE '<' tipo '>' ID_simple  {if($4.obj != null){cargarVariables($6.sval,cargarTripla($6.sval,(Tipo)$4.obj,true)," nombre de Triple ");}else{cargarErrorEImprimirlo("Linea " + AnalizadorLexico.saltoDeLinea + " Error: No se puede crear una tripla de un tipo no declarado. ");}}
-					| TYPEDEF ID_simple ASIGNACION tipo '{' ',' CTE_con_sig '}' {cargarErrorEImprimirlo("Linea " + AnalizadorLexico.saltoDeLinea + " Error: Falta rango inferior ");}
-					| TYPEDEF ID_simple ASIGNACION tipo '{' CTE_con_sig '}' {cargarErrorEImprimirlo("Linea " + AnalizadorLexico.saltoDeLinea + " Error: Falta alguno de los rangos ");}
-					| TYPEDEF ID_simple ASIGNACION tipo '{' CTE_con_sig ',' '}' {cargarErrorEImprimirlo("Linea " + AnalizadorLexico.saltoDeLinea + " Error: Falta rango superior ");}
-					| TYPEDEF ID_simple ASIGNACION tipo '{' '}' {cargarErrorEImprimirlo("Linea " + AnalizadorLexico.saltoDeLinea + " Error: Faltan ambos rangos ");}
-					|TYPEDEF ASIGNACION tipo '{' CTE_con_sig ',' CTE_con_sig '}' {cargarErrorEImprimirlo("Linea " + AnalizadorLexico.saltoDeLinea + " Error: Falta de nombre en el tipo definido ");}
-					| TYPEDEF ID_simple ASIGNACION '{' CTE_con_sig ',' CTE_con_sig '}' {cargarErrorEImprimirlo("Linea " + AnalizadorLexico.saltoDeLinea + ": Error: Falta el tipo base en la declaracion de subtipo ");}
-					| TYPEDEF '<' tipo '>' ID_simple {cargarErrorEImprimirlo("Linea " + AnalizadorLexico.saltoDeLinea + " Error: Falta de la palabra reservada TRIPLE ");}
-					| TYPEDEF TRIPLE tipo '>' ID_simple {cargarErrorEImprimirlo("Linea " + AnalizadorLexico.saltoDeLinea + " Error: Falta del '<' en TRIPLE");}
-					| TYPEDEF TRIPLE '<' tipo ID_simple {cargarErrorEImprimirlo("Linea " + AnalizadorLexico.saltoDeLinea + " Error: Falta del '>' en TRIPLE");}
-					| TYPEDEF TRIPLE tipo ID_simple {cargarErrorEImprimirlo("Linea " + AnalizadorLexico.saltoDeLinea + " Error: Faltan ambos '<>' en TRIPLE");}
-					| TYPEDEF TRIPLE '<' tipo '>' error {cargarErrorEImprimirlo("Linea " + AnalizadorLexico.saltoDeLinea + " Error: Falta identificador al final de la declaracion");}			
+declaracion_subtipo : TYPEDEF ID_simple ASIGNACION tipo '{' CTE_con_sig ',' CTE_con_sig '}' {if($4.obj != null){cargarVariables($2.sval,cargarSubtipo($2.sval,(Tipo)$4.obj,$6.sval,$8.sval)," nombre de SubTipo ");}else{cargarErrorEImprimirloSemantico("Linea " + AnalizadorLexico.saltoDeLinea + " Error: No se puede crear una tripla de un tipo no declarado. ");}}
+                    | TYPEDEF ID_simple ASIGNACION tipo CTE_con_sig ',' CTE_con_sig '}' {cargarErrorEImprimirloSintactico("Linea " + AnalizadorLexico.saltoDeLinea + " Error: Faltan el '{' en el rango ");}
+                    | TYPEDEF ID_simple ASIGNACION tipo '{' CTE_con_sig ',' CTE_con_sig {cargarErrorEImprimirloSintactico("Linea " + AnalizadorLexico.saltoDeLinea + " Error: Faltan el '}' en el rango ");}
+                    | TYPEDEF ID_simple ASIGNACION tipo CTE_con_sig ',' CTE_con_sig {cargarErrorEImprimirloSintactico("Linea " + AnalizadorLexico.saltoDeLinea + " Error: Faltan ambos '{' '}' en el rango ");}
+                    | TYPEDEF TRIPLE '<' tipo '>' ID_simple  {if($4.obj != null){cargarVariables($6.sval,cargarTripla($6.sval,(Tipo)$4.obj,true)," nombre de Triple ");}else{cargarErrorEImprimirloSemantico("Linea " + AnalizadorLexico.saltoDeLinea + " Error: No se puede crear una tripla de un tipo no declarado. ");}}
+					| TYPEDEF ID_simple ASIGNACION tipo '{' ',' CTE_con_sig '}' {cargarErrorEImprimirloSintactico("Linea " + AnalizadorLexico.saltoDeLinea + " Error: Falta rango inferior ");}
+					| TYPEDEF ID_simple ASIGNACION tipo '{' CTE_con_sig '}' {cargarErrorEImprimirloSintactico("Linea " + AnalizadorLexico.saltoDeLinea + " Error: Falta alguno de los rangos ");}
+					| TYPEDEF ID_simple ASIGNACION tipo '{' CTE_con_sig ',' '}' {cargarErrorEImprimirloSintactico("Linea " + AnalizadorLexico.saltoDeLinea + " Error: Falta rango superior ");}
+					| TYPEDEF ID_simple ASIGNACION tipo '{' '}' {cargarErrorEImprimirloSintactico("Linea " + AnalizadorLexico.saltoDeLinea + " Error: Faltan ambos rangos ");}
+					|TYPEDEF ASIGNACION tipo '{' CTE_con_sig ',' CTE_con_sig '}' {cargarErrorEImprimirloSintactico("Linea " + AnalizadorLexico.saltoDeLinea + " Error: Falta de nombre en el tipo definido ");}
+					| TYPEDEF ID_simple ASIGNACION '{' CTE_con_sig ',' CTE_con_sig '}' {cargarErrorEImprimirloSintactico("Linea " + AnalizadorLexico.saltoDeLinea + ": Error: Falta el tipo base en la declaracion de subtipo ");}
+					| TYPEDEF '<' tipo '>' ID_simple {cargarErrorEImprimirloSintactico("Linea " + AnalizadorLexico.saltoDeLinea + " Error: Falta de la palabra reservada TRIPLE ");}
+					| TYPEDEF TRIPLE tipo '>' ID_simple {cargarErrorEImprimirloSintactico("Linea " + AnalizadorLexico.saltoDeLinea + " Error: Falta del '<' en TRIPLE");}
+					| TYPEDEF TRIPLE '<' tipo ID_simple {cargarErrorEImprimirloSintactico("Linea " + AnalizadorLexico.saltoDeLinea + " Error: Falta del '>' en TRIPLE");}
+					| TYPEDEF TRIPLE tipo ID_simple {cargarErrorEImprimirloSintactico("Linea " + AnalizadorLexico.saltoDeLinea + " Error: Faltan ambos '<>' en TRIPLE");}
+					| TYPEDEF TRIPLE '<' tipo '>' error {cargarErrorEImprimirloSintactico("Linea " + AnalizadorLexico.saltoDeLinea + " Error: Falta identificador al final de la declaracion");}			
 ;
 
 declaracion_funciones     : encabezado_funcion parametros_parentesis BEGIN cuerpo_funcion END 
-								{	if($4.sval!="RET"){cargarErrorEImprimirlo("Linea " + AnalizadorLexico.saltoDeLinea + " Error: Faltan el RETORNO de al funcion ");}
+								{	if($4.sval!="RET"){cargarErrorEImprimirloSemantico("Linea " + AnalizadorLexico.saltoDeLinea + " Error: Faltan el RETORNO de al funcion ");}
 									sacarAmbito();
 									DENTRODELAMBITO.pop();
 									cargarParametroFormal($1.sval,(Tipo)$2.obj);									
 								}                  
 ;
 
-encabezado_funcion 	: tipo FUN ID {$$.sval=$3.sval;System.out.println(" Encabezado funcion ");cargarVariables($3.sval,(Tipo)$1.obj,"nombre de funcion");agregarAmbito($3.sval);DENTRODELAMBITO.push($3.sval);GeneradorCodigoIntermedio.addNuevaPolaca();}
-					| tipo FUN {cargarErrorEImprimirlo("Linea " + AnalizadorLexico.saltoDeLinea + ": Error: Faltan el nombre en la funcion ");}
+encabezado_funcion 	: tipo FUN ID {$$.sval=$3.sval;cargarVariables($3.sval,(Tipo)$1.obj,"nombre de funcion");agregarAmbito($3.sval);DENTRODELAMBITO.push($3.sval);GeneradorCodigoIntermedio.addNuevaPolaca();}
+					| tipo FUN {cargarErrorEImprimirloSintactico("Linea " + AnalizadorLexico.saltoDeLinea + ": Error: Faltan el nombre en la funcion ");}
 ;
 
 parametros_parentesis: '(' tipo_primitivo ID_simple ')' {$$.obj=$2.obj; GeneradorCodigoIntermedio.addElemento($3.sval + AMBITO.toString()); GeneradorCodigoIntermedio.addElemento("PF");cargarVariables($3.sval,(Tipo)$2.obj," nombre de parametro real ");}
 					| '(' ID_simple ID_simple ')' {if(tipos.containsKey($2.sval))
 										{$$.obj = tipos.get($2.sval); GeneradorCodigoIntermedio.addElemento($3.sval + AMBITO.toString()); GeneradorCodigoIntermedio.addElemento("PF");cargarVariables($3.sval,tipos.get($2.sval)," nombre de parametro real ");
-										}else{cargarErrorEImprimirlo("Linea " + AnalizadorLexico.saltoDeLinea +" Se utilizo un tipo desconocido ");};}								
-					| '(' tipo_primitivo ')' {$$.obj=$2.obj;cargarErrorEImprimirlo("Linea " + AnalizadorLexico.saltoDeLinea +" Error: Falta el nombre del parametro en la funcion ");} 
-					| '(' ID_simple ')' {cargarErrorEImprimirlo("Linea " + AnalizadorLexico.saltoDeLinea +" Error: Falta el tipo del parametro en la funcion ");}
-                    | '(' ')' {cargarErrorEImprimirlo("Linea " + AnalizadorLexico.saltoDeLinea +" Error: Falta el parametro en la funcion ");}
-                    | '(' error ')' {cargarErrorEImprimirlo("Linea " + AnalizadorLexico.saltoDeLinea +" Error: Se excedio el numero de parametros (1). ");}
+										}else{cargarErrorEImprimirloSintactico("Linea " + AnalizadorLexico.saltoDeLinea +" Se utilizo un tipo desconocido ");};}								
+					| '(' tipo_primitivo ')' {$$.obj=$2.obj;cargarErrorEImprimirloSintactico("Linea " + AnalizadorLexico.saltoDeLinea +" Error: Falta el nombre del parametro en la funcion ");} 
+					| '(' ID_simple ')' {cargarErrorEImprimirloSintactico("Linea " + AnalizadorLexico.saltoDeLinea +" Error: Falta el tipo del parametro en la funcion ");}
+                    | '(' ')' {cargarErrorEImprimirloSintactico("Linea " + AnalizadorLexico.saltoDeLinea +" Error: Falta el parametro en la funcion ");}
+                    | '(' error ')' {cargarErrorEImprimirloSintactico("Linea " + AnalizadorLexico.saltoDeLinea +" Error: Se excedio el numero de parametros (1). ");}
 ;
 
 cuerpo_funcion	: sentencias {if($1.sval=="RET"){$$.sval="RET";}}
 ;
 
-retorno	: RET '(' expresion_arit ')' {if(!existeFuncion()){cargarErrorEImprimirlo("Linea :" + AnalizadorLexico.saltoDeLinea +  " Error : RETORNO declarado fuera del ambito de una funcion  ");
+retorno	: RET '(' expresion_arit ')' {if(!existeFuncion()){cargarErrorEImprimirloSemantico("Linea :" + AnalizadorLexico.saltoDeLinea +  " Error : RETORNO declarado fuera del ambito de una funcion  ");
 										}else{
 											GeneradorCodigoIntermedio.addElemento("RET");
 										}}
-		| RET '('  ')' {cargarErrorEImprimirlo("Linea :" + AnalizadorLexico.saltoDeLinea +  " Error : Falta el parametro del RETORNO  ");
+		| RET '('  ')' {cargarErrorEImprimirloSintactico("Linea :" + AnalizadorLexico.saltoDeLinea +  " Error : Falta el parametro del RETORNO  ");
 						if(!existeFuncion())
-										{cargarErrorEImprimirlo("Linea :" + AnalizadorLexico.saltoDeLinea +  " Error : RETORNO declarado fuera del ambito de una funcion  ");
+										{cargarErrorEImprimirloSemantico("Linea :" + AnalizadorLexico.saltoDeLinea +  " Error : RETORNO declarado fuera del ambito de una funcion  ");
 						}}
 ;
 									/* SENTENCIAS EJECUTABLES */
@@ -114,15 +114,15 @@ sentencia_ejecutable	: asignacion
 						| sentencia_IF {if($1.sval=="RET"){$$.sval="RET";}}
 						| sentencia_WHILE
 						| sentencia_goto
-						| ETIQUETA {if(fueDeclarado($1.sval+AMBITO.toString())){cargarErrorEImprimirlo("Linea :" + AnalizadorLexico.saltoDeLinea +  " Error : La ETIQUETA "+$1.sval+" ya existe  ");}else{cargarVariables($1.sval,tipos.get("ETIQUETA"),"ETIQUETA");}GeneradorCodigoIntermedio.addEtiqueta($1.sval+AMBITO.toString());GeneradorCodigoIntermedio.addElemento("LABEL"+$1.sval+AMBITO.toString());}
+						| ETIQUETA {if(fueDeclarado($1.sval+AMBITO.toString())){cargarErrorEImprimirloSemantico("Linea :" + AnalizadorLexico.saltoDeLinea +  " Error : La ETIQUETA "+$1.sval+" ya existe  ");}else{cargarVariables($1.sval,tipos.get("ETIQUETA"),"ETIQUETA");}GeneradorCodigoIntermedio.addEtiqueta($1.sval+AMBITO.toString());GeneradorCodigoIntermedio.addElemento("LABEL"+$1.sval+AMBITO.toString());}
 						| outf_rule
 						| retorno {$$.sval="RET";}
 ;
 
 outf_rule    : OUTF '(' expresion_arit ')' {GeneradorCodigoIntermedio.addElemento("OUTF");}
-            | OUTF '(' ')' {cargarErrorEImprimirlo("Linea :" + AnalizadorLexico.saltoDeLinea +  " Error : Falta el parametro del OUTF  ");}
+            | OUTF '(' ')' {cargarErrorEImprimirloSintactico("Linea :" + AnalizadorLexico.saltoDeLinea +  " Error : Falta el parametro del OUTF  ");}
             | OUTF '(' cadena ')'    {GeneradorCodigoIntermedio.addElemento("OUTF");}
-            | OUTF '(' sentencias ')'  {cargarErrorEImprimirlo("Linea :" + AnalizadorLexico.saltoDeLinea +  " Error : Parametro incorrecto en sentencia OUTF. ");}
+            | OUTF '(' sentencias ')'  {cargarErrorEImprimirloSintactico("Linea :" + AnalizadorLexico.saltoDeLinea +  " Error : Parametro incorrecto en sentencia OUTF. ");}
 ;
 
 asignacion	: variable_simple ASIGNACION expresion_arit {if(fueDeclarado($1.sval)){
@@ -130,7 +130,7 @@ asignacion	: variable_simple ASIGNACION expresion_arit {if(fueDeclarado($1.sval)
 															GeneradorCodigoIntermedio.addElemento($1.sval+Parser.AMBITO.toString());
 															GeneradorCodigoIntermedio.addElemento(":="); 
 															}else{
-																cargarErrorEImprimirlo("Linea :" + AnalizadorLexico.saltoDeLinea +  " Error:  La variable '" + $1.sval + "' no fue declarada");}
+																cargarErrorEImprimirloSemantico("Linea :" + AnalizadorLexico.saltoDeLinea +  " Error:  La variable '" + $1.sval + "' no fue declarada");}
 															}
 			| variable_simple '{' CTE '}' ASIGNACION expresion_arit  {if(fueDeclarado($1.sval)){
 																		if(Integer.valueOf($3.sval) <= 3){
@@ -139,54 +139,54 @@ asignacion	: variable_simple ASIGNACION expresion_arit {if(fueDeclarado($1.sval)
 																			GeneradorCodigoIntermedio.addElemento($3.sval);
 																			GeneradorCodigoIntermedio.addElemento("INDEX");
 																			GeneradorCodigoIntermedio.addElemento(":="); 
-																			}else{cargarErrorEImprimirlo("Linea :" + AnalizadorLexico.saltoDeLinea +  " Error:  Tripla fuera de rango ");}														
+																			}else{cargarErrorEImprimirloSintactico("Linea :" + AnalizadorLexico.saltoDeLinea +  " Error:  Tripla fuera de rango ");}														
 																	}else{
-																		cargarErrorEImprimirlo("Linea :" + AnalizadorLexico.saltoDeLinea +  " Error:  La variable '" + $1.sval + "' no fue declarada");}}
-			| variable_simple '{' '-' CTE '}' ASIGNACION expresion_arit {cargarErrorEImprimirlo("Linea " + AnalizadorLexico.saltoDeLinea + " Error: no se puede acceder a una posicion negativa de un arreglo ");}
+																		cargarErrorEImprimirloSemantico("Linea :" + AnalizadorLexico.saltoDeLinea +  " Error:  La variable '" + $1.sval + "' no fue declarada");}}
+			| variable_simple '{' '-' CTE '}' ASIGNACION expresion_arit {cargarErrorEImprimirloSintactico("Linea " + AnalizadorLexico.saltoDeLinea + " Error: no se puede acceder a una posicion negativa de un arreglo ");}
 ;
 
 invocacion	: ID_simple '(' expresion_arit ')' {if(!fueDeclarado($1.sval)){
-													cargarErrorEImprimirlo("Linea :" + AnalizadorLexico.saltoDeLinea +  " Error:  La funcion '" + $1.sval + "' no fue declarada");}
+													cargarErrorEImprimirloSemantico("Linea :" + AnalizadorLexico.saltoDeLinea +  " Error:  La funcion '" + $1.sval + "' no fue declarada");}
 													else{	
 														GeneradorCodigoIntermedio.invocar($1.sval+AMBITO.toString());																																																		
 												}}
 			| ID_simple '(' tipo_primitivo '(' expresion_arit ')' ')' 
 												{if(!fueDeclarado($1.sval)){
-													cargarErrorEImprimirlo("Linea :" + AnalizadorLexico.saltoDeLinea +  " Error:  La funcion '" + $1.sval + "' no fue declarada");}
+													cargarErrorEImprimirloSemantico("Linea :" + AnalizadorLexico.saltoDeLinea +  " Error:  La funcion '" + $1.sval + "' no fue declarada");}
 													else{
 														GeneradorCodigoIntermedio.invocar($1.sval+AMBITO.toString(), ((Tipo)$3.obj).getType());
 												}}
-			| ID_simple '(' ')' {cargarErrorEImprimirlo("Linea :" + AnalizadorLexico.saltoDeLinea +  " Error:  faltan los parametros reales en la invocacion");}
-			| ID_simple '(' error ')' {cargarErrorEImprimirlo("Linea :" + AnalizadorLexico.saltoDeLinea +  " Error:  Se excedio el numero de parametros en la invocacion (1)");}
+			| ID_simple '(' ')' {cargarErrorEImprimirloSintactico("Linea :" + AnalizadorLexico.saltoDeLinea +  " Error:  faltan los parametros reales en la invocacion");}
+			| ID_simple '(' error ')' {cargarErrorEImprimirloSintactico("Linea :" + AnalizadorLexico.saltoDeLinea +  " Error:  Se excedio el numero de parametros en la invocacion (1)");}
 ;
 
 
 list_expre	: list_expre ',' expresion_arit {$$.ival=$1.ival + 1;GeneradorCodigoIntermedio.addElemento(",");}
-			| ',' expresion_arit {cargarErrorEImprimirlo("Linea " + AnalizadorLexico.saltoDeLinea + " Error: Falta de expresion en lista de expresiones.  ");}
-			| list_expre ','  {cargarErrorEImprimirlo("Linea " + AnalizadorLexico.saltoDeLinea + " Error: Falta de expresion en lista de expresiones.  ");}
+			| ',' expresion_arit {cargarErrorEImprimirloSintactico("Linea " + AnalizadorLexico.saltoDeLinea + " Error: Falta de expresion en lista de expresiones.  ");}
+			| list_expre ','  {cargarErrorEImprimirloSintactico("Linea " + AnalizadorLexico.saltoDeLinea + " Error: Falta de expresion en lista de expresiones.  ");}
 			| expresion_arit {$$.ival=1;GeneradorCodigoIntermedio.addElemento(",");}
 ;
 
 expresion_arit  : expresion_arit '+' termino {GeneradorCodigoIntermedio.addElemento("+"); }
                 | expresion_arit '-' termino {GeneradorCodigoIntermedio.addElemento("-"); }
                 | termino
-				| error '+' error{cargarErrorEImprimirlo("Linea :" + AnalizadorLexico.saltoDeLinea +  " Error:  La expresion esta mal escrita, falta alguno de los operandos o ambos");}
-				| error '-' error{cargarErrorEImprimirlo("Linea :" + AnalizadorLexico.saltoDeLinea +  " Error:  La expresion esta mal escrita, falta alguno de los operandos o ambos");}
-				| expresion_arit '+' error {cargarErrorEImprimirlo("Linea :" + AnalizadorLexico.saltoDeLinea +  " Error:  La expresion esta mal escrita, falta el operando de la derecha");}
-				| expresion_arit '-' error {cargarErrorEImprimirlo("Linea :" + AnalizadorLexico.saltoDeLinea +  " Error:  La expresion esta mal escrita, falta el operando de la derecha");}
-				| error termino {cargarErrorEImprimirlo("Linea :" + AnalizadorLexico.saltoDeLinea +  " Error:  La expresion esta mal escrita, falta el operador");}
+				| error '+' error{cargarErrorEImprimirloSintactico("Linea :" + AnalizadorLexico.saltoDeLinea +  " Error:  La expresion esta mal escrita, falta alguno de los operandos o ambos");}
+				| error '-' error{cargarErrorEImprimirloSintactico("Linea :" + AnalizadorLexico.saltoDeLinea +  " Error:  La expresion esta mal escrita, falta alguno de los operandos o ambos");}
+				| expresion_arit '+' error {cargarErrorEImprimirloSintactico("Linea :" + AnalizadorLexico.saltoDeLinea +  " Error:  La expresion esta mal escrita, falta el operando de la derecha");}
+				| expresion_arit '-' error {cargarErrorEImprimirloSintactico("Linea :" + AnalizadorLexico.saltoDeLinea +  " Error:  La expresion esta mal escrita, falta el operando de la derecha");}
+				| error termino {cargarErrorEImprimirloSintactico("Linea :" + AnalizadorLexico.saltoDeLinea +  " Error:  La expresion esta mal escrita, falta el operador");}
 ;
 
 termino : termino '*' factor {GeneradorCodigoIntermedio.addElemento("*");} 
         | termino '/' factor {GeneradorCodigoIntermedio.addElemento("/");}
         | factor 
-		| error '*' error{cargarErrorEImprimirlo("Linea :" + AnalizadorLexico.saltoDeLinea +  " Error:  La expresion esta mal escrita");}
-		| error '/' error{cargarErrorEImprimirlo("Linea :" + AnalizadorLexico.saltoDeLinea +  " Error:  La expresion esta mal escrita");}
-		| termino '*' error {cargarErrorEImprimirlo("Linea :" + AnalizadorLexico.saltoDeLinea +  " Error:  La expresion esta mal escrita");}
-		| termino '/' error {cargarErrorEImprimirlo("Linea :" + AnalizadorLexico.saltoDeLinea +  " Error:  La expresion esta mal escrita");}
+		| error '*' error{cargarErrorEImprimirloSintactico("Linea :" + AnalizadorLexico.saltoDeLinea +  " Error:  La expresion esta mal escrita");}
+		| error '/' error{cargarErrorEImprimirloSintactico("Linea :" + AnalizadorLexico.saltoDeLinea +  " Error:  La expresion esta mal escrita");}
+		| termino '*' error {cargarErrorEImprimirloSintactico("Linea :" + AnalizadorLexico.saltoDeLinea +  " Error:  La expresion esta mal escrita");}
+		| termino '/' error {cargarErrorEImprimirloSintactico("Linea :" + AnalizadorLexico.saltoDeLinea +  " Error:  La expresion esta mal escrita");}
 ;
 
-factor 	: variable_simple {if(fueDeclarado($1.sval)){GeneradorCodigoIntermedio.addElemento($1.sval+Parser.AMBITO.toString());AnalizadorLexico.TablaDeSimbolos.get($1.sval).incrementarContDeRef(); $$.sval = $1.sval;}else{cargarErrorEImprimirlo("Linea :" + AnalizadorLexico.saltoDeLinea +  " Error: La variable '"+$1.sval+ "' no fue declarada");};}
+factor 	: variable_simple {if(fueDeclarado($1.sval)){GeneradorCodigoIntermedio.addElemento($1.sval+Parser.AMBITO.toString());AnalizadorLexico.TablaDeSimbolos.get($1.sval).incrementarContDeRef(); $$.sval = $1.sval;}else{cargarErrorEImprimirloSemantico("Linea :" + AnalizadorLexico.saltoDeLinea +  " Error: La variable '"+$1.sval+ "' no fue declarada");};}
 		| CTE_con_sig {GeneradorCodigoIntermedio.addElemento($1.sval);}
 		| invocacion 
 		| variable_simple '{' CTE '}' {if(fueDeclarado($1.sval)){ 
@@ -196,13 +196,13 @@ factor 	: variable_simple {if(fueDeclarado($1.sval)){GeneradorCodigoIntermedio.a
 												GeneradorCodigoIntermedio.addElemento("INDEX");
 												AnalizadorLexico.TablaDeSimbolos.get($1.sval).incrementarContDeRef(); $$.sval = $1.sval;
 											}else{
-												cargarErrorEImprimirlo("Linea :" + AnalizadorLexico.saltoDeLinea +  " Error:  Tripla fuera de rango ");
+												cargarErrorEImprimirloSintactico("Linea :" + AnalizadorLexico.saltoDeLinea +  " Error:  Tripla fuera de rango ");
 											}
-										}else{cargarErrorEImprimirlo("Linea :" + AnalizadorLexico.saltoDeLinea +  " Error: La variable '"+$1.sval+ "' no fue declarada");};}
-		| variable_simple '{' '-' CTE '}' {cargarErrorEImprimirlo("Linea " + AnalizadorLexico.saltoDeLinea + " Error: no se puede acceder a una posicion negativa de un arreglo ");}
+										}else{cargarErrorEImprimirloSemantico("Linea :" + AnalizadorLexico.saltoDeLinea +  " Error: La variable '"+$1.sval+ "' no fue declarada");};}
+		| variable_simple '{' '-' CTE '}' {cargarErrorEImprimirloSintactico("Linea " + AnalizadorLexico.saltoDeLinea + " Error: no se puede acceder a una posicion negativa de un arreglo ");}
 ;
 variables 	: variables ',' variable_simple { $$.sval = $1.sval + "/"+$3.sval;} 
-			| variables variable_simple {cargarErrorEImprimirlo("Linea " + AnalizadorLexico.saltoDeLinea + " Error: Falta ',' entre variables ");}
+			| variables variable_simple {cargarErrorEImprimirloSintactico("Linea " + AnalizadorLexico.saltoDeLinea + " Error: Falta ',' entre variables ");}
 			| variable_simple {$$.sval = $1.sval;}
 ;
 
@@ -219,33 +219,33 @@ CTE_con_sig : CTE {if(estaRango($1.sval)) { $$.sval = $1.sval; } }
 
 sentencia_IF: IF condicion bloque_THEN ';' bloque_else ';' END_IF {if($3.sval=="RET" && $5.sval=="RET"){$$.sval="RET";};completarBifurcacionI();}
             | IF condicion bloque_THEN ';' END_IF {$$.sval=$3.sval;completarBifurcacionISinElse();}
-			| IF condicion THEN END_IF {cargarErrorEImprimirlo("Linea :" + AnalizadorLexico.saltoDeLinea + " Error: Falta de contenido en bloque THEN.");}
-			| IF condicion bloque_THEN ';' ELSE END_IF {{cargarErrorEImprimirlo("Linea " + AnalizadorLexico.saltoDeLinea + " Error : falta cuerpo en el ELSE ");};}
+			| IF condicion THEN END_IF {cargarErrorEImprimirloSintactico("Linea :" + AnalizadorLexico.saltoDeLinea + " Error: Falta de contenido en bloque THEN.");}
+			| IF condicion bloque_THEN ';' ELSE END_IF {{cargarErrorEImprimirloSintactico("Linea " + AnalizadorLexico.saltoDeLinea + " Error : falta cuerpo en el ELSE ");};}
 
 
-			| IF condicion bloque_THEN bloque_else ';' END_IF {if($3.sval=="RET" && $4.sval=="RET"){$$.sval="RET";};cargarErrorEImprimirlo("Linea " + AnalizadorLexico.saltoDeLinea + " Error: Falta ';' al final de la sentencia del bloque del THEN ");}
-			| IF condicion bloque_THEN END_IF {$$.sval=$3.sval;cargarErrorEImprimirlo("Linea " + AnalizadorLexico.saltoDeLinea + " Error: Falta ';' al final de la sentencia del bloque del THEN  ");}
-			| IF condicion bloque_THEN ';' bloque_else END_IF {if($3.sval=="RET" && $5.sval=="RET"){$$.sval="RET";};cargarErrorEImprimirlo("Linea " + AnalizadorLexico.saltoDeLinea + " Error: Falta ';' al final de la sentencia del bloque del ELSE  ");}
-			| IF condicion bloque_THEN bloque_else END_IF {if($3.sval=="RET" && $4.sval=="RET"){$$.sval="RET";};cargarErrorEImprimirlo("Linea " + AnalizadorLexico.saltoDeLinea + " Error: Falta ';' al final de los bloques del IF ");}
+			| IF condicion bloque_THEN bloque_else ';' END_IF {if($3.sval=="RET" && $4.sval=="RET"){$$.sval="RET";};cargarErrorEImprimirloSintactico("Linea " + AnalizadorLexico.saltoDeLinea + " Error: Falta ';' al final de la sentencia del bloque del THEN ");}
+			| IF condicion bloque_THEN END_IF {$$.sval=$3.sval;cargarErrorEImprimirloSintactico("Linea " + AnalizadorLexico.saltoDeLinea + " Error: Falta ';' al final de la sentencia del bloque del THEN  ");}
+			| IF condicion bloque_THEN ';' bloque_else END_IF {if($3.sval=="RET" && $5.sval=="RET"){$$.sval="RET";};cargarErrorEImprimirloSintactico("Linea " + AnalizadorLexico.saltoDeLinea + " Error: Falta ';' al final de la sentencia del bloque del ELSE  ");}
+			| IF condicion bloque_THEN bloque_else END_IF {if($3.sval=="RET" && $4.sval=="RET"){$$.sval="RET";};cargarErrorEImprimirloSintactico("Linea " + AnalizadorLexico.saltoDeLinea + " Error: Falta ';' al final de los bloques del IF ");}
 			
-			| IF condicion bloque_THEN ';' error{$$.sval=$3.sval;cargarErrorEImprimirlo("Linea " + AnalizadorLexico.saltoDeLinea + ": Error : Falta el END_IF en IF  ");}
-			| IF condicion bloque_THEN ';' bloque_else ';' error{if($3.sval=="RET" && $5.sval=="RET"){$$.sval="RET";};cargarErrorEImprimirlo("Linea " + AnalizadorLexico.saltoDeLinea + ": Error : Falta el END_IF en IF ");}
+			| IF condicion bloque_THEN ';' error{$$.sval=$3.sval;cargarErrorEImprimirloSintactico("Linea " + AnalizadorLexico.saltoDeLinea + ": Error : Falta el END_IF en IF  ");}
+			| IF condicion bloque_THEN ';' bloque_else ';' error{if($3.sval=="RET" && $5.sval=="RET"){$$.sval="RET";};cargarErrorEImprimirloSintactico("Linea " + AnalizadorLexico.saltoDeLinea + ": Error : Falta el END_IF en IF ");}
 ;
 
-condicion	: '(' '(' list_expre ')' comparador '(' list_expre ')' ')' {if($3.ival == $7.ival){cantDeOperandos=$3.ival;modificarPolacaPM($5.sval,$3.ival);}else{cargarErrorEImprimirlo("Linea " + AnalizadorLexico.saltoDeLinea + "Error : Cantidad de operandor incompatibles en la comparacion ");}}
-			| '(' list_expre ')' comparador '(' list_expre ')' ')' {cargarErrorEImprimirlo("Linea " + AnalizadorLexico.saltoDeLinea + "Error : Falta el '(' en la condicion ");}
-			| '(' '(' list_expre ')' comparador '(' list_expre ')' {cargarErrorEImprimirlo("Linea " + AnalizadorLexico.saltoDeLinea + "Error : Falta el ')' en la condicion ");}
-			|'(' list_expre ')' comparador '(' list_expre ')' {cargarErrorEImprimirlo("Linea " + AnalizadorLexico.saltoDeLinea + "Error : Faltan los parentesis en la condicion ");}
+condicion	: '(' '(' list_expre ')' comparador '(' list_expre ')' ')' {if($3.ival == $7.ival){cantDeOperandos=$3.ival;modificarPolacaPM($5.sval,$3.ival);}else{cargarErrorEImprimirloSintactico("Linea " + AnalizadorLexico.saltoDeLinea + "Error : Cantidad de operandor incompatibles en la comparacion ");}}
+			| '(' list_expre ')' comparador '(' list_expre ')' ')' {cargarErrorEImprimirloSintactico("Linea " + AnalizadorLexico.saltoDeLinea + "Error : Falta el '(' en la condicion ");}
+			| '(' '(' list_expre ')' comparador '(' list_expre ')' {cargarErrorEImprimirloSintactico("Linea " + AnalizadorLexico.saltoDeLinea + "Error : Falta el ')' en la condicion ");}
+			|'(' list_expre ')' comparador '(' list_expre ')' {cargarErrorEImprimirloSintactico("Linea " + AnalizadorLexico.saltoDeLinea + "Error : Faltan los parentesis en la condicion ");}
 			| '(' expresion_arit comparador expresion_arit ')' {cantDeOperandos=1;opCondicion($3.sval);}
-			|  expresion_arit comparador expresion_arit ')' {cargarErrorEImprimirlo("Linea " + AnalizadorLexico.saltoDeLinea + "Error : Falta el '(' en la condicion ");}
-			| '(' expresion_arit comparador expresion_arit  {cargarErrorEImprimirlo("Linea " + AnalizadorLexico.saltoDeLinea + "Error : Falta el ')' en la condicion ");}
-			| expresion_arit comparador expresion_arit  {cargarErrorEImprimirlo("Linea " + AnalizadorLexico.saltoDeLinea + "Error : Faltan los parentesis en la condicion ");}
+			|  expresion_arit comparador expresion_arit ')' {cargarErrorEImprimirloSintactico("Linea " + AnalizadorLexico.saltoDeLinea + "Error : Falta el '(' en la condicion ");}
+			| '(' expresion_arit comparador expresion_arit  {cargarErrorEImprimirloSintactico("Linea " + AnalizadorLexico.saltoDeLinea + "Error : Falta el ')' en la condicion ");}
+			| expresion_arit comparador expresion_arit  {cargarErrorEImprimirloSintactico("Linea " + AnalizadorLexico.saltoDeLinea + "Error : Faltan los parentesis en la condicion ");}
 			
-			| '(' list_expre ')' {cargarErrorEImprimirlo("Linea " + AnalizadorLexico.saltoDeLinea + "Error : Falta el comparador en la condicion ");}
+			| '(' list_expre ')' {cargarErrorEImprimirloSintactico("Linea " + AnalizadorLexico.saltoDeLinea + "Error : Falta el comparador en la condicion ");}
 			
-			|'(' '(' list_expre ')'  '(' list_expre ')' ')' {cargarErrorEImprimirlo("Linea " + AnalizadorLexico.saltoDeLinea + " Error : Falta el comparador ");}
-			|'(' '(' list_expre comparador '(' list_expre ')' ')' {cargarErrorEImprimirlo("Linea " + AnalizadorLexico.saltoDeLinea + " Error : Falta el ')' en la condicion luego de la lista de expresiones ");}
-			|'(' '(' list_expre ')' comparador list_expre ')' ')' {cargarErrorEImprimirlo("Linea " + AnalizadorLexico.saltoDeLinea + " Error : Falta el '(' en la condicion luego del comparador");}
+			|'(' '(' list_expre ')'  '(' list_expre ')' ')' {cargarErrorEImprimirloSintactico("Linea " + AnalizadorLexico.saltoDeLinea + " Error : Falta el comparador ");}
+			|'(' '(' list_expre comparador '(' list_expre ')' ')' {cargarErrorEImprimirloSintactico("Linea " + AnalizadorLexico.saltoDeLinea + " Error : Falta el ')' en la condicion luego de la lista de expresiones ");}
+			|'(' '(' list_expre ')' comparador list_expre ')' ')' {cargarErrorEImprimirloSintactico("Linea " + AnalizadorLexico.saltoDeLinea + " Error : Falta el '(' en la condicion luego del comparador");}
 ;
 
 comparador	: '>' {$$.sval=">";} 
@@ -261,9 +261,9 @@ bloque_else: bloque_else_simple {if($1.sval=="RET"){$$.sval="RET";};}
 ;
 
 bloque_else_multiple:	ELSE BEGIN bloque_sent_ejecutables ';' END {if($3.sval=="RET"){$$.sval="RET";};}
-					| ELSE BEGIN END {cargarErrorEImprimirlo("Linea " + AnalizadorLexico.saltoDeLinea +  " Error: falta el bloque de sentencias ");}
-					| ELSE BEGIN bloque_sent_ejecutables END {if($3.sval=="RET"){$$.sval="RET";};cargarErrorEImprimirlo("Linea " + AnalizadorLexico.saltoDeLinea + " Error: Falta ';' al final de la sentencia ");}
-					| ELSE BEGIN bloque_sent_ejecutables error {if($3.sval=="RET"){$$.sval="RET";};cargarErrorEImprimirlo("Linea " + AnalizadorLexico.saltoDeLinea + " Error: Falta el END al final de las sentencias del ELSE");}
+					| ELSE BEGIN END {cargarErrorEImprimirloSintactico("Linea " + AnalizadorLexico.saltoDeLinea +  " Error: falta el bloque de sentencias ");}
+					| ELSE BEGIN bloque_sent_ejecutables END {if($3.sval=="RET"){$$.sval="RET";};cargarErrorEImprimirloSintactico("Linea " + AnalizadorLexico.saltoDeLinea + " Error: Falta ';' al final de la sentencia ");}
+					| ELSE BEGIN bloque_sent_ejecutables error {if($3.sval=="RET"){$$.sval="RET";};cargarErrorEImprimirloSintactico("Linea " + AnalizadorLexico.saltoDeLinea + " Error: Falta el END al final de las sentencias del ELSE");}
 					
 ;
 
@@ -275,9 +275,9 @@ bloque_THEN: bloque_THEN_simple {if($1.sval=="RET"){$$.sval="RET";};operacionesI
 ;
 
 bloque_THEN_multiple:	THEN BEGIN bloque_sent_ejecutables ';' END {if($3.sval=="RET"){$$.sval="RET";};}
-					| THEN BEGIN END {cargarErrorEImprimirlo("Linea " + AnalizadorLexico.saltoDeLinea +  " Error: falta el bloque de sentencias ");}
-					| THEN BEGIN bloque_sent_ejecutables END {if($3.sval=="RET"){$$.sval="RET";};cargarErrorEImprimirlo("Linea " + AnalizadorLexico.saltoDeLinea + " Error: Falta ';' al final de la sentencia ");}
-					| THEN BEGIN bloque_sent_ejecutables error {if($3.sval=="RET"){$$.sval="RET";};cargarErrorEImprimirlo("Linea " + AnalizadorLexico.saltoDeLinea + " Error: Falta el END al final de las sentencias del THEN");}
+					| THEN BEGIN END {cargarErrorEImprimirloSintactico("Linea " + AnalizadorLexico.saltoDeLinea +  " Error: falta el bloque de sentencias ");}
+					| THEN BEGIN bloque_sent_ejecutables END {if($3.sval=="RET"){$$.sval="RET";};cargarErrorEImprimirloSintactico("Linea " + AnalizadorLexico.saltoDeLinea + " Error: Falta ';' al final de la sentencia ");}
+					| THEN BEGIN bloque_sent_ejecutables error {if($3.sval=="RET"){$$.sval="RET";};cargarErrorEImprimirloSintactico("Linea " + AnalizadorLexico.saltoDeLinea + " Error: Falta el END al final de las sentencias del THEN");}
 ;
 
 bloque_THEN_simple:	THEN bloque_sentencia_simple {if($2.sval=="RET"){$$.sval="RET";};}
@@ -290,9 +290,9 @@ bloque_unidad	: bloque_unidad_simple {if($1.sval=="RET"){$$.sval="RET";};}
 
 
 bloque_unidad_multiple  : BEGIN bloque_sent_ejecutables ';' END {if($2.sval=="RET"){$$.sval="RET";};}
-						| BEGIN END {cargarErrorEImprimirlo("Linea " + AnalizadorLexico.saltoDeLinea +  " Error: falta el bloque de sentencias ");}
-						| BEGIN bloque_sent_ejecutables END {if($2.sval=="RET"){$$.sval="RET";};cargarErrorEImprimirlo("Linea " + AnalizadorLexico.saltoDeLinea + " Error: Falta ';' al final de la sentencia ");}
-						| BEGIN bloque_sent_ejecutables error {if($2.sval=="RET"){$$.sval="RET";};cargarErrorEImprimirlo("Linea " + AnalizadorLexico.saltoDeLinea + " Error: Falta el END al final de las sentencias");}						
+						| BEGIN END {cargarErrorEImprimirloSintactico("Linea " + AnalizadorLexico.saltoDeLinea +  " Error: falta el bloque de sentencias ");}
+						| BEGIN bloque_sent_ejecutables END {if($2.sval=="RET"){$$.sval="RET";};cargarErrorEImprimirloSintactico("Linea " + AnalizadorLexico.saltoDeLinea + " Error: Falta ';' al final de la sentencia ");}
+						| BEGIN bloque_sent_ejecutables error {if($2.sval=="RET"){$$.sval="RET";};cargarErrorEImprimirloSintactico("Linea " + AnalizadorLexico.saltoDeLinea + " Error: Falta el END al final de las sentencias");}						
 ;				
 
 bloque_unidad_simple:  bloque_sentencia_simple {if($1.sval=="RET"){$$.sval="RET";}}
@@ -300,7 +300,7 @@ bloque_unidad_simple:  bloque_sentencia_simple {if($1.sval=="RET"){$$.sval="RET"
 
 bloque_sent_ejecutables	: bloque_sent_ejecutables ';' bloque_sentencia_simple {if($1.sval=="RET" || $3.sval=="RET"){$$.sval="RET";};}
 						| bloque_sentencia_simple {if($1.sval=="RET"){$$.sval="RET";};}
-						| bloque_sent_ejecutables bloque_sentencia_simple {if($1.sval=="RET" || $2.sval=="RET"){$$.sval="RET";};cargarErrorEImprimirlo("Linea " + AnalizadorLexico.saltoDeLinea + " Error: Falta ';' al final de la sentencia ");}
+						| bloque_sent_ejecutables bloque_sentencia_simple {if($1.sval=="RET" || $2.sval=="RET"){$$.sval="RET";};cargarErrorEImprimirloSintactico("Linea " + AnalizadorLexico.saltoDeLinea + " Error: Falta ';' al final de la sentencia ");}
 ;
 
 bloque_sentencia_simple: sentencia_ejecutable {if($1.sval=="RET"){$$.sval="RET";};}
@@ -312,7 +312,7 @@ cadena	: CADENAMULTILINEA {cargarCadenaMultilinea($1.sval);GeneradorCodigoInterm
 									/* TEMAS PARTICULARES */
 /* Temas 13:  Sentencias de Control */
 sentencia_WHILE	: encabezado_WHILE condicion bloque_unidad {operacionesWhile();}
-				| encabezado_WHILE condicion error {cargarErrorEImprimirlo("Linea " + AnalizadorLexico.saltoDeLinea +  " Error: falta el cuerpo del WHILE ");}
+				| encabezado_WHILE condicion error {cargarErrorEImprimirloSintactico("Linea " + AnalizadorLexico.saltoDeLinea +  " Error: falta el cuerpo del WHILE ");}
 ;	
 
 encabezado_WHILE : WHILE {GeneradorCodigoIntermedio.apilar(GeneradorCodigoIntermedio.getPos());GeneradorCodigoIntermedio.addElemento("LABEL"+GeneradorCodigoIntermedio.getPos());}
@@ -320,8 +320,8 @@ encabezado_WHILE : WHILE {GeneradorCodigoIntermedio.apilar(GeneradorCodigoInterm
 
 /* Tema 23: goto */
 sentencia_goto	: GOTO ETIQUETA {GeneradorCodigoIntermedio.addBaulDeGotos($2.sval+AMBITO.toString()+"/"+AMBITO.toString()+"/"+String.valueOf(GeneradorCodigoIntermedio.getPos()));}
-				| GOTO ID_simple {cargarErrorEImprimirlo("Linea :" + AnalizadorLexico.saltoDeLinea + " Error: Falta el caracter '@' de la etiqueta. ");}
-				| GOTO error  {cargarErrorEImprimirlo("Linea :" + AnalizadorLexico.saltoDeLinea + " Error: Falta la etiqueta en GOTO ");}
+				| GOTO ID_simple {cargarErrorEImprimirloSintactico("Linea :" + AnalizadorLexico.saltoDeLinea + " Error: Falta el caracter '@' de la etiqueta. ");}
+				| GOTO error  {cargarErrorEImprimirloSintactico("Linea :" + AnalizadorLexico.saltoDeLinea + " Error: Falta la etiqueta en GOTO ");}
 ;
 /* Tema 19: Pattern Matching*/
 //Lo tenemos en cuenta en la regla Condicion
@@ -342,11 +342,22 @@ static{
 }
 
 
-public static void cargarErrorEImprimirlo(String salida) {	
+public static void cargarErrorEImprimirloSintactico(String salida) {	
 		try {
 			AnalizadorLexico.sintactico.newLine();  // Agregar un salto de l nea
 			AnalizadorLexico.sintactico.write(" "+salida+" ");
 			AnalizadorLexico.sintactico.flush();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+}
+
+public static void cargarErrorEImprimirloSemantico(String salida) {	
+		try {
+			AnalizadorLexico.semantico.newLine();  // Agregar un salto de l nea
+			AnalizadorLexico.semantico.write(" "+salida+" ");
+			AnalizadorLexico.semantico.flush();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -363,14 +374,10 @@ private static void cargarGotos(){
 
 	        // Bucle para reducir el key si no se encuentra directamente
 	        while (!terminoWhile) {
-	            System.out.println("Entra el while con key: " + key);
 	            if (GeneradorCodigoIntermedio.Etiquetas.contains(key)) {
-	                System.out.println("Antes de remove " + key);
 	                int pos = Integer.valueOf(elemento[2]);
-	                System.out.println("Key " + key + " pos " + pos + " ambito " + elemento[1]);
 	                GeneradorCodigoIntermedio.reemplazarElm(key, pos, elemento[1]); // Reemplaza el elemento con el m todo adecuado
 	                GeneradorCodigoIntermedio.BaulDeGotos.remove(0); // Eliminamos el primer elemento
-	                System.out.println("Post remove " + key);
 	                noHayEtiqueta = false;
 	                terminoWhile = true; // Terminamos el ciclo si encontramos la etiqueta
 	            } else {
@@ -389,7 +396,7 @@ private static void cargarGotos(){
 	        // Si no se encontr  etiqueta, avanzamos al siguiente elemento (ya manejado por el while principal)
 	        if (noHayEtiqueta) {
 	        	GeneradorCodigoIntermedio.BaulDeGotos.remove(0); // Eliminamos el elemento para evitar ciclos infinitos
-	            cargarErrorEImprimirlo("No se encontr  la etiqueta llamada: " + key);
+	            cargarErrorEImprimirloSemantico("No se encontr  la etiqueta llamada: " + key);
 	        }	  
 	}
 }
@@ -402,7 +409,6 @@ private static void cargarCadenaMultilinea(String cadena){
 }
 
 private static void modificarPolacaPM(String operador, int cantDeOp){
-	System.out.println(" Pattern Matching ");
 	GeneradorCodigoIntermedio.addOperadorEnPattMatch(operador,cantDeOp);
 }
 
@@ -417,7 +423,6 @@ private static void opCondicion(String operador){
 private static void operacionesWhile(){
 	int aux=0;
 	while(aux<cantDeOperandos){
-		System.out.println(" SE BIFURCA POR F ");
 		completarBifurcacionF();
 		aux++;
 	}
@@ -438,7 +443,6 @@ private static void operacionesIF(){
 	String elm = String.valueOf(GeneradorCodigoIntermedio.getPos()+2);
 	int aux=0;
 	while(aux<cantDeOperandos){
-		System.out.println(" SE BIFURCA POR F ");
 		completarBifurcacionF();
 		aux++;
 	}
@@ -482,9 +486,9 @@ private static Tipo getTipoDef(String id){
 
 private static Tipo cargarSubtipo(String name, Tipo t,  String min, String max){
 	if(t.esSubTipo()){
-		cargarErrorEImprimirlo( "Linea :" +" No se puede declarar un subTipo de un tipo definido por el usuario ");
+		cargarErrorEImprimirloSemantico( "Linea :" +" No se puede declarar un subTipo de un tipo definido por el usuario ");
 	}else if(t.esTripla()){
-		cargarErrorEImprimirlo( "Linea :" +" No se puede declarar un subTipo de un tipo definido por el usuario ");
+		cargarErrorEImprimirloSemantico( "Linea :" +" No se puede declarar un subTipo de un tipo definido por el usuario ");
 	}else{
 		if(min.contains(".") && max.contains(".")){
 			double mini = Double.valueOf(min);
@@ -502,9 +506,9 @@ private static Tipo cargarSubtipo(String name, Tipo t,  String min, String max){
 private static Tipo cargarTripla(String name, Tipo t, boolean tripla){
 	
 	if(t.esSubTipo()){
-		cargarErrorEImprimirlo( "Linea :" + " No se puede declarar un subTipo de un tipo definido por el usuario ");
+		cargarErrorEImprimirloSemantico( "Linea :" + " No se puede declarar un subTipo de un tipo definido por el usuario ");
 	}else if(t.esTripla()){
-		cargarErrorEImprimirlo( "Linea :" + " No se puede declarar un subTipo de un tipo definido por el usuario ");
+		cargarErrorEImprimirloSemantico( "Linea :" + " No se puede declarar un subTipo de un tipo definido por el usuario ");
 	}else{
 		tipos.put(name,new Tipo(t.getType(),tripla));
 	}
@@ -555,12 +559,10 @@ public static Simbolo getVariableFueraDeAmbito(String id){
     }
 }
 private static boolean existeEnEsteAmbito(String id){
-	//System.out.println("  > Buscando la declaracion < ");
     String ambitoActual = AMBITO.toString(); // Convertimos AMBITO (StringBuilder) a String
 
     // Construimos la clave: id +  mbito actual
     String key = id + ambitoActual;
-	//System.out.println("  > Key buscada "+ key + "En el ambito "+ ambitoActual);
 
     // Buscamos en el mapa
     if (AnalizadorLexico.TablaDeSimbolos.containsKey(key)) {
@@ -592,7 +594,7 @@ private static void cargarVariables(String variables, Tipo tipo, String uso){
 					declarar(v+AMBITO.toString());
 				}
 				}else{
-				cargarErrorEImprimirlo("Linea :" + AnalizadorLexico.saltoDeLinea +"  La variable  " + v + " ya fue declarada.");
+				cargarErrorEImprimirloSemantico("Linea :" + AnalizadorLexico.saltoDeLinea +"  La variable  " + v + " ya fue declarada.");
 				}
 			}else{
 					addAmbitoID(v);
@@ -627,7 +629,6 @@ private static void addTipo(String id, Tipo tipo) {
 };
 
 private static void agregarAmbito(String amb) {
-	System.out.println(" Se agrego al ambito "+amb);
 	AMBITO.append("$").append(amb);
 }
 

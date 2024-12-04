@@ -116,7 +116,6 @@ public class Simbolo {
     public void agregarAmbitoaVar(String amb) {
         Simbolo simb = new Simbolo(this.id+amb,this.entero, this.doub,this.tipoVar,this.uso,this.base,this.contadorDeReferencias,
         		this.defPorUser,this.seDeclaro,amb);
-        System.out.println("A ->> " +this.id+amb+" SE LE ASIGNO EL AMBITO "+ amb);
         AnalizadorLexico.TablaDeSimbolos.put(this.id+amb, simb);
     }
     public String getAmbito() {
@@ -128,7 +127,6 @@ public class Simbolo {
 		return ambitoVar;
 	}
 	public void setAmbitoVar(String ambitoV) {
-		System.out.println("Se le asigno " + this.id + " el amb "+ ambitoV );
 		ambitoVar = ambitoV;
 	}
 	
@@ -253,7 +251,7 @@ public class Simbolo {
 		if(this.tipoVar.sonCompatibles(simb2.getTipo())) {
 			return true;
 		}
-		Parser.cargarErrorEImprimirlo("Tipos incompatibles, se intento operar un "+ this.getTipo() + " con un "+ simb2.getTipo());
+		Parser.cargarErrorEImprimirloSemantico("Tipos incompatibles, se intento operar un "+ this.getTipo() + " con un "+ simb2.getTipo());
 		return false;
 	}
 	

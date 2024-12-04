@@ -13,10 +13,11 @@ Error_DivisionCero DB "Error: Division por cero", 10, 0
 Error_Overflow DB "Error: Overflow en producto entre Enteros", 10, 0 
 Error_Subtipo_inferior DB "Error: Valor menor al rango inferior del subtipo ", 10, 0 
 Error_Subtipo_superior DB "Error: Valor mayor al limite superior del subtipo ", 10, 0 
-ESPERAR_ACCION_USUARIO DB "Haga click en ACEPTAR para cerrar el programa y la consola", 10, 0 
+$_FIN_DE_PROGRAMA_$ DB "FIN DE LA EJECUCION DEL PROGRAMA ", 10, 0 
 $_$mensajeEntero$_$ DB "%d, %d, %d", 10, 0 
 $_$mensajeFloat$_$ DB "%f, %f, %f", 10, 0 
 @ParametroRealInt DW ?
+@RET$MAIN$juancito$juancito2$juancito3 DW ?
 a$MAIN$juancito$juancito2 DW ?
 a$MAIN$juancito DW ?
 juancito3$MAIN$juancito$juancito2 DW ?
@@ -27,6 +28,7 @@ juancito$MAIN DW ?
 c$MAIN DQ ?
 d$MAIN DW ?
 a$MAIN$juancito$juancito2$juancito3 DW ?
+@RET$MAIN$juancito$juancito2 DW ?
 
 .code 
  
@@ -104,22 +106,23 @@ JMP LABELadan$MAIN
 JMP fin 
  
 Divison_Por_Cero:
-invoke MessageBox, NULL, addr Error_DivisionCero, addr Error_DivisionCero, MB_OK 
+invoke printf, addr Error_DivisionCero 
 JMP fin
 
 Overflow:
-invoke MessageBox, NULL, addr Error_Overflow, addr Error_Overflow, MB_OK 
+invoke printf, addr Error_Overflow 
 JMP fin
 
 Subtipo_inferior:
-invoke MessageBox, NULL, addr Error_Subtipo_inferior, addr Error_Subtipo_inferior, MB_OK 
+invoke printf, addr Error_Subtipo_inferior 
 JMP fin
 
 Subtipo_superior:
-invoke MessageBox, NULL, addr Error_Subtipo_superior, addr Error_Subtipo_superior, MB_OK 
+invoke printf, addr Error_Subtipo_superior 
 JMP fin
 
 fin: 
-invoke MessageBox, NULL, addr ESPERAR_ACCION_USUARIO, addr ESPERAR_ACCION_USUARIO, MB_OK 
+invoke printf, addr $_FIN_DE_PROGRAMA_$ 
+invoke crt_getchar 
 invoke ExitProcess, 0 
 end start
