@@ -1,2 +1,3 @@
 
- Linea :9 Error: La variable 'e' no fue declarada 
+ Linea :5 Error: La variable 'e' no fue declarada 
+ Linea :6 Error: La variable 'x' no fue declarada 

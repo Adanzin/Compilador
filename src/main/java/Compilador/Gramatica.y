@@ -149,11 +149,11 @@ asignacion	: variable_simple ASIGNACION expresion_arit
 																			GeneradorCodigoIntermedio.addElemento($3.sval);
 																			GeneradorCodigoIntermedio.addElemento("INDEX");
 																			GeneradorCodigoIntermedio.addElemento(":="); 
-																			}else{cargarErrorEImprimirloSintactico("Linea :" + AnalizadorLexico.saltoDeLinea +  " Error:  Tripla fuera de rango ");}														
+																			}else{cargarErrorEImprimirloSemantico("Linea :" + AnalizadorLexico.saltoDeLinea +  " Error:  Tripla fuera de rango ");}														
 																	}else{
 																		cargarErrorEImprimirloSemantico("Linea :" + AnalizadorLexico.saltoDeLinea +  " Error:  La variable '" + $1.sval + "' no fue declarada");}}}
 			| variable_simple '{' '-' CTE '}' ASIGNACION expresion_arit {cargarErrorEImprimirloSintactico("Linea " + AnalizadorLexico.saltoDeLinea + " Error: no se puede acceder a una posicion negativa de un arreglo ");}
-			| ASIGNACION expresion_arit {cargarErrorEImprimirloSintactico("Linea " + AnalizadorLexico.saltoDeLinea + " Error: Falta la parte izquierda de la asignacion. ");}
+			| ASIGNACION expresion_arit {cargarErrorEImprimirloSintactico("Linea " + AnalizadorLexico.saltoDeLinea + " Error: Falta el operando izquierdo de la asignacion. ");}
 ;
 
 invocacion	: ID_simple '(' expresion_arit ')' 
@@ -248,11 +248,11 @@ sentencia_IF: IF condicion bloque_THEN ';' bloque_else ';' END_IF {if($3.sval=="
 			| IF condicion bloque_THEN ';' bloque_else ';' error{if($3.sval=="RET" && $5.sval=="RET"){$$.sval="RET";};cargarErrorEImprimirloSintactico("Linea " + AnalizadorLexico.saltoDeLinea + ": Error : Falta el END_IF en IF ");}
 ;
 
-condicion	: '(' '(' list_expre ')' comparador '(' list_expre ')' ')' {if(!EerrorSintactico()){if($3.ival == $7.ival){cantDeOperandos=$3.ival;modificarPolacaPM($5.sval,$3.ival);}else{cargarErrorEImprimirloSintactico("Linea " + AnalizadorLexico.saltoDeLinea + "Error : Cantidad de operandor incompatibles en la comparacion ");}}}
+condicion	: '(' '(' list_expre ')' comparador '(' list_expre ')' ')' {if($3.ival == $7.ival){if(!EerrorSintactico()){cantDeOperandos=$3.ival;modificarPolacaPM($5.sval,$3.ival);}}else{cargarErrorEImprimirloSintactico("Linea " + AnalizadorLexico.saltoDeLinea + "Error : Cantidad de operandor incompatibles en la comparacion ");}}
 			| '(' list_expre ')' comparador '(' list_expre ')' ')' {cargarErrorEImprimirloSintactico("Linea " + AnalizadorLexico.saltoDeLinea + "Error : Falta el '(' en la condicion ");}
 			| '(' '(' list_expre ')' comparador '(' list_expre ')' {cargarErrorEImprimirloSintactico("Linea " + AnalizadorLexico.saltoDeLinea + "Error : Falta el ')' en la condicion ");}
 			|'(' list_expre ')' comparador '(' list_expre ')' {cargarErrorEImprimirloSintactico("Linea " + AnalizadorLexico.saltoDeLinea + "Error : Faltan los parentesis en la condicion ");}
-			| '(' expresion_arit comparador expresion_arit ')' {if(!EerrorSintactico()){cantDeOperandos=1;opCondicion($3.sval);}}
+			| '(' expresion_arit comparador expresion_arit ')' {cantDeOperandos=1;if(!EerrorSintactico()){opCondicion($3.sval);}}
 			|  expresion_arit comparador expresion_arit ')' {cargarErrorEImprimirloSintactico("Linea " + AnalizadorLexico.saltoDeLinea + "Error : Falta el '(' en la condicion ");}
 			| '(' expresion_arit comparador expresion_arit  {cargarErrorEImprimirloSintactico("Linea " + AnalizadorLexico.saltoDeLinea + "Error : Falta el ')' en la condicion ");}
 			| expresion_arit comparador expresion_arit  {cargarErrorEImprimirloSintactico("Linea " + AnalizadorLexico.saltoDeLinea + "Error : Faltan los parentesis en la condicion ");}
@@ -286,8 +286,8 @@ bloque_else_multiple:	ELSE BEGIN bloque_sent_ejecutables ';' END {if($3.sval=="R
 bloque_else_simple:	ELSE bloque_sentencia_simple {if($2.sval=="RET"){$$.sval="RET";};}
 ;
 //THEN
-bloque_THEN: bloque_THEN_simple {if($1.sval=="RET"){$$.sval="RET";};operacionesIF();}
-			| bloque_THEN_multiple {if($1.sval=="RET"){$$.sval="RET";};operacionesIF();}
+bloque_THEN: bloque_THEN_simple {if(!EerrorSintactico()){if($1.sval=="RET"){$$.sval="RET";};operacionesIF();}}
+			| bloque_THEN_multiple {if(!EerrorSintactico()){if($1.sval=="RET"){$$.sval="RET";};operacionesIF();}}
 ;
 
 bloque_THEN_multiple:	THEN BEGIN bloque_sent_ejecutables ';' END {if($3.sval=="RET"){$$.sval="RET";};}
@@ -362,7 +362,7 @@ static{
 }
 
 public static boolean EerrorSintactico(){
-		return CreacionDeSalidas.getOutputSemantico().length()!=0 || CreacionDeSalidas.getOutputSintactico().length()!=0 || CreacionDeSalidas.getOutputLexico().length()!=0;
+		return CreacionDeSalidas.getOutputSintactico().length()!=0 || CreacionDeSalidas.getOutputLexico().length()!=0;
 }
 
 

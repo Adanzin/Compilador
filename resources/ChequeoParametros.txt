@@ -1,27 +1,13 @@
 lala
-
 begin
-
- 
-
-integer FUN juancito ( double a ) BEGIN
-
-                             if (e < 4) then
-
-                                           IF (e < 3) THEN
-
-                                                         RET (x);
-
-                                           ELSE
-
-                                                         RET (a);
-
-                                           END_IF;
-
-                            end_if;
-
-               END;
-
- 
+integer FUN juancito( double
+a ) BEGIN
+IF (e < 3) THEN
+RET (x)
+ELSE
+RET (a);
+END_IF;
+a:=1;
+END;
 
 end

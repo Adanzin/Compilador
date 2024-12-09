@@ -874,7 +874,7 @@ static{
 }
 
 public static boolean EerrorSintactico(){
-		return CreacionDeSalidas.getOutputSemantico().length()!=0 || CreacionDeSalidas.getOutputSintactico().length()!=0 || CreacionDeSalidas.getOutputLexico().length()!=0;
+		return CreacionDeSalidas.getOutputSintactico().length()!=0 || CreacionDeSalidas.getOutputLexico().length()!=0;
 }
 
 
@@ -1637,7 +1637,7 @@ case 66:
 																			GeneradorCodigoIntermedio.addElemento(val_peek(3).sval);
 																			GeneradorCodigoIntermedio.addElemento("INDEX");
 																			GeneradorCodigoIntermedio.addElemento(":="); 
-																			}else{cargarErrorEImprimirloSintactico("Linea :" + AnalizadorLexico.saltoDeLinea +  " Error:  Tripla fuera de rango ");}														
+																			}else{cargarErrorEImprimirloSemantico("Linea :" + AnalizadorLexico.saltoDeLinea +  " Error:  Tripla fuera de rango ");}														
 																	}else{
 																		cargarErrorEImprimirloSemantico("Linea :" + AnalizadorLexico.saltoDeLinea +  " Error:  La variable '" + val_peek(5).sval + "' no fue declarada");}}}
 break;
@@ -1647,7 +1647,7 @@ case 67:
 break;
 case 68:
 //#line 156 "Gramatica.y"
-{cargarErrorEImprimirloSintactico("Linea " + AnalizadorLexico.saltoDeLinea + " Error: Falta la parte izquierda de la asignacion. ");}
+{cargarErrorEImprimirloSintactico("Linea " + AnalizadorLexico.saltoDeLinea + " Error: Falta el operando izquierdo de la asignacion. ");}
 break;
 case 69:
 //#line 160 "Gramatica.y"
@@ -1831,7 +1831,7 @@ case 113:
 break;
 case 114:
 //#line 251 "Gramatica.y"
-{if(!EerrorSintactico()){if(val_peek(6).ival == val_peek(2).ival){cantDeOperandos=val_peek(6).ival;modificarPolacaPM(val_peek(4).sval,val_peek(6).ival);}else{cargarErrorEImprimirloSintactico("Linea " + AnalizadorLexico.saltoDeLinea + "Error : Cantidad de operandor incompatibles en la comparacion ");}}}
+{if(val_peek(6).ival == val_peek(2).ival){if(!EerrorSintactico()){cantDeOperandos=val_peek(6).ival;modificarPolacaPM(val_peek(4).sval,val_peek(6).ival);}}else{cargarErrorEImprimirloSintactico("Linea " + AnalizadorLexico.saltoDeLinea + "Error : Cantidad de operandor incompatibles en la comparacion ");}}
 break;
 case 115:
 //#line 252 "Gramatica.y"
@@ -1847,7 +1847,7 @@ case 117:
 break;
 case 118:
 //#line 255 "Gramatica.y"
-{if(!EerrorSintactico()){cantDeOperandos=1;opCondicion(val_peek(2).sval);}}
+{cantDeOperandos=1;if(!EerrorSintactico()){opCondicion(val_peek(2).sval);}}
 break;
 case 119:
 //#line 256 "Gramatica.y"
@@ -1931,11 +1931,11 @@ case 138:
 break;
 case 139:
 //#line 289 "Gramatica.y"
-{if(val_peek(0).sval=="RET"){yyval.sval="RET";};operacionesIF();}
+{if(!EerrorSintactico()){if(val_peek(0).sval=="RET"){yyval.sval="RET";};operacionesIF();}}
 break;
 case 140:
 //#line 290 "Gramatica.y"
-{if(val_peek(0).sval=="RET"){yyval.sval="RET";};operacionesIF();}
+{if(!EerrorSintactico()){if(val_peek(0).sval=="RET"){yyval.sval="RET";};operacionesIF();}}
 break;
 case 141:
 //#line 293 "Gramatica.y"

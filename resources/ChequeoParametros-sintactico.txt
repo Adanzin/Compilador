@@ -1,0 +1,2 @@
+
+ Linea 9 Error: Falta ';' al final de la sentencia del bloque del THEN  

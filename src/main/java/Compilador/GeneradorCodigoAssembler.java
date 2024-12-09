@@ -96,9 +96,7 @@ public class GeneradorCodigoAssembler {
 		Simbolo simbOperando2 = Parser.getVariableFueraDeAmbito(operando2);
 		operando1 = simbOperando1.getId();
 		operando2 = simbOperando2.getId();
-		
-		System.out.println(simbOperando1);
-		System.out.println(simbOperando2);
+
 		
 		if (simbOperando1.sonCompatibles(simbOperando2)) {
 			Tipo tipoOperando2 = simbOperando2.getTipo();
