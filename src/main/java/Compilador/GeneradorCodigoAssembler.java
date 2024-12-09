@@ -97,6 +97,9 @@ public class GeneradorCodigoAssembler {
 		operando1 = simbOperando1.getId();
 		operando2 = simbOperando2.getId();
 		
+		System.out.println(simbOperando1);
+		System.out.println(simbOperando2);
+		
 		if (simbOperando1.sonCompatibles(simbOperando2)) {
 			Tipo tipoOperando2 = simbOperando2.getTipo();
 			Tipo tipoOperando1 = simbOperando1.getTipo();
@@ -250,7 +253,6 @@ public class GeneradorCodigoAssembler {
 			chequeoSubtipo.append("CMP AX, @auxSubtipoSuperior" + AnalizadorLexico.TablaDeSimbolos.get(operando2).getTipo().getNombreSubtipo() + "\n"); 
 			chequeoSubtipo.append("JG Subtipo_superior \n");
 		}
-		
 		switch (operacion) {
 			case "+":
 				codigo.append("ADD AX," + operando2 + "\n");
@@ -286,6 +288,7 @@ public class GeneradorCodigoAssembler {
 				String auxOp = operando1;
 				operando1 = operando2;
 				operando2 = auxOp;
+				
 				//No andaba bien asi que los intercambie para que se haga correctamente
 				codigo.append("MOV AX, " + operando2 + "\n");
 				
@@ -396,7 +399,7 @@ public class GeneradorCodigoAssembler {
 						codigo.append("MOV AX, " + operando + "\n"); //Guardo la variable que quiero retornar en AX
 						codigo.append("MOV @RET" + nombrePolaca + ", AX" + "\n");
 					}else {
-						codigo.append("FLD operando \n");
+						codigo.append("FLD " + operando + "\n");
 						codigo.append("FSTP @RET" + nombrePolaca + "\n");
 					}
 					
@@ -884,7 +887,7 @@ public class GeneradorCodigoAssembler {
 				String tipoString = tipo.toString();
 				if (tipoString.contains("CADENAMULTILINEA")) {
 					String lexemaConvertido = convertirLexemaCadena(lexema);
-					if (codigo.indexOf(lexemaConvertido + " db") == -1) {
+					if (codigo.indexOf("/n"+lexemaConvertido + " db") == -1) {
 						codigo.append(lexemaConvertido).append(" db \"").append(
 								//--------------------------------------------------------------------------------
 								lexema.replace("\"", "\", 22h, \"").replace("\n", " ").replace("[", "").replace("]", "").replaceAll("\\s+", " ").trim())

@@ -14,7 +14,7 @@ public class AS_ERROR extends AccionSemantica {
 
 	@Override
 	public Short ejecutar(char car, Reader lector, StringBuilder token, TablaPalabrasReservadas PalabrasReservadas, Map<String, Simbolo> TablaDeSimbolos) {
-		cargarSalida("Error lexico en la linea" + AnalizadorLexico.saltoDeLinea +": Se leyo el siguiente caracter invalido "+ token.toString());
+		cargarSalida("Error lexico en la linea" + AnalizadorLexico.saltoDeLinea +": Se leyo el siguiente caracter invalido "+ car);
 		return TOKEN_ACTIVO;
 	}
 

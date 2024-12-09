@@ -47,6 +47,12 @@ public class Main {
         System.out.println("       ");
         System.out.println("       >>>>>  TABLA DE SIMBOLOS <<<<<");
         getSimbolos();
+		System.out.println("       >>>>>  TIPOS   <<<<<");
+		System.out.println("       ");
+		getTipos();
+		System.out.println("       ");
+		System.out.println("       >>>>>  POLACA   <<<<<");
+		GeneradorCodigoIntermedio.imprimirPolaca();
         if (CreacionDeSalidas.getOutputLexico().length()==0 && CreacionDeSalidas.getOutputSintactico().length()==0 
         		&& CreacionDeSalidas.getOutputSemantico().length()==0) {
         			// Generamos el assembler
@@ -56,12 +62,6 @@ public class Main {
         				System.out.println("       ");
                 		System.out.println(" > Se compilo correctamente < ");
         				System.out.println("       ");
-        				System.out.println("       >>>>>  TIPOS   <<<<<");
-        				System.out.println("       ");
-        				getTipos();
-        				System.out.println("       ");
-        				System.out.println("       >>>>>  POLACA   <<<<<");
-        				GeneradorCodigoIntermedio.imprimirPolaca();
         				
         			}else {
         				System.out.println("       ");

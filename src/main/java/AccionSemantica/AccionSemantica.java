@@ -21,6 +21,7 @@ public abstract class AccionSemantica {
 		try {
 			AnalizadorLexico.lexico.newLine();  // Agregar un salto de línea
 			AnalizadorLexico.lexico.write(" "+in+" ");
+			AnalizadorLexico.lexico.flush();
 
 		} catch (IOException e) {
 			// TODO Auto-generated catch block

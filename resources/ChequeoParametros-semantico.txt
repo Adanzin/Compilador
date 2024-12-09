@@ -1,0 +1,2 @@
+
+ Linea :9 Error: La variable 'e' no fue declarada 
