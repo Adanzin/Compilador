@@ -88,12 +88,12 @@ public class Simbolo {
     	if(this.esEntero()) {
     		Simbolo s = new Simbolo(this.entero*-1,this.doub,this.base);
     		s.setTipoVar(this.tipoVar);
-    		s.setId(this.id);
+    		s.setId("-" + this.id);
     		return s;
     	}
     	Simbolo s = new Simbolo(this.entero,this.doub*-1.0,this.base);
     	s.setTipoVar(this.tipoVar);
-    	s.setId(this.id);
+    	s.setId("-" + this.id);
     	return s;
     }
 

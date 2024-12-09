@@ -39,7 +39,9 @@ public class GeneradorCodigoAssembler {
 					break;
 				case "BF":
 					ultimaOperacion = elemento;
-					operadorSaltoCondicional(elemento, codigo, polacaActual.get(i-2));
+					String comparadorAnterior = polacaActual.get(i-2);
+					String tipoOperandos = Parser.getVariableFueraDeAmbito(polacaActual.get(i-3)).getTipo().getType();
+					operadorSaltoCondicional(elemento, codigo, comparadorAnterior, tipoOperandos);
 					break;
 				case "BI":
 					ultimaOperacion = elemento;
@@ -96,7 +98,7 @@ public class GeneradorCodigoAssembler {
 		Simbolo simbOperando2 = Parser.getVariableFueraDeAmbito(operando2);
 		operando1 = simbOperando1.getId();
 		operando2 = simbOperando2.getId();
-
+		
 		
 		if (simbOperando1.sonCompatibles(simbOperando2)) {
 			Tipo tipoOperando2 = simbOperando2.getTipo();
@@ -207,21 +209,39 @@ public class GeneradorCodigoAssembler {
 		pila.push(key); //Apilo el nombre de la variable que debera retornar la funcion		
 	}
 	
-	public static void operadorSaltoCondicional(String elemento, StringBuilder codigo, String comparadorAnterior) {
+	public static void operadorSaltoCondicional(String elemento, StringBuilder codigo, String comparadorAnterior, String tipoOperandos) {
 		String operador = pila.pop(); // Es la direccion a saltar
 		switch (comparadorAnterior) {
 		// Le paso el operador anterior al salto para saber que comparaci�n era y as� usar el jump adecuado
 			case ">":
-				codigo.append("JLE LABEL" + operador + "\n \n"); // Salto en el caso contrario al de la comparacion
+				if(tipoOperandos.contains("INTEGER")||tipoOperandos.contains("OCTAL")) {
+					codigo.append("JLE LABEL" + operador + "\n \n"); // Salto en el caso contrario al de la comparacion
+				}else {
+					codigo.append("JBE LABEL" + operador + "\n \n"); // Salto en el caso contrario al de la comparacion
+				}
+				
 				break;
 			case "<":
-				codigo.append("JAE LABEL" + operador + "\n \n"); // Salto en el caso contrario al de la comparacion
+				if(tipoOperandos.contains("INTEGER")||tipoOperandos.contains("OCTAL")) {
+					codigo.append("JGE LABEL" + operador + "\n \n"); // Salto en el caso contrario al de la comparacion
+				}else {
+					codigo.append("JAE LABEL" + operador + "\n \n"); // Salto en el caso contrario al de la comparacion
+				}
+				
 				break;
 			case ">=":
-				codigo.append("JL LABEL" + operador + "\n \n"); // Salto en el caso contrario al de la comparacion
+				if(tipoOperandos.contains("INTEGER")||tipoOperandos.contains("OCTAL")) {
+					codigo.append("JL LABEL" + operador + "\n \n"); // Salto en el caso contrario al de la comparacion
+				}else {
+					codigo.append("JB LABEL" + operador + "\n \n"); // Salto en el caso contrario al de la comparacion
+				}
 				break;
 			case "<=":
-				codigo.append("JG LABEL" + operador + "\n \n"); // Salto en el caso contrario al de la comparacion
+				if(tipoOperandos.contains("INTEGER")||tipoOperandos.contains("OCTAL")) {
+					codigo.append("JG LABEL" + operador + "\n \n"); // Salto en el caso contrario al de la comparacion
+				}else {
+					codigo.append("JA LABEL" + operador + "\n \n"); // Salto en el caso contrario al de la comparacion
+				}
 				break;
 			case "=":
 				codigo.append("JNE LABEL" + operador + "\n \n"); // Salto en el caso contrario al de la comparacion
@@ -251,6 +271,7 @@ public class GeneradorCodigoAssembler {
 			chequeoSubtipo.append("CMP AX, @auxSubtipoSuperior" + AnalizadorLexico.TablaDeSimbolos.get(operando2).getTipo().getNombreSubtipo() + "\n"); 
 			chequeoSubtipo.append("JG Subtipo_superior \n");
 		}
+		
 		switch (operacion) {
 			case "+":
 				codigo.append("ADD AX," + operando2 + "\n");
@@ -397,7 +418,7 @@ public class GeneradorCodigoAssembler {
 						codigo.append("MOV AX, " + operando + "\n"); //Guardo la variable que quiero retornar en AX
 						codigo.append("MOV @RET" + nombrePolaca + ", AX" + "\n");
 					}else {
-						codigo.append("FLD " + operando + "\n");
+						codigo.append("FLD operando \n");
 						codigo.append("FSTP @RET" + nombrePolaca + "\n");
 					}
 					
@@ -474,7 +495,7 @@ public class GeneradorCodigoAssembler {
 				codigo.append("FLD " + operando1 + "\n"); //Apilo el operando1
 				codigo.append("FCOMPP"  + "\n"); //Compara los operandos extrayendo ambos operandos de la pila
 				codigo.append("FSTSW AX \n");
-				codigo.append("SAHF \n ");
+				codigo.append("SAHF \n");
 				codigo.append("FINIT \n \n"); //Siempre vacio la pila al finalizar para evitar errores de ejecucion
 			}
 		}
@@ -738,9 +759,11 @@ public class GeneradorCodigoAssembler {
 		String tipoString = AnalizadorLexico.TablaDeSimbolos.get(operando).getTipo().toString();
 		if (tipoString.contains("INTEGER")) {
 			operando = "integer" + operando;
+			operando = operando.replace("-", "_");
 		}
 		if (tipoString.contains("OCTAL")) {
 			operando = "octi" + operando;
+			operando = operando.replace("-", "_");
 		}
 		if (tipoString.contains("DOUBLE")) {
 			operando = "float" + operando;
@@ -885,7 +908,7 @@ public class GeneradorCodigoAssembler {
 				String tipoString = tipo.toString();
 				if (tipoString.contains("CADENAMULTILINEA")) {
 					String lexemaConvertido = convertirLexemaCadena(lexema);
-					if (codigo.indexOf("/n"+lexemaConvertido + " db") == -1) {
+					if (codigo.indexOf(lexemaConvertido + " db") == -1) {
 						codigo.append(lexemaConvertido).append(" db \"").append(
 								//--------------------------------------------------------------------------------
 								lexema.replace("\"", "\", 22h, \"").replace("\n", " ").replace("[", "").replace("]", "").replaceAll("\\s+", " ").trim())
