@@ -16,53 +16,194 @@ Error_Subtipo_superior DB "Error: Valor mayor al limite superior del subtipo ", 
 $_FIN_DE_PROGRAMA_$ DB "FIN DE LA EJECUCION DEL PROGRAMA ", 10, 0 
 $_$mensajeEntero$_$ DB "%d, %d, %d", 10, 0 
 $_$mensajeFloat$_$ DB "%f, %f, %f", 10, 0 
-b$MAIN DW ?
-@ParametroRealInt DW ?
-integer_2 DW -2
-@ParametroRealFloat DQ ?
+s2$MAIN DQ ?, ?, ?
+_imprimo_s1 db "imprimo s1", 10, 0 
+@aux7 DQ ?
+@aux6 DQ ?
+@aux5 DQ ?
+@aux4 DQ ?
+float400@0 DQ 400.0
+@aux9 DQ ?
+@aux8 DQ ?
+_imprimo_b db "imprimo b", 10, 0 
+tsing$MAIN DQ ?, ?, ?
+b$MAIN$f DQ ?, ?, ?
+s1$MAIN DQ ?, ?, ?
+f$MAIN DQ ?, ?, ?
+@aux3 DQ ?
+@aux2 DQ ?
+@aux1 DQ ?
+@aux11 DQ ?
+_imprimo_s2 db "imprimo s2", 10, 0 
+@aux12 DQ ?
+float40@0 DQ 40.0
+@aux10 DQ ?
 integer1 DW 1
 integer2 DW 2
-integer4 DW 4
-c$MAIN DW ?
-a$MAIN DW ?
-@aux1 DW ?
-integer10 DW 10
+integer3 DW 3
+_imprimo_s1_parte_2 db "imprimo s1 parte 2", 10, 0 
+float4@0 DQ 4.0
+float10@0 DQ 10.0
+@RET$MAIN$f DQ ?, ?, ?
+@ParametroRealFloatTripla DQ ?, ?, ?
 
 .code 
  
+$MAIN$f: 
+PUSH EBP 
+MOV EBP, ESP 
+SUB ESP, 4 
+PUSH EDI 
+PUSH ESI 
+MOV ECX, OFFSET @ParametroRealFloatTripla
+MOV EDX, OFFSET b$MAIN$f
+FLD QWORD PTR [ECX] 
+FSTP QWORD PTR [EDX] 
+FLD QWORD PTR [ECX + 8] 
+FSTP QWORD PTR [EDX + 8] 
+FLD QWORD PTR [ECX + 16] 
+FSTP QWORD PTR [EDX + 16] 
+
+MOV ECX, OFFSET b$MAIN$f
+FLD QWORD PTR [ECX + 0] 
+FSTP QWORD PTR @aux1
+ 
+FLD @aux1
+FLD float10@0
+FADD
+FSTP @aux2
+FINIT 
+ 
+MOV ECX, OFFSET b$MAIN$f
+FLD QWORD PTR [ECX + 0] 
+FSTP QWORD PTR @aux3
+ 
+MOV ECX, OFFSET b$MAIN$f
+FLD QWORD PTR @aux2
+FSTP QWORD PTR [ECX + 0] 
+FINIT 
+ 
+MOV ECX, OFFSET b$MAIN$f
+FLD QWORD PTR [ECX + 8] 
+FSTP QWORD PTR @aux4
+ 
+FLD @aux4
+FLD float10@0
+FADD
+FSTP @aux5
+FINIT 
+ 
+MOV ECX, OFFSET b$MAIN$f
+FLD QWORD PTR [ECX + 8] 
+FSTP QWORD PTR @aux6
+ 
+MOV ECX, OFFSET b$MAIN$f
+FLD QWORD PTR @aux5
+FSTP QWORD PTR [ECX + 8] 
+FINIT 
+ 
+MOV ECX, OFFSET b$MAIN$f
+FLD QWORD PTR [ECX + 16] 
+FSTP QWORD PTR @aux7
+ 
+FLD @aux7
+FLD float10@0
+FADD
+FSTP @aux8
+FINIT 
+ 
+MOV ECX, OFFSET b$MAIN$f
+FLD QWORD PTR [ECX + 16] 
+FSTP QWORD PTR @aux9
+ 
+MOV ECX, OFFSET b$MAIN$f
+FLD QWORD PTR @aux8
+FSTP QWORD PTR [ECX + 16] 
+FINIT 
+ 
+invoke printf, addr _imprimo_b 
+ 
+invoke printf, addr $_$mensajeFloat$_$, QWORD PTR [b$MAIN$f], QWORD PTR [b$MAIN$f + 8], QWORD PTR [b$MAIN$f + 16] 
+ 
+invoke printf, addr _imprimo_s1_parte_2 
+ 
+invoke printf, addr $_$mensajeFloat$_$, QWORD PTR [s1$MAIN], QWORD PTR [s1$MAIN + 8], QWORD PTR [s1$MAIN + 16] 
+ 
+MOV ECX, OFFSET b$MAIN$f
+MOV EDX, OFFSET @RET$MAIN$f
+FLD QWORD PTR [ECX] 
+FSTP QWORD PTR [EDX] 
+FLD QWORD PTR [ECX + 8] 
+FSTP QWORD PTR [EDX + 8] 
+FLD QWORD PTR [ECX + 16] 
+FSTP QWORD PTR [EDX + 16] 
+
+POP ESI 
+POP EDI 
+MOV ESP, EBP 
+POP EBP 
+RET
+ 
+
 start: 
-MOV AX, integer_2
-MOV a$MAIN, AX
+MOV ECX, OFFSET s1$MAIN
+FLD QWORD PTR [ECX + 0] 
+FSTP QWORD PTR @aux10
+ 
+MOV ECX, OFFSET s1$MAIN
+FLD QWORD PTR float4@0
+FSTP QWORD PTR [ECX + 0] 
+FINIT 
+ 
+MOV ECX, OFFSET s1$MAIN
+FLD QWORD PTR [ECX + 8] 
+FSTP QWORD PTR @aux11
+ 
+MOV ECX, OFFSET s1$MAIN
+FLD QWORD PTR float40@0
+FSTP QWORD PTR [ECX + 8] 
+FINIT 
+ 
+MOV ECX, OFFSET s1$MAIN
+FLD QWORD PTR [ECX + 16] 
+FSTP QWORD PTR @aux12
+ 
+MOV ECX, OFFSET s1$MAIN
+FLD QWORD PTR float400@0
+FSTP QWORD PTR [ECX + 16] 
+FINIT 
+ 
+invoke printf, addr _imprimo_s1 
+ 
+invoke printf, addr $_$mensajeFloat$_$, QWORD PTR [s1$MAIN], QWORD PTR [s1$MAIN + 8], QWORD PTR [s1$MAIN + 16] 
+ 
+MOV ECX, OFFSET s1$MAIN
+MOV EDX, OFFSET @ParametroRealFloatTripla
+FLD QWORD PTR [ECX] 
+FSTP QWORD PTR [EDX] 
+FLD QWORD PTR [ECX + 8] 
+FSTP QWORD PTR [EDX + 8] 
+FLD QWORD PTR [ECX + 16] 
+FSTP QWORD PTR [EDX + 16] 
 
- 
-MOV AX, integer10
-MOV b$MAIN, AX
+FINIT 
+FLD @ParametroRealFloatTripla 
+CALL $MAIN$f
+MOV ECX, OFFSET @RET$MAIN$f
+MOV EDX, OFFSET s2$MAIN
+FLD QWORD PTR [ECX] 
+FSTP QWORD PTR [EDX] 
+FLD QWORD PTR [ECX + 8] 
+FSTP QWORD PTR [EDX + 8] 
+FLD QWORD PTR [ECX + 16] 
+FSTP QWORD PTR [EDX + 16] 
 
+FINIT 
  
-MOV AX, integer4
-MOV c$MAIN, AX
-
+invoke printf, addr _imprimo_s2 
  
-LABEL9: 
-MOV AX, a$MAIN
-MOV BX, b$MAIN
-CMP AX,BX
+invoke printf, addr $_$mensajeFloat$_$, QWORD PTR [s2$MAIN], QWORD PTR [s2$MAIN + 8], QWORD PTR [s2$MAIN + 16] 
  
-JGE LABEL24
- 
-MOV AX, a$MAIN
-ADD AX,integer1
-MOV @aux1,AX
- 
-MOV AX, @aux1
-MOV a$MAIN, AX
-
- 
-invoke printf, cfm$("%hi\n"), a$MAIN
- 
-JMP LABEL9
- 
-LABEL24: 
 JMP fin 
  
 Divison_Por_Cero:

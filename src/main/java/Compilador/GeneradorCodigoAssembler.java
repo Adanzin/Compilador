@@ -109,10 +109,10 @@ public class GeneradorCodigoAssembler {
 				if (operacion == ":=") {
 					if (tipoOperando2.getType().toString().contains("INTEGER") || tipoOperando2.getType().toString().contains("OCTAL")) {
 						// Solo debe permitirse la asignacion y llamo al metodo para asignar a cada elemento el del indice correspondiente
-						operacionEntreTriplasInteger(operando1, operando2, operacion, codigo, tipoOperando1,tipoOperando2);
+						operacionEntreTriplasInteger(operando1, operando2, codigo);
 						ultimaTripla = "";
 					} else {
-						operacionEntreTriplasFloat(operando1, operando2, operacion, codigo, tipoOperando1, tipoOperando2);
+						operacionEntreTriplasFloat(operando1, operando2, codigo);
 						codigo.append("FINIT \n \n"); //Siempre vacio la pila al finalizar para evitar errores de ejecucion
 						ultimaTripla = "";
 					}
@@ -175,18 +175,34 @@ public class GeneradorCodigoAssembler {
 		Simbolo simbOperando2 = Parser.getVariableFueraDeAmbito(operando2);
 		Simbolo simbOperando1 = Parser.getVariableFueraDeAmbito(operando1);
 		if(simbOperando1.getTipoParFormal()==simbOperando2.getTipo().getType()){
-			if(simbOperando2.getTipo().getType()=="INTEGER" || simbOperando2.getTipo().getType()=="OCTAL") {
-				codigo.append("MOV AX, " + operando2 + "\n");
-				codigo.append("MOV @ParametroRealInt, AX \n");
+			if(!simbOperando2.getTipo().esTripla()) {
+				if(simbOperando2.getTipo().getType()=="INTEGER" || simbOperando2.getTipo().getType()=="OCTAL") {
+					codigo.append("MOV AX, " + operando2 + "\n");
+					codigo.append("MOV @ParametroRealInt, AX \n");
+				}
+				else if(simbOperando2.getTipo().getType()=="DOUBLE") {
+					codigo.append("FLD " + operando2 + "\n"); //Apilo el parametro real
+					codigo.append("FSTP @ParametroRealFloat \n");
+					
+					//-------------------------------------------------------------------
+					codigo.append("FINIT \n");
+					codigo.append("FLD @ParametroRealFloat \n"); //
+				}
 			}
-			else if(simbOperando2.getTipo().getType()=="DOUBLE") {
-				codigo.append("FLD " + operando2 + "\n"); //Apilo el parametro real
-				codigo.append("FSTP @ParametroRealFloat \n");
-				
-				//-------------------------------------------------------------------
-				codigo.append("FINIT \n");
-				codigo.append("FLD @ParametroRealFloat \n"); //
+			else {
+				if(simbOperando2.getTipo().getType()=="INTEGER" || simbOperando2.getTipo().getType()=="OCTAL") {
+					operacionEntreTriplasInteger(operando2, "@ParametroRealIntTripla", codigo);
+				}
+				else if(simbOperando2.getTipo().getType()=="DOUBLE") {
+					operacionEntreTriplasFloat(operando2,"@ParametroRealFloatTripla", codigo);
+					
+					//-------------------------------------------------------------------
+					codigo.append("FINIT \n");
+					codigo.append("FLD @ParametroRealFloatTripla \n"); //Apilo para despues desapilarlo en el llamado a funcion
+				}
 			}
+			
+			
 		}else {
 			Parser.cargarErrorEImprimirloSemantico("Error: El par�metro real y formal tienen tipos incompatiables en la funcion " + operando1 + "\n");
 			try {
@@ -414,14 +430,21 @@ public class GeneradorCodigoAssembler {
 				
 				
 				if(retorno.sonCompatibles(simbOperando)) {
-					if(retorno.getTipo().getType().contains("INTEGER")||retorno.getTipo().getType().contains("OCTAL")) {
-						codigo.append("MOV AX, " + operando + "\n"); //Guardo la variable que quiero retornar en AX
-						codigo.append("MOV @RET" + nombrePolaca + ", AX" + "\n");
+					if(!retorno.getTipo().esTripla()) {
+						if(retorno.getTipo().getType().contains("INTEGER")||retorno.getTipo().getType().contains("OCTAL")) {
+							codigo.append("MOV AX, " + operando + "\n"); //Guardo la variable que quiero retornar en AX
+							codigo.append("MOV @RET" + nombrePolaca + ", AX" + "\n");
+						}else {
+							codigo.append("FLD " + operando + "\n");
+							codigo.append("FSTP @RET" + nombrePolaca + "\n");
+						}
 					}else {
-						codigo.append("FLD operando \n");
-						codigo.append("FSTP @RET" + nombrePolaca + "\n");
+						if(retorno.getTipo().getType().contains("INTEGER")||retorno.getTipo().getType().contains("OCTAL")) {
+							operacionEntreTriplasInteger(operando, "@RET" + nombrePolaca, codigo);
+						}else {
+							operacionEntreTriplasFloat(operando, "@RET" + nombrePolaca, codigo);
+						}
 					}
-					
 					codigo.append("POP ESI \n");
 					codigo.append("POP EDI \n");
 					codigo.append("MOV ESP, EBP \n");
@@ -510,17 +533,32 @@ public class GeneradorCodigoAssembler {
 		codigo.append("PUSH ESI \n");
 		//ParametroRealInt
 		//ParametroRealFloat
-		if (AnalizadorLexico.TablaDeSimbolos.get(operando).getTipo().getType()=="INTEGER" || 
-				AnalizadorLexico.TablaDeSimbolos.get(operando).getTipo().getType()=="OCTAL") {
-			codigo.append("MOV AX, @ParametroRealInt \n");
-			codigo.append("MOV " + operando + ", AX \n \n"); //Primero asigno el valor del ParametroRealInt cuando hago el CALL
+		
+		if(!AnalizadorLexico.TablaDeSimbolos.get(operando).getTipo().esTripla()) {
+			if (AnalizadorLexico.TablaDeSimbolos.get(operando).getTipo().getType()=="INTEGER" || 
+					AnalizadorLexico.TablaDeSimbolos.get(operando).getTipo().getType()=="OCTAL") {
+				crearAuxiliarParametroReal(AnalizadorLexico.TablaDeSimbolos.get(operando).getTipo());
+				codigo.append("MOV AX, @ParametroRealInt \n");
+				codigo.append("MOV " + operando + ", AX \n \n"); //Primero asigno el valor del ParametroRealInt cuando hago el CALL
+			}
+			else if (AnalizadorLexico.TablaDeSimbolos.get(operando).getTipo().getType()=="DOUBLE") {
+				crearAuxiliarParametroReal(AnalizadorLexico.TablaDeSimbolos.get(operando).getTipo());
+				codigo.append("FSTP " + operando + "\n \n"); //Primero apilo el valor del ParametroRealFloat en ST cuando hago el CALL
+			}
+		}else {
+			if (AnalizadorLexico.TablaDeSimbolos.get(operando).getTipo().getType()=="INTEGER" || AnalizadorLexico.TablaDeSimbolos.get(operando).getTipo().getType()=="OCTAL") {
+				crearAuxiliarParametroRealTripla(AnalizadorLexico.TablaDeSimbolos.get(operando).getTipo());
+				operacionEntreTriplasInteger("@ParametroRealIntTripla", operando, codigo);
+			}
+			else {
+				crearAuxiliarParametroRealTripla(AnalizadorLexico.TablaDeSimbolos.get(operando).getTipo());
+				operacionEntreTriplasFloat("@ParametroRealFloatTripla", operando, codigo);
+			}
 		}
-		else if (AnalizadorLexico.TablaDeSimbolos.get(operando).getTipo().getType()=="DOUBLE") {
-			codigo.append("FSTP " + operando + "\n \n"); //Primero apilo el valor del ParametroRealFloat en ST cuando hago el CALL
-		}
+		
 	}
 	
-	public static void operacionEntreTriplasInteger(String operando1, String operando2, String operacion, StringBuilder codigo, Tipo tipoOperando1, Tipo tipoOperando2) {
+	public static void operacionEntreTriplasInteger(String operando1, String operando2, StringBuilder codigo) {
 		codigo.append("MOV ECX, OFFSET " + operando1 + "\n"); //Guardo la posicion inicial del primer elemento del operando1 (valor) 
 		codigo.append("MOV EDX, OFFSET " + operando2 + "\n"); //Guardo la posicion inicial del primer elemento del operando2 (valor)
 		codigo.append("MOV AX, [ECX]  \n"); //Guardo en AX el valor del primer elemento del operando1
@@ -537,7 +575,7 @@ public class GeneradorCodigoAssembler {
 		codigo.append("\n \n");
 	}
 	
-	public static void operacionEntreTriplasFloat(String operando1, String operando2, String operacion, StringBuilder codigo, Tipo tipoOperando1, Tipo tipoOperando2) {
+	public static void operacionEntreTriplasFloat(String operando1, String operando2, StringBuilder codigo) {
 		codigo.append("MOV ECX, OFFSET " + operando1 + "\n"); //Guardo la posicion inicial del primer elemento del operando1 (valor)
 		codigo.append("MOV EDX, OFFSET " + operando2 + "\n"); //Guardo la posicion inicial del primer elemento del operando2 (valor)
 		
@@ -735,6 +773,21 @@ public class GeneradorCodigoAssembler {
 			simb.setId("@ParametroRealFloat");
 			simb.setUso("Var Aux ParametroRealFloat");
 			AnalizadorLexico.TablaDeSimbolos.put("@ParametroRealFloat",simb);
+		}
+	}
+	
+	public static void crearAuxiliarParametroRealTripla(Tipo tipo) {
+		Simbolo simb = new Simbolo();
+		simb.setTipoVar(tipo);
+		if(tipo.getType()=="INTEGER" || (tipo.getType()=="OCTAL")){
+			simb.setId("@ParametroRealIntTripla");
+			simb.setUso("Var Aux ParametroRealIntTripla");
+			AnalizadorLexico.TablaDeSimbolos.put("@ParametroRealIntTripla",simb);
+		}
+		else if(tipo.getType()=="DOUBLE") {
+			simb.setId("@ParametroRealFloatTripla");
+			simb.setUso("Var Aux ParametroRealFloatTripla");
+			AnalizadorLexico.TablaDeSimbolos.put("@ParametroRealFloatTripla",simb);
 		}
 	}
 	
@@ -982,10 +1035,6 @@ public class GeneradorCodigoAssembler {
 	
 	
 	public static StringBuilder generarCode() {
-		Tipo tipoINTEGER = new Tipo("INTEGER");
-		Tipo tipoDOUBLE = new Tipo("DOUBLE");
-		crearAuxiliarParametroReal(tipoINTEGER);
-		crearAuxiliarParametroReal(tipoDOUBLE);
 		StringBuilder codigo = new StringBuilder();
 		codigo.append(".code \n \n");
 		//Key polaca main $MAIN

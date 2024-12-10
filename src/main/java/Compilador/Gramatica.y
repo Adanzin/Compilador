@@ -143,13 +143,13 @@ asignacion	: variable_simple ASIGNACION expresion_arit
 			| variable_simple '{' CTE '}' ASIGNACION expresion_arit  
 																	{if(!EerrorSintactico())
 																	{if(fueDeclarado($1.sval)){
-																		if(Integer.valueOf($3.sval) <= 3){
+																		if(Integer.valueOf($3.sval) <= 3 && Integer.valueOf($3.sval) > 0){
 																			$$.sval = $1.sval;
 																			GeneradorCodigoIntermedio.addElemento($1.sval+Parser.AMBITO.toString());
 																			GeneradorCodigoIntermedio.addElemento($3.sval);
 																			GeneradorCodigoIntermedio.addElemento("INDEX");
 																			GeneradorCodigoIntermedio.addElemento(":="); 
-																			}else{cargarErrorEImprimirloSemantico("Linea :" + AnalizadorLexico.saltoDeLinea +  " Error:  Tripla fuera de rango ");}														
+																			}else{cargarErrorEImprimirloSemantico("Linea :" + AnalizadorLexico.saltoDeLinea +  " Error:  La posicion " + $3.sval + " es invalida, se espera un valor entre 1 y 3. ");}														
 																	}else{
 																		cargarErrorEImprimirloSemantico("Linea :" + AnalizadorLexico.saltoDeLinea +  " Error:  La variable '" + $1.sval + "' no fue declarada");}}}
 			| variable_simple '{' '-' CTE '}' ASIGNACION expresion_arit {cargarErrorEImprimirloSintactico("Linea " + AnalizadorLexico.saltoDeLinea + " Error: no se puede acceder a una posicion negativa de un arreglo ");}
@@ -206,13 +206,13 @@ factor 	: variable_simple {if(!EerrorSintactico()){if(fueDeclarado($1.sval)){Gen
 		| variable_simple '{' CTE '}' 
 										{if(!EerrorSintactico())
 											{if(fueDeclarado($1.sval)){ 
-											if(Integer.valueOf($3.sval) <= 3){
+											if(Integer.valueOf($3.sval) <= 3 && Integer.valueOf($3.sval) > 0){
 												GeneradorCodigoIntermedio.addElemento($1.sval+Parser.AMBITO.toString());
 												GeneradorCodigoIntermedio.addElemento($3.sval);
 												GeneradorCodigoIntermedio.addElemento("INDEX");
 												AnalizadorLexico.TablaDeSimbolos.get($1.sval).incrementarContDeRef(); $$.sval = $1.sval;
 											}else{
-												cargarErrorEImprimirloSemantico("Linea :" + AnalizadorLexico.saltoDeLinea +  " Error:  Tripla fuera de rango ");
+												cargarErrorEImprimirloSemantico("Linea :" + AnalizadorLexico.saltoDeLinea +  " Error:  La posicion " + $3.sval + " es invalida, se espera un valor entre 1 y 3. ");
 											}
 										}else{cargarErrorEImprimirloSemantico("Linea :" + AnalizadorLexico.saltoDeLinea +  " Error: La variable '"+$1.sval+ "' no fue declarada");};}}
 		| variable_simple '{' '-' CTE '}' {cargarErrorEImprimirloSintactico("Linea " + AnalizadorLexico.saltoDeLinea + " Error: no se puede acceder a una posicion negativa de un arreglo ");}

@@ -17,7 +17,7 @@ package main.java.Compilador;
 
 
 
-//#line 2 "Gramatica.y"
+//#line 2 "gramatica.y"
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -858,7 +858,7 @@ final static String yyrule[] = {
 "sentencia_goto : GOTO error",
 };
 
-//#line 350 "Gramatica.y"
+//#line 350 "gramatica.y"
 	
 public static StringBuilder AMBITO = new StringBuilder("$MAIN");																 
 public static Stack<String> DENTRODELAMBITO = new Stack<String>(); 
@@ -1378,63 +1378,63 @@ boolean doaction;
       {
 //########## USER-SUPPLIED ACTIONS ##########
 case 1:
-//#line 15 "Gramatica.y"
+//#line 15 "gramatica.y"
 {cargarGotos();}
 break;
 case 3:
-//#line 17 "Gramatica.y"
+//#line 17 "gramatica.y"
 {cargarErrorEImprimirloSintactico("\u2718"+"Linea " + AnalizadorLexico.saltoDeLinea + " Error: Falta el nombre del programa ");}
 break;
 case 4:
-//#line 18 "Gramatica.y"
+//#line 18 "gramatica.y"
 {cargarErrorEImprimirloSintactico("\u2718"+"Linea " + AnalizadorLexico.saltoDeLinea + " Error: Falta el delimitador END ");}
 break;
 case 5:
-//#line 19 "Gramatica.y"
+//#line 19 "gramatica.y"
 {cargarErrorEImprimirloSintactico("\u2718"+"Linea " + AnalizadorLexico.saltoDeLinea + " Error: Falta el delimitador BEGIN ");}
 break;
 case 6:
-//#line 20 "Gramatica.y"
+//#line 20 "gramatica.y"
 {cargarErrorEImprimirloSintactico("\u2718"+"Linea " + AnalizadorLexico.saltoDeLinea + " Error: Faltan los delimitadores del programa ");}
 break;
 case 7:
-//#line 23 "Gramatica.y"
+//#line 23 "gramatica.y"
 {if(val_peek(1).sval=="RET" || val_peek(0).sval=="RET" ){yyval.sval="RET";}}
 break;
 case 8:
-//#line 24 "Gramatica.y"
+//#line 24 "gramatica.y"
 {if(val_peek(0).sval=="RET"){yyval.sval="RET";}}
 break;
 case 10:
-//#line 28 "Gramatica.y"
+//#line 28 "gramatica.y"
 {cargarErrorEImprimirloSintactico("Linea " + AnalizadorLexico.saltoDeLinea + " Error: faltan las sentencias antes del ';'  ");}
 break;
 case 11:
-//#line 29 "Gramatica.y"
+//#line 29 "gramatica.y"
 {if(val_peek(1).sval=="RET"){yyval.sval="RET";}}
 break;
 case 12:
-//#line 30 "Gramatica.y"
+//#line 30 "gramatica.y"
 {cargarErrorEImprimirloSintactico("Linea " + AnalizadorLexico.saltoDeLinea + " Error: Falta ';' al final de la sentencia ");}
 break;
 case 16:
-//#line 38 "Gramatica.y"
+//#line 38 "gramatica.y"
 {cargarErrorEImprimirloSintactico("Linea " + AnalizadorLexico.saltoDeLinea + " Error: Falta ';' al final de la sentencia ");}
 break;
 case 17:
-//#line 39 "Gramatica.y"
+//#line 39 "gramatica.y"
 {cargarErrorEImprimirloSintactico("Linea " + AnalizadorLexico.saltoDeLinea + " Error: Falta ';' al final de la sentencia ");}
 break;
 case 18:
-//#line 42 "Gramatica.y"
+//#line 42 "gramatica.y"
 {if(!EerrorSintactico()){cargarVariables(val_peek(1).sval,(Tipo)val_peek(2).obj," nombre de variable "); }}
 break;
 case 19:
-//#line 43 "Gramatica.y"
+//#line 43 "gramatica.y"
 {cargarErrorEImprimirloSintactico("Linea " + AnalizadorLexico.saltoDeLinea + " Error: Falta ';' al final de la sentencia ");}
 break;
 case 20:
-//#line 46 "Gramatica.y"
+//#line 46 "gramatica.y"
 {if(!EerrorSintactico()){ 
 		if(tipos.containsKey(val_peek(0).sval)){
 			yyval.obj = tipos.get(val_peek(0).sval);
@@ -1442,90 +1442,90 @@ case 20:
 				+" Se utilizo un tipo desconocido ");};}}
 break;
 case 21:
-//#line 51 "Gramatica.y"
+//#line 51 "gramatica.y"
 { yyval.obj = val_peek(0).obj;  }
 break;
 case 22:
-//#line 54 "Gramatica.y"
+//#line 54 "gramatica.y"
 { if(!tipos.containsKey("INTEGER")){tipos.put("INTEGER",new Tipo("INTEGER"));}
 							yyval.obj = tipos.get("INTEGER");}
 break;
 case 23:
-//#line 56 "Gramatica.y"
+//#line 56 "gramatica.y"
 { if(!tipos.containsKey("DOUBLE")){tipos.put("DOUBLE",new Tipo("DOUBLE"));}
 							yyval.obj = tipos.get("DOUBLE");}
 break;
 case 24:
-//#line 58 "Gramatica.y"
+//#line 58 "gramatica.y"
 { if(!tipos.containsKey("OCTAL")){tipos.put("OCTAL",new Tipo("OCTAL"));}
 							yyval.obj = tipos.get("OCTAL");}
 break;
 case 25:
-//#line 62 "Gramatica.y"
+//#line 62 "gramatica.y"
 {if(!EerrorSintactico()){cargarVariables(val_peek(7).sval,cargarSubtipo(val_peek(7).sval,(Tipo)val_peek(5).obj,val_peek(3).sval,val_peek(1).sval)," nombre de SubTipo ");}else{cargarErrorEImprimirloSemantico("Linea " + AnalizadorLexico.saltoDeLinea + " Error: No se puede crear una tripla de un tipo no declarado. ");}}
 break;
 case 26:
-//#line 63 "Gramatica.y"
+//#line 63 "gramatica.y"
 {cargarErrorEImprimirloSintactico("Linea " + AnalizadorLexico.saltoDeLinea + " Error: Faltan el '{' en el rango ");}
 break;
 case 27:
-//#line 64 "Gramatica.y"
+//#line 64 "gramatica.y"
 {cargarErrorEImprimirloSintactico("Linea " + AnalizadorLexico.saltoDeLinea + " Error: Faltan el '}' en el rango ");}
 break;
 case 28:
-//#line 65 "Gramatica.y"
+//#line 65 "gramatica.y"
 {cargarErrorEImprimirloSintactico("Linea " + AnalizadorLexico.saltoDeLinea + " Error: Faltan ambos '{' '}' en el rango ");}
 break;
 case 29:
-//#line 66 "Gramatica.y"
+//#line 66 "gramatica.y"
 {if(val_peek(2).obj != null){if(!EerrorSintactico()){cargarVariables(val_peek(0).sval,cargarTripla(val_peek(0).sval,(Tipo)val_peek(2).obj,true)," nombre de Triple ");}else{cargarErrorEImprimirloSemantico("Linea " + AnalizadorLexico.saltoDeLinea + " Error: No se puede crear una tripla de un tipo no declarado. ");}}}
 break;
 case 30:
-//#line 67 "Gramatica.y"
+//#line 67 "gramatica.y"
 {cargarErrorEImprimirloSintactico("Linea " + AnalizadorLexico.saltoDeLinea + " Error: Falta rango inferior ");}
 break;
 case 31:
-//#line 68 "Gramatica.y"
+//#line 68 "gramatica.y"
 {cargarErrorEImprimirloSintactico("Linea " + AnalizadorLexico.saltoDeLinea + " Error: Falta alguno de los rangos ");}
 break;
 case 32:
-//#line 69 "Gramatica.y"
+//#line 69 "gramatica.y"
 {cargarErrorEImprimirloSintactico("Linea " + AnalizadorLexico.saltoDeLinea + " Error: Falta rango superior ");}
 break;
 case 33:
-//#line 70 "Gramatica.y"
+//#line 70 "gramatica.y"
 {cargarErrorEImprimirloSintactico("Linea " + AnalizadorLexico.saltoDeLinea + " Error: Faltan ambos rangos ");}
 break;
 case 34:
-//#line 71 "Gramatica.y"
+//#line 71 "gramatica.y"
 {cargarErrorEImprimirloSintactico("Linea " + AnalizadorLexico.saltoDeLinea + " Error: Falta de nombre en el tipo definido ");}
 break;
 case 35:
-//#line 72 "Gramatica.y"
+//#line 72 "gramatica.y"
 {cargarErrorEImprimirloSintactico("Linea " + AnalizadorLexico.saltoDeLinea + ": Error: Falta el tipo base en la declaracion de subtipo ");}
 break;
 case 36:
-//#line 73 "Gramatica.y"
+//#line 73 "gramatica.y"
 {cargarErrorEImprimirloSintactico("Linea " + AnalizadorLexico.saltoDeLinea + " Error: Falta de la palabra reservada TRIPLE ");}
 break;
 case 37:
-//#line 74 "Gramatica.y"
+//#line 74 "gramatica.y"
 {cargarErrorEImprimirloSintactico("Linea " + AnalizadorLexico.saltoDeLinea + " Error: Falta del '<' en TRIPLE");}
 break;
 case 38:
-//#line 75 "Gramatica.y"
+//#line 75 "gramatica.y"
 {cargarErrorEImprimirloSintactico("Linea " + AnalizadorLexico.saltoDeLinea + " Error: Falta del '>' en TRIPLE");}
 break;
 case 39:
-//#line 76 "Gramatica.y"
+//#line 76 "gramatica.y"
 {cargarErrorEImprimirloSintactico("Linea " + AnalizadorLexico.saltoDeLinea + " Error: Faltan ambos '<>' en TRIPLE");}
 break;
 case 40:
-//#line 77 "Gramatica.y"
+//#line 77 "gramatica.y"
 {cargarErrorEImprimirloSintactico("Linea " + AnalizadorLexico.saltoDeLinea + " Error: Falta identificador al final de la declaracion");}
 break;
 case 41:
-//#line 81 "Gramatica.y"
+//#line 81 "gramatica.y"
 {if(!EerrorSintactico())
 								{	if(val_peek(1).sval!="RET"){cargarErrorEImprimirloSemantico("Linea " + AnalizadorLexico.saltoDeLinea + " Error: Faltan el RETORNO de al funcion ");}
 									sacarAmbito();
@@ -1534,46 +1534,46 @@ case 41:
 								}}
 break;
 case 42:
-//#line 89 "Gramatica.y"
+//#line 89 "gramatica.y"
 {if(!EerrorSintactico()){yyval.sval=val_peek(0).sval;cargarVariables(val_peek(0).sval,(Tipo)val_peek(2).obj,"nombre de funcion");agregarAmbito(val_peek(0).sval);DENTRODELAMBITO.push(val_peek(0).sval);GeneradorCodigoIntermedio.addNuevaPolaca();}}
 break;
 case 43:
-//#line 90 "Gramatica.y"
+//#line 90 "gramatica.y"
 {cargarErrorEImprimirloSintactico("Linea " + AnalizadorLexico.saltoDeLinea + ": Error: Faltan el nombre en la funcion ");}
 break;
 case 44:
-//#line 93 "Gramatica.y"
+//#line 93 "gramatica.y"
 {if(!EerrorSintactico()){yyval.obj=val_peek(2).obj; GeneradorCodigoIntermedio.addElemento(val_peek(1).sval + AMBITO.toString()); GeneradorCodigoIntermedio.addElemento("PF");cargarVariables(val_peek(1).sval,(Tipo)val_peek(2).obj," nombre de parametro real ");}}
 break;
 case 45:
-//#line 95 "Gramatica.y"
+//#line 95 "gramatica.y"
 {if(!EerrorSintactico())
 										{if(tipos.containsKey(val_peek(2).sval))
 										{yyval.obj = tipos.get(val_peek(2).sval); GeneradorCodigoIntermedio.addElemento(val_peek(1).sval + AMBITO.toString()); GeneradorCodigoIntermedio.addElemento("PF");cargarVariables(val_peek(1).sval,tipos.get(val_peek(2).sval)," nombre de parametro real ");
 										}else{cargarErrorEImprimirloSintactico("Linea " + AnalizadorLexico.saltoDeLinea +" Se utilizo un tipo desconocido ");};}}
 break;
 case 46:
-//#line 99 "Gramatica.y"
+//#line 99 "gramatica.y"
 {yyval.obj=val_peek(1).obj;cargarErrorEImprimirloSintactico("Linea " + AnalizadorLexico.saltoDeLinea +" Error: Falta el nombre del parametro en la funcion ");}
 break;
 case 47:
-//#line 100 "Gramatica.y"
+//#line 100 "gramatica.y"
 {cargarErrorEImprimirloSintactico("Linea " + AnalizadorLexico.saltoDeLinea +" Error: Falta el tipo del parametro en la funcion ");}
 break;
 case 48:
-//#line 101 "Gramatica.y"
+//#line 101 "gramatica.y"
 {cargarErrorEImprimirloSintactico("Linea " + AnalizadorLexico.saltoDeLinea +" Error: Falta el parametro en la funcion ");}
 break;
 case 49:
-//#line 102 "Gramatica.y"
+//#line 102 "gramatica.y"
 {cargarErrorEImprimirloSintactico("Linea " + AnalizadorLexico.saltoDeLinea +" Error: Se excedio el numero de parametros (1). ");}
 break;
 case 50:
-//#line 105 "Gramatica.y"
+//#line 105 "gramatica.y"
 {if(val_peek(0).sval=="RET"){yyval.sval="RET";}}
 break;
 case 51:
-//#line 109 "Gramatica.y"
+//#line 109 "gramatica.y"
 {if(!EerrorSintactico())
 										{if(!existeFuncion()){cargarErrorEImprimirloSemantico("Linea :" + AnalizadorLexico.saltoDeLinea +  " Error : RETORNO declarado fuera del ambito de una funcion  ");
 										}else{
@@ -1581,43 +1581,43 @@ case 51:
 										}}}
 break;
 case 52:
-//#line 114 "Gramatica.y"
+//#line 114 "gramatica.y"
 {cargarErrorEImprimirloSintactico("Linea :" + AnalizadorLexico.saltoDeLinea +  " Error : Falta el parametro del RETORNO  ");	}
 break;
 case 54:
-//#line 119 "Gramatica.y"
+//#line 119 "gramatica.y"
 {if(val_peek(0).sval=="RET"){yyval.sval="RET";}}
 break;
 case 57:
-//#line 122 "Gramatica.y"
+//#line 122 "gramatica.y"
 {if(!EerrorSintactico()){if(fueDeclarado(val_peek(0).sval+AMBITO.toString())){cargarErrorEImprimirloSemantico("Linea :" + AnalizadorLexico.saltoDeLinea +  " Error : La ETIQUETA "+val_peek(0).sval+" ya existe  ");}else{cargarVariables(val_peek(0).sval,tipos.get("ETIQUETA"),"ETIQUETA");}GeneradorCodigoIntermedio.addEtiqueta(val_peek(0).sval+AMBITO.toString());GeneradorCodigoIntermedio.addElemento("LABEL"+val_peek(0).sval+AMBITO.toString());}}
 break;
 case 59:
-//#line 124 "Gramatica.y"
+//#line 124 "gramatica.y"
 {yyval.sval="RET";}
 break;
 case 60:
-//#line 127 "Gramatica.y"
+//#line 127 "gramatica.y"
 {if(!EerrorSintactico()){GeneradorCodigoIntermedio.addElemento("OUTF");}}
 break;
 case 61:
-//#line 128 "Gramatica.y"
+//#line 128 "gramatica.y"
 {cargarErrorEImprimirloSintactico("Linea :" + AnalizadorLexico.saltoDeLinea +  " Error : Falta el parametro del OUTF  ");}
 break;
 case 62:
-//#line 129 "Gramatica.y"
+//#line 129 "gramatica.y"
 {if(!EerrorSintactico()){GeneradorCodigoIntermedio.addElemento("OUTF");}}
 break;
 case 63:
-//#line 130 "Gramatica.y"
+//#line 130 "gramatica.y"
 {cargarErrorEImprimirloSintactico("Linea :" + AnalizadorLexico.saltoDeLinea +  " Error : Parametro incorrecto en sentencia OUTF. ");}
 break;
 case 64:
-//#line 131 "Gramatica.y"
+//#line 131 "gramatica.y"
 {cargarErrorEImprimirloSintactico("Linea :" + AnalizadorLexico.saltoDeLinea +  " Error : Cadena mal escrita en sentencia OUTF. ");}
 break;
 case 65:
-//#line 135 "Gramatica.y"
+//#line 135 "gramatica.y"
 {if(!EerrorSintactico())
 															{if(fueDeclarado(val_peek(2).sval)){
 															yyval.sval = val_peek(2).sval;
@@ -1628,29 +1628,29 @@ case 65:
 															}}
 break;
 case 66:
-//#line 144 "Gramatica.y"
+//#line 144 "gramatica.y"
 {if(!EerrorSintactico())
 																	{if(fueDeclarado(val_peek(5).sval)){
-																		if(Integer.valueOf(val_peek(3).sval) <= 3){
+																		if(Integer.valueOf(val_peek(3).sval) <= 3 && Integer.valueOf(val_peek(3).sval) > 0){
 																			yyval.sval = val_peek(5).sval;
 																			GeneradorCodigoIntermedio.addElemento(val_peek(5).sval+Parser.AMBITO.toString());
 																			GeneradorCodigoIntermedio.addElemento(val_peek(3).sval);
 																			GeneradorCodigoIntermedio.addElemento("INDEX");
 																			GeneradorCodigoIntermedio.addElemento(":="); 
-																			}else{cargarErrorEImprimirloSemantico("Linea :" + AnalizadorLexico.saltoDeLinea +  " Error:  Tripla fuera de rango ");}														
+																			}else{cargarErrorEImprimirloSemantico("Linea :" + AnalizadorLexico.saltoDeLinea +  " Error:  La posicion " + val_peek(3).sval + " es invalida, se espera un valor entre 1 y 3. ");}														
 																	}else{
 																		cargarErrorEImprimirloSemantico("Linea :" + AnalizadorLexico.saltoDeLinea +  " Error:  La variable '" + val_peek(5).sval + "' no fue declarada");}}}
 break;
 case 67:
-//#line 155 "Gramatica.y"
+//#line 155 "gramatica.y"
 {cargarErrorEImprimirloSintactico("Linea " + AnalizadorLexico.saltoDeLinea + " Error: no se puede acceder a una posicion negativa de un arreglo ");}
 break;
 case 68:
-//#line 156 "Gramatica.y"
+//#line 156 "gramatica.y"
 {cargarErrorEImprimirloSintactico("Linea " + AnalizadorLexico.saltoDeLinea + " Error: Falta el operando izquierdo de la asignacion. ");}
 break;
 case 69:
-//#line 160 "Gramatica.y"
+//#line 160 "gramatica.y"
 {if(!EerrorSintactico())
 												{if(!fueDeclarado(val_peek(3).sval)){
 													cargarErrorEImprimirloSemantico("Linea :" + AnalizadorLexico.saltoDeLinea +  " Error:  La funcion '" + val_peek(3).sval + "' no fue declarada");}
@@ -1659,7 +1659,7 @@ case 69:
 												}}}
 break;
 case 70:
-//#line 167 "Gramatica.y"
+//#line 167 "gramatica.y"
 {if(!EerrorSintactico())
 												{if(!fueDeclarado(val_peek(6).sval)){
 													cargarErrorEImprimirloSemantico("Linea :" + AnalizadorLexico.saltoDeLinea +  " Error:  La funcion '" + val_peek(6).sval + "' no fue declarada");}
@@ -1668,368 +1668,368 @@ case 70:
 												}}}
 break;
 case 71:
-//#line 173 "Gramatica.y"
+//#line 173 "gramatica.y"
 {cargarErrorEImprimirloSintactico("Linea :" + AnalizadorLexico.saltoDeLinea +  " Error:  faltan los parametros reales en la invocacion");}
 break;
 case 72:
-//#line 174 "Gramatica.y"
+//#line 174 "gramatica.y"
 {cargarErrorEImprimirloSintactico("Linea :" + AnalizadorLexico.saltoDeLinea +  " Error:  Se excedio el numero de parametros en la invocacion (1)");}
 break;
 case 73:
-//#line 178 "Gramatica.y"
+//#line 178 "gramatica.y"
 {yyval.ival=val_peek(2).ival + 1;if(!EerrorSintactico()){GeneradorCodigoIntermedio.addElemento(",");}}
 break;
 case 74:
-//#line 179 "Gramatica.y"
+//#line 179 "gramatica.y"
 {cargarErrorEImprimirloSintactico("Linea " + AnalizadorLexico.saltoDeLinea + " Error: Falta de expresion en lista de expresiones.  ");}
 break;
 case 75:
-//#line 180 "Gramatica.y"
+//#line 180 "gramatica.y"
 {cargarErrorEImprimirloSintactico("Linea " + AnalizadorLexico.saltoDeLinea + " Error: Falta de expresion en lista de expresiones.  ");}
 break;
 case 76:
-//#line 181 "Gramatica.y"
+//#line 181 "gramatica.y"
 {yyval.ival=1;if(!EerrorSintactico()){GeneradorCodigoIntermedio.addElemento(",");}}
 break;
 case 77:
-//#line 184 "Gramatica.y"
+//#line 184 "gramatica.y"
 {if(!EerrorSintactico()){GeneradorCodigoIntermedio.addElemento("+"); }}
 break;
 case 78:
-//#line 185 "Gramatica.y"
+//#line 185 "gramatica.y"
 {if(!EerrorSintactico()){GeneradorCodigoIntermedio.addElemento("-"); }}
 break;
 case 80:
-//#line 187 "Gramatica.y"
+//#line 187 "gramatica.y"
 {cargarErrorEImprimirloSintactico("Linea :" + AnalizadorLexico.saltoDeLinea +  " Error:  La expresion esta mal escrita, falta alguno de los operandos o ambos");}
 break;
 case 81:
-//#line 188 "Gramatica.y"
+//#line 188 "gramatica.y"
 {cargarErrorEImprimirloSintactico("Linea :" + AnalizadorLexico.saltoDeLinea +  " Error:  La expresion esta mal escrita, falta alguno de los operandos o ambos");}
 break;
 case 82:
-//#line 189 "Gramatica.y"
+//#line 189 "gramatica.y"
 {cargarErrorEImprimirloSintactico("Linea :" + AnalizadorLexico.saltoDeLinea +  " Error:  La expresion esta mal escrita, falta el operando de la derecha");}
 break;
 case 83:
-//#line 190 "Gramatica.y"
+//#line 190 "gramatica.y"
 {cargarErrorEImprimirloSintactico("Linea :" + AnalizadorLexico.saltoDeLinea +  " Error:  La expresion esta mal escrita, falta el operando de la derecha");}
 break;
 case 84:
-//#line 191 "Gramatica.y"
+//#line 191 "gramatica.y"
 {cargarErrorEImprimirloSintactico("Linea :" + AnalizadorLexico.saltoDeLinea +  " Error:  La expresion esta mal escrita, falta el operador");}
 break;
 case 85:
-//#line 194 "Gramatica.y"
+//#line 194 "gramatica.y"
 {if(!EerrorSintactico()){GeneradorCodigoIntermedio.addElemento("*");} }
 break;
 case 86:
-//#line 195 "Gramatica.y"
+//#line 195 "gramatica.y"
 {if(!EerrorSintactico()){GeneradorCodigoIntermedio.addElemento("/");}}
 break;
 case 88:
-//#line 197 "Gramatica.y"
+//#line 197 "gramatica.y"
 {cargarErrorEImprimirloSintactico("Linea :" + AnalizadorLexico.saltoDeLinea +  " Error:  La expresion esta mal escrita");}
 break;
 case 89:
-//#line 198 "Gramatica.y"
+//#line 198 "gramatica.y"
 {cargarErrorEImprimirloSintactico("Linea :" + AnalizadorLexico.saltoDeLinea +  " Error:  La expresion esta mal escrita");}
 break;
 case 90:
-//#line 199 "Gramatica.y"
+//#line 199 "gramatica.y"
 {cargarErrorEImprimirloSintactico("Linea :" + AnalizadorLexico.saltoDeLinea +  " Error:  La expresion esta mal escrita");}
 break;
 case 91:
-//#line 200 "Gramatica.y"
+//#line 200 "gramatica.y"
 {cargarErrorEImprimirloSintactico("Linea :" + AnalizadorLexico.saltoDeLinea +  " Error:  La expresion esta mal escrita");}
 break;
 case 92:
-//#line 203 "Gramatica.y"
+//#line 203 "gramatica.y"
 {if(!EerrorSintactico()){if(fueDeclarado(val_peek(0).sval)){GeneradorCodigoIntermedio.addElemento(val_peek(0).sval+Parser.AMBITO.toString());AnalizadorLexico.TablaDeSimbolos.get(val_peek(0).sval).incrementarContDeRef(); yyval.sval = val_peek(0).sval;}else{cargarErrorEImprimirloSemantico("Linea :" + AnalizadorLexico.saltoDeLinea +  " Error: La variable '"+val_peek(0).sval+ "' no fue declarada");};}}
 break;
 case 93:
-//#line 204 "Gramatica.y"
+//#line 204 "gramatica.y"
 {if(!EerrorSintactico()){GeneradorCodigoIntermedio.addElemento(val_peek(0).sval);}}
 break;
 case 95:
-//#line 207 "Gramatica.y"
+//#line 207 "gramatica.y"
 {if(!EerrorSintactico())
 											{if(fueDeclarado(val_peek(3).sval)){ 
-											if(Integer.valueOf(val_peek(1).sval) <= 3){
+											if(Integer.valueOf(val_peek(1).sval) <= 3 && Integer.valueOf(val_peek(1).sval) > 0){
 												GeneradorCodigoIntermedio.addElemento(val_peek(3).sval+Parser.AMBITO.toString());
 												GeneradorCodigoIntermedio.addElemento(val_peek(1).sval);
 												GeneradorCodigoIntermedio.addElemento("INDEX");
 												AnalizadorLexico.TablaDeSimbolos.get(val_peek(3).sval).incrementarContDeRef(); yyval.sval = val_peek(3).sval;
 											}else{
-												cargarErrorEImprimirloSemantico("Linea :" + AnalizadorLexico.saltoDeLinea +  " Error:  Tripla fuera de rango ");
+												cargarErrorEImprimirloSemantico("Linea :" + AnalizadorLexico.saltoDeLinea +  " Error:  La posicion " + val_peek(1).sval + " es invalida, se espera un valor entre 1 y 3. ");
 											}
 										}else{cargarErrorEImprimirloSemantico("Linea :" + AnalizadorLexico.saltoDeLinea +  " Error: La variable '"+val_peek(3).sval+ "' no fue declarada");};}}
 break;
 case 96:
-//#line 218 "Gramatica.y"
+//#line 218 "gramatica.y"
 {cargarErrorEImprimirloSintactico("Linea " + AnalizadorLexico.saltoDeLinea + " Error: no se puede acceder a una posicion negativa de un arreglo ");}
 break;
 case 97:
-//#line 220 "Gramatica.y"
+//#line 220 "gramatica.y"
 { yyval.sval = val_peek(2).sval + "/"+val_peek(0).sval;}
 break;
 case 98:
-//#line 221 "Gramatica.y"
+//#line 221 "gramatica.y"
 {cargarErrorEImprimirloSintactico("Linea " + AnalizadorLexico.saltoDeLinea + " Error: Falta ',' entre variables ");}
 break;
 case 99:
-//#line 222 "Gramatica.y"
+//#line 222 "gramatica.y"
 {yyval.sval = val_peek(0).sval;}
 break;
 case 102:
-//#line 232 "Gramatica.y"
+//#line 232 "gramatica.y"
 {if(estaRango(val_peek(0).sval)) { yyval.sval = val_peek(0).sval; } }
 break;
 case 103:
-//#line 233 "Gramatica.y"
+//#line 233 "gramatica.y"
 { cambioCTENegativa(val_peek(0).sval); yyval.sval = "-" + val_peek(0).sval;}
 break;
 case 104:
-//#line 236 "Gramatica.y"
+//#line 236 "gramatica.y"
 {if(val_peek(4).sval=="RET" && val_peek(2).sval=="RET"){yyval.sval="RET";};if(!EerrorSintactico()){completarBifurcacionI();}}
 break;
 case 105:
-//#line 237 "Gramatica.y"
+//#line 237 "gramatica.y"
 {if(!EerrorSintactico()){completarBifurcacionISinElse();}}
 break;
 case 106:
-//#line 238 "Gramatica.y"
+//#line 238 "gramatica.y"
 {cargarErrorEImprimirloSintactico("Linea :" + AnalizadorLexico.saltoDeLinea + " Error: Falta de contenido en bloque THEN.");}
 break;
 case 107:
-//#line 239 "Gramatica.y"
+//#line 239 "gramatica.y"
 {{cargarErrorEImprimirloSintactico("Linea " + AnalizadorLexico.saltoDeLinea + " Error : falta cuerpo en el ELSE ");};}
 break;
 case 108:
-//#line 242 "Gramatica.y"
+//#line 242 "gramatica.y"
 {if(val_peek(3).sval=="RET" && val_peek(2).sval=="RET"){yyval.sval="RET";};cargarErrorEImprimirloSintactico("Linea " + AnalizadorLexico.saltoDeLinea + " Error: Falta ';' al final de la sentencia del bloque del THEN ");}
 break;
 case 109:
-//#line 243 "Gramatica.y"
+//#line 243 "gramatica.y"
 {cargarErrorEImprimirloSintactico("Linea " + AnalizadorLexico.saltoDeLinea + " Error: Falta ';' al final de la sentencia del bloque del THEN  ");}
 break;
 case 110:
-//#line 244 "Gramatica.y"
+//#line 244 "gramatica.y"
 {if(val_peek(3).sval=="RET" && val_peek(1).sval=="RET"){yyval.sval="RET";};cargarErrorEImprimirloSintactico("Linea " + AnalizadorLexico.saltoDeLinea + " Error: Falta ';' al final de la sentencia del bloque del ELSE  ");}
 break;
 case 111:
-//#line 245 "Gramatica.y"
+//#line 245 "gramatica.y"
 {if(val_peek(2).sval=="RET" && val_peek(1).sval=="RET"){yyval.sval="RET";};cargarErrorEImprimirloSintactico("Linea " + AnalizadorLexico.saltoDeLinea + " Error: Falta ';' al final de los bloques del IF ");}
 break;
 case 112:
-//#line 247 "Gramatica.y"
+//#line 247 "gramatica.y"
 {yyval.sval=val_peek(2).sval;cargarErrorEImprimirloSintactico("Linea " + AnalizadorLexico.saltoDeLinea + ": Error : Falta el END_IF en IF  ");}
 break;
 case 113:
-//#line 248 "Gramatica.y"
+//#line 248 "gramatica.y"
 {if(val_peek(4).sval=="RET" && val_peek(2).sval=="RET"){yyval.sval="RET";};cargarErrorEImprimirloSintactico("Linea " + AnalizadorLexico.saltoDeLinea + ": Error : Falta el END_IF en IF ");}
 break;
 case 114:
-//#line 251 "Gramatica.y"
+//#line 251 "gramatica.y"
 {if(val_peek(6).ival == val_peek(2).ival){if(!EerrorSintactico()){cantDeOperandos=val_peek(6).ival;modificarPolacaPM(val_peek(4).sval,val_peek(6).ival);}}else{cargarErrorEImprimirloSintactico("Linea " + AnalizadorLexico.saltoDeLinea + "Error : Cantidad de operandor incompatibles en la comparacion ");}}
 break;
 case 115:
-//#line 252 "Gramatica.y"
+//#line 252 "gramatica.y"
 {cargarErrorEImprimirloSintactico("Linea " + AnalizadorLexico.saltoDeLinea + "Error : Falta el '(' en la condicion ");}
 break;
 case 116:
-//#line 253 "Gramatica.y"
+//#line 253 "gramatica.y"
 {cargarErrorEImprimirloSintactico("Linea " + AnalizadorLexico.saltoDeLinea + "Error : Falta el ')' en la condicion ");}
 break;
 case 117:
-//#line 254 "Gramatica.y"
+//#line 254 "gramatica.y"
 {cargarErrorEImprimirloSintactico("Linea " + AnalizadorLexico.saltoDeLinea + "Error : Faltan los parentesis en la condicion ");}
 break;
 case 118:
-//#line 255 "Gramatica.y"
+//#line 255 "gramatica.y"
 {cantDeOperandos=1;if(!EerrorSintactico()){opCondicion(val_peek(2).sval);}}
 break;
 case 119:
-//#line 256 "Gramatica.y"
+//#line 256 "gramatica.y"
 {cargarErrorEImprimirloSintactico("Linea " + AnalizadorLexico.saltoDeLinea + "Error : Falta el '(' en la condicion ");}
 break;
 case 120:
-//#line 257 "Gramatica.y"
+//#line 257 "gramatica.y"
 {cargarErrorEImprimirloSintactico("Linea " + AnalizadorLexico.saltoDeLinea + "Error : Falta el ')' en la condicion ");}
 break;
 case 121:
-//#line 258 "Gramatica.y"
+//#line 258 "gramatica.y"
 {cargarErrorEImprimirloSintactico("Linea " + AnalizadorLexico.saltoDeLinea + "Error : Faltan los parentesis en la condicion ");}
 break;
 case 122:
-//#line 260 "Gramatica.y"
+//#line 260 "gramatica.y"
 {cargarErrorEImprimirloSintactico("Linea " + AnalizadorLexico.saltoDeLinea + "Error : Falta el comparador en la condicion ");}
 break;
 case 123:
-//#line 262 "Gramatica.y"
+//#line 262 "gramatica.y"
 {cargarErrorEImprimirloSintactico("Linea " + AnalizadorLexico.saltoDeLinea + " Error : Falta el comparador ");}
 break;
 case 124:
-//#line 263 "Gramatica.y"
+//#line 263 "gramatica.y"
 {cargarErrorEImprimirloSintactico("Linea " + AnalizadorLexico.saltoDeLinea + " Error : Falta el ')' en la condicion luego de la lista de expresiones ");}
 break;
 case 125:
-//#line 264 "Gramatica.y"
+//#line 264 "gramatica.y"
 {cargarErrorEImprimirloSintactico("Linea " + AnalizadorLexico.saltoDeLinea + " Error : Falta el '(' en la condicion luego del comparador");}
 break;
 case 126:
-//#line 267 "Gramatica.y"
+//#line 267 "gramatica.y"
 {yyval.sval=">";}
 break;
 case 127:
-//#line 268 "Gramatica.y"
+//#line 268 "gramatica.y"
 {yyval.sval=">=";}
 break;
 case 128:
-//#line 269 "Gramatica.y"
+//#line 269 "gramatica.y"
 {yyval.sval="<";}
 break;
 case 129:
-//#line 270 "Gramatica.y"
+//#line 270 "gramatica.y"
 {yyval.sval="<=";}
 break;
 case 130:
-//#line 271 "Gramatica.y"
+//#line 271 "gramatica.y"
 {yyval.sval="=";}
 break;
 case 131:
-//#line 272 "Gramatica.y"
+//#line 272 "gramatica.y"
 {yyval.sval="!=";}
 break;
 case 132:
-//#line 275 "Gramatica.y"
+//#line 275 "gramatica.y"
 {if(val_peek(0).sval=="RET"){yyval.sval="RET";};}
 break;
 case 133:
-//#line 276 "Gramatica.y"
+//#line 276 "gramatica.y"
 {if(val_peek(0).sval=="RET"){yyval.sval="RET";};}
 break;
 case 134:
-//#line 279 "Gramatica.y"
+//#line 279 "gramatica.y"
 {if(val_peek(2).sval=="RET"){yyval.sval="RET";};}
 break;
 case 135:
-//#line 280 "Gramatica.y"
+//#line 280 "gramatica.y"
 {cargarErrorEImprimirloSintactico("Linea " + AnalizadorLexico.saltoDeLinea +  " Error: falta el bloque de sentencias ");}
 break;
 case 136:
-//#line 281 "Gramatica.y"
+//#line 281 "gramatica.y"
 {if(val_peek(1).sval=="RET"){yyval.sval="RET";};cargarErrorEImprimirloSintactico("Linea " + AnalizadorLexico.saltoDeLinea + " Error: Falta ';' al final de la sentencia ");}
 break;
 case 137:
-//#line 282 "Gramatica.y"
+//#line 282 "gramatica.y"
 {if(val_peek(1).sval=="RET"){yyval.sval="RET";};cargarErrorEImprimirloSintactico("Linea " + AnalizadorLexico.saltoDeLinea + " Error: Falta el END al final de las sentencias del ELSE");}
 break;
 case 138:
-//#line 286 "Gramatica.y"
+//#line 286 "gramatica.y"
 {if(val_peek(0).sval=="RET"){yyval.sval="RET";};}
 break;
 case 139:
-//#line 289 "Gramatica.y"
+//#line 289 "gramatica.y"
 {if(!EerrorSintactico()){if(val_peek(0).sval=="RET"){yyval.sval="RET";};operacionesIF();}}
 break;
 case 140:
-//#line 290 "Gramatica.y"
+//#line 290 "gramatica.y"
 {if(!EerrorSintactico()){if(val_peek(0).sval=="RET"){yyval.sval="RET";};operacionesIF();}}
 break;
 case 141:
-//#line 293 "Gramatica.y"
+//#line 293 "gramatica.y"
 {if(val_peek(2).sval=="RET"){yyval.sval="RET";};}
 break;
 case 142:
-//#line 294 "Gramatica.y"
+//#line 294 "gramatica.y"
 {cargarErrorEImprimirloSintactico("Linea " + AnalizadorLexico.saltoDeLinea +  " Error: falta el bloque de sentencias ");}
 break;
 case 143:
-//#line 295 "Gramatica.y"
+//#line 295 "gramatica.y"
 {if(val_peek(1).sval=="RET"){yyval.sval="RET";};cargarErrorEImprimirloSintactico("Linea " + AnalizadorLexico.saltoDeLinea + " Error: Falta ';' al final de la sentencia ");}
 break;
 case 144:
-//#line 296 "Gramatica.y"
+//#line 296 "gramatica.y"
 {if(val_peek(1).sval=="RET"){yyval.sval="RET";};cargarErrorEImprimirloSintactico("Linea " + AnalizadorLexico.saltoDeLinea + " Error: Falta el END al final de las sentencias del THEN");}
 break;
 case 145:
-//#line 299 "Gramatica.y"
+//#line 299 "gramatica.y"
 {if(val_peek(0).sval=="RET"){yyval.sval="RET";};}
 break;
 case 146:
-//#line 303 "Gramatica.y"
+//#line 303 "gramatica.y"
 {if(val_peek(0).sval=="RET"){yyval.sval="RET";};}
 break;
 case 147:
-//#line 304 "Gramatica.y"
+//#line 304 "gramatica.y"
 {if(val_peek(0).sval=="RET"){yyval.sval="RET";};}
 break;
 case 148:
-//#line 308 "Gramatica.y"
+//#line 308 "gramatica.y"
 {if(val_peek(2).sval=="RET"){yyval.sval="RET";};}
 break;
 case 149:
-//#line 309 "Gramatica.y"
+//#line 309 "gramatica.y"
 {cargarErrorEImprimirloSintactico("Linea " + AnalizadorLexico.saltoDeLinea +  " Error: falta el bloque de sentencias ");}
 break;
 case 150:
-//#line 310 "Gramatica.y"
+//#line 310 "gramatica.y"
 {if(val_peek(1).sval=="RET"){yyval.sval="RET";};cargarErrorEImprimirloSintactico("Linea " + AnalizadorLexico.saltoDeLinea + " Error: Falta ';' al final de la sentencia ");}
 break;
 case 151:
-//#line 311 "Gramatica.y"
+//#line 311 "gramatica.y"
 {if(val_peek(1).sval=="RET"){yyval.sval="RET";};cargarErrorEImprimirloSintactico("Linea " + AnalizadorLexico.saltoDeLinea + " Error: Falta el END al final de las sentencias");}
 break;
 case 152:
-//#line 314 "Gramatica.y"
+//#line 314 "gramatica.y"
 {if(val_peek(0).sval=="RET"){yyval.sval="RET";}}
 break;
 case 153:
-//#line 317 "Gramatica.y"
+//#line 317 "gramatica.y"
 {if(val_peek(2).sval=="RET" || val_peek(0).sval=="RET"){yyval.sval="RET";};}
 break;
 case 154:
-//#line 318 "Gramatica.y"
+//#line 318 "gramatica.y"
 {if(val_peek(0).sval=="RET"){yyval.sval="RET";};}
 break;
 case 155:
-//#line 319 "Gramatica.y"
+//#line 319 "gramatica.y"
 {if(val_peek(1).sval=="RET" || val_peek(0).sval=="RET"){yyval.sval="RET";};cargarErrorEImprimirloSintactico("Linea " + AnalizadorLexico.saltoDeLinea + " Error: Falta ';' al final de la sentencia ");}
 break;
 case 156:
-//#line 322 "Gramatica.y"
+//#line 322 "gramatica.y"
 {if(val_peek(0).sval=="RET"){yyval.sval="RET";};}
 break;
 case 157:
-//#line 325 "Gramatica.y"
+//#line 325 "gramatica.y"
 {if(!EerrorSintactico()){cargarCadenaMultilinea(val_peek(0).sval);GeneradorCodigoIntermedio.addElemento(val_peek(0).sval);}}
 break;
 case 158:
-//#line 330 "Gramatica.y"
+//#line 330 "gramatica.y"
 {if(!EerrorSintactico()){operacionesWhile();}}
 break;
 case 159:
-//#line 331 "Gramatica.y"
+//#line 331 "gramatica.y"
 {cargarErrorEImprimirloSintactico("Linea " + AnalizadorLexico.saltoDeLinea +  " Error: falta el cuerpo del WHILE ");}
 break;
 case 160:
-//#line 334 "Gramatica.y"
+//#line 334 "gramatica.y"
 {if(!EerrorSintactico()){GeneradorCodigoIntermedio.apilar(GeneradorCodigoIntermedio.getPos());GeneradorCodigoIntermedio.addElemento("LABEL"+GeneradorCodigoIntermedio.getPos());}}
 break;
 case 161:
-//#line 338 "Gramatica.y"
+//#line 338 "gramatica.y"
 {if(!EerrorSintactico()){GeneradorCodigoIntermedio.addBaulDeGotos(val_peek(0).sval+AMBITO.toString()
 									+"/"+AMBITO.toString()
 									+"/"+String.valueOf(GeneradorCodigoIntermedio.getPos()));}}
 break;
 case 162:
-//#line 341 "Gramatica.y"
+//#line 341 "gramatica.y"
 {cargarErrorEImprimirloSintactico("Linea :" + AnalizadorLexico.saltoDeLinea 
 									+ " Error: Falta el caracter '@' de la etiqueta. ");}
 break;
 case 163:
-//#line 343 "Gramatica.y"
+//#line 343 "gramatica.y"
 {cargarErrorEImprimirloSintactico("Linea :" + AnalizadorLexico.saltoDeLinea
 									 + " Error: Falta la etiqueta en GOTO ");}
 break;
