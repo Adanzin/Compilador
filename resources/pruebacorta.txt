@@ -8,27 +8,7 @@ begin
                             s1{3} := 400.0;
              
 
-              tsing fun f(tsing b) begin
-							b{1} := b{1}+10.0;
-
-                            b{2} := b{2}+10.0;
-                            
-                            b{3} := b{3}+10.0;
-                            
-                            OUTF([imprimo b]);
-                            OUTf(b);
-                            
-                            OUTF([imprimo s1 parte 2]);
-                            OUTf(s1);
-              ret (b);
-              end;
-			
-			OUTF([imprimo s1]);
-             outf(s1);
-
-              s2 := f(s1);
-
-             OUTF([imprimo s2]);
-              outf(s2);
-
+              if(s1{2}>s1{1})THEN
+              	OUTF([entro]);
+              END_IF;
 end

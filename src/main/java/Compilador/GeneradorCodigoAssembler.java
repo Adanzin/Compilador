@@ -26,46 +26,52 @@ public class GeneradorCodigoAssembler {
 			elemento = polacaActual.get(i);
 			switch (elemento) {
 				case "+","-","*","/",":=":
-					ultimaOperacion = elemento;
+					ultimaOperacion = elemento; //Almaceno la ultima operacion para debuggear
 					operadorBinario(elemento, codigo);
 					break;
 				case "INTEGER", "DOUBLE", "OCTAL", "RET":
-					ultimaOperacion = elemento;
+					ultimaOperacion = elemento;//Almaceno la ultima operacion para debuggear
 					operadorUnario(elemento, codigo, nombrePolaca);
 					break;
 				case "CALL":
-					ultimaOperacion = elemento;
+					ultimaOperacion = elemento;//Almaceno la ultima operacion para debuggear
 					operadorFuncion(codigo);
 					break;
 				case "BF":
-					ultimaOperacion = elemento;
+					ultimaOperacion = elemento;//Almaceno la ultima operacion para debuggear
+					String tipoOperandos;
 					String comparadorAnterior = polacaActual.get(i-2);
-					String tipoOperandos = Parser.getVariableFueraDeAmbito(polacaActual.get(i-3)).getTipo().getType();
+					String operandoAnterior = polacaActual.get(i-3);
+					if(operandoAnterior!="INDEX") {
+						tipoOperandos = Parser.getVariableFueraDeAmbito(operandoAnterior).getTipo().getType();
+					}else {
+						tipoOperandos = Parser.getVariableFueraDeAmbito(polacaActual.get(i-5)).getTipo().getType();
+					}
 					operadorSaltoCondicional(elemento, codigo, comparadorAnterior, tipoOperandos);
 					break;
 				case "BI":
-					ultimaOperacion = elemento;
+					ultimaOperacion = elemento;//Almaceno la ultima operacion para debuggear
 					operadorSaltoIncondicional(codigo);
 					break;
 				case "<",">","<=",">=","=", "!=":	
-					ultimaOperacion = elemento;
+					ultimaOperacion = elemento;//Almaceno la ultima operacion para debuggear
 					operadorComparacion(elemento, codigo);
 					break;
 				case "OUTF":
-					ultimaOperacion = elemento;
+					ultimaOperacion = elemento;//Almaceno la ultima operacion para debuggear
 					imprimirPorPantalla(codigo);
 					break;
 				case "PF":
-					ultimaOperacion = elemento;
+					ultimaOperacion = elemento;//Almaceno la ultima operacion para debuggear
 					operadorInicioFuncion(codigo);
 					break;
 				case "INDEX":
-					ultimaOperacion = elemento;
+					ultimaOperacion = elemento;//Almaceno la ultima operacion para debuggear
 					operadorIndiceTripla(codigo);
 					break;
 				default: //Entra si es un operando o si es un LABEL+N� que no puedo chequear en el CASE
 					if(elemento.startsWith("LABEL")) { //Es una etiqueta
-						ultimaOperacion = elemento;
+						ultimaOperacion = elemento;//Almaceno la ultima operacion para debuggear
 						codigo.append(elemento + ": \n");
 					}
 					else { //Es un operando sino
@@ -186,7 +192,7 @@ public class GeneradorCodigoAssembler {
 					
 					//-------------------------------------------------------------------
 					codigo.append("FINIT \n");
-					codigo.append("FLD @ParametroRealFloat \n"); //
+					codigo.append("FLD @ParametroRealFloat \n"); 
 				}
 			}
 			else {
@@ -311,7 +317,7 @@ public class GeneradorCodigoAssembler {
 			case "/":
 				codigo.append("MOV BX," + operando2 + "\n"); //Uso BX para no pisar AX con el operando1
 				codigo.append("CMP BX" + ",0" + "\n");
-				codigo.append("JE Divison_Por_Cero \n"); //JZ salta si la comparacion del operando2 con el cero es TRUE
+				codigo.append("JE Divison_Por_Cero \n"); //JE salta si la comparacion del operando2 con el cero es TRUE
 				//Continua el flujo normal en caso de no saltar
 				
 				if(tipoOperando.esSubTipo()) {
@@ -472,7 +478,6 @@ public class GeneradorCodigoAssembler {
 			case "DOUBLE":
 				if (tipoOperando.getType().contains("INTEGER")||tipoOperando.getType().contains("OCTAL")) {
 					//Conversion de Entero/Octal a Double
-					String aux = crearAuxiliar(Parser.tipos.get("DOUBLE"));
 					codigo.append("MOVZX EAX, WORD PTR " + operando + " \n");
 					codigo.append("PUSH EAX \n");
 					codigo.append("FILD DWORD PTR [ESP] \n"); //Cargo el entero como double
@@ -517,8 +522,8 @@ public class GeneradorCodigoAssembler {
 				codigo.append("FLD " + operando2 + "\n"); //Apilo el operando2
 				codigo.append("FLD " + operando1 + "\n"); //Apilo el operando1
 				codigo.append("FCOMPP"  + "\n"); //Compara los operandos extrayendo ambos operandos de la pila
-				codigo.append("FSTSW AX \n");
-				codigo.append("SAHF \n");
+				codigo.append("FSTSW AX \n"); //Almaceno el resultado de la comparacion en AX
+				codigo.append("SAHF \n"); //Me quedo con los ultimos bits significativos del registro
 				codigo.append("FINIT \n \n"); //Siempre vacio la pila al finalizar para evitar errores de ejecucion
 			}
 		}
