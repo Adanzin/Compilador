@@ -1,6 +1,6 @@
 # Compilador
-### El camino hacia la creación de un compilador es largo y arduo, pero como dijo Hércules: 
-#### "El valor no se mide por la ausencia de miedo, sino por la capacidad de superarlo." 
+### El camino hacia la creación de un compilador es largo y arduo, pero como dijo Perseo: 
+#### " La victoria no se logra sin lucha, pero la lucha es lo que hace que la victoria sea dulce. " 
 Este compilador fue desarrollado por Adan Diaz y Esteban Boroni, dos estudiantes de la carrera de Ingenieria de Sistemas de la UNICEN. 
 En este repositorio, encontrarás el codigo fuente de mi compilador, así como documentación y recursos adicionales para ayudarte a entender cómo funciona y cómo puedes utilizarlo. 
 Espero que disfrutes explorando mi proyecto.
